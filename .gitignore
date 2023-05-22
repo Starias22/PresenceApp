@@ -45,3 +45,7 @@ app.*.map.json
 
 
 sh.txt
+hash.txt
+macos/Runner/Configs/Warnings.xcconfig
+ios/Runner.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+ios/Runner.xcodeproj/project.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
