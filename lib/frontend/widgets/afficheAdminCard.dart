@@ -1,0 +1,171 @@
+import 'package:flutter/material.dart';
+import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/services/admin_manager.dart';
+import 'package:presence_app/frontend/screens/afficherAdmins.dart';
+import 'package:presence_app/frontend/screens/pageModifierAdmin.dart';
+
+class AfficherAdminCard extends StatelessWidget {
+  final Admin admin;
+   AfficherAdminCard({Key? key, required this.admin}) : super(key: key);
+
+ 
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: () {
+        print("tapppp");
+      },
+      child: Container(
+        color: Colors.white,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: SizedBox(
+                    height: 90.0,
+                    width: 90.0,
+                    child: Image.asset(
+                      'assets/images/imsp1.png',
+                      fit: BoxFit.fill,
+                    ),
+                  )),
+              Expanded(
+                  child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                admin.getLname(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                admin.getFname(),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                admin.getEmail(),
+                                style: const TextStyle(color: Colors.grey),
+                              ),
+                            ],
+                          ),
+                        ),
+                        DropdownButtonHideUnderline(
+                            child: DropdownButton(
+                          onChanged: (String? v) async {
+                            if (v == "modifier") {
+                              print('Hello***');
+                            } else if (v == "supprimer") {
+                              print('////Hello***');
+
+                          
+
+
+
+                              showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                        actionsAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                        title: const Text(
+                                            'Voulez-vous vraiment supprimer ?'),
+                                        actions: [
+                                          ElevatedButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  primary: const Color.fromARGB(
+                                                      255, 10, 184, 39),
+                                                  shape: const StadiumBorder(),
+                                                  padding: const EdgeInsets.all(
+                                                      8.0)),
+                                              child: const Text("Annuler")),
+                                          ElevatedButton(
+                                              onPressed: () async {
+                                                
+                                            await AdminManager().delete(Admin.target(admin.getEmail()));
+
+                                            
+                                            
+
+                                                Navigator.of(context).pop();
+
+                                                 
+                                              },
+                                              style: ElevatedButton.styleFrom(
+                                                  backgroundColor: const Color.fromARGB(
+                                                      255, 184, 50, 10),
+                                                  shape: const StadiumBorder(),
+                                                  padding: const EdgeInsets.all(
+                                                      8.0)),
+                                              child: const Text("Supprimer")),
+                                        ],
+                                      )).then((value) {
+                                //setState(() {});
+                              });
+                            }
+                          },
+                          items: [
+                            DropdownMenuItem(
+                              value: 'modifier',
+                              child: const Row(
+                                children: [
+                                  Text(
+                                    'Modifier',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                    return FormulaireModifierAdmin(admin: admin,);
+                  }));
+                              },
+                            ),
+                            const DropdownMenuItem(
+                              value: 'supprimer',
+                              child: Row(
+                                children: [
+                                  Text(
+                                    'Supprimer',
+                                    style: TextStyle(color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                              
+                            )
+                          ],
+                          icon: const Padding(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child: Icon(
+                              Icons.more_vert,
+                              size: 25,
+                            ),
+                          ),
+                        ))
+                      ],
+                    ),
+                  ),
+                ],
+              ))
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

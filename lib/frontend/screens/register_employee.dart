@@ -1,0 +1,465 @@
+import 'package:email_validator/email_validator.dart';
+import 'package:flutter/material.dart';
+import 'package:presence_app/bridge/register_employee_controller.dart';
+import 'package:presence_app/frontend/screens/pageStatistiques.dart';
+import 'package:presence_app/utils.dart';
+
+class RegisterEmployee extends StatefulWidget {
+  const RegisterEmployee({Key? key}) : super(key: key);
+
+  @override
+  State<RegisterEmployee> createState() => _RegisterEmployeeState();
+}
+
+class _RegisterEmployeeState extends State<RegisterEmployee> {
+  //final key = GlobalKey<DropdownSearchState>();
+
+  late String _nom;
+  late String _prenom;
+  late String _sexe;
+  late String _email;
+  late int _service;
+
+  late String fname, lname, email, service, gender, entryTime, exitTime;
+
+  void showToast(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(message),
+      duration: const Duration(seconds: 3),
+    ));
+  }
+
+  Future<void> retrieveServices() async {
+    items = await RegisterEmployeeController.getServices();
+  }
+
+  late List<String> items = [];
+  String _valueChanged = '';
+  String _valueSaved = '';
+  final _key = GlobalKey<FormState>();
+
+  TextEditingController? _controller;
+
+  Future<void> _getValue() async {
+    await Future.delayed(const Duration(seconds: 3), () {
+      setState(() {
+        _controller?.text = 'circleValue';
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    _getValue();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //while(items)
+    retrieveServices();
+
+    List<DropdownMenuItem<String>> itemsS;
+    return SafeArea(
+        child: Scaffold(
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text(
+                "Création de compte employé",
+                style: TextStyle(
+                  fontSize: 18,
+                ),
+              ),
+              leading: IconButton(
+                  onPressed: () => {
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>
+                                    const StatistiquesForServices()))
+                      },
+                  icon: const Icon(
+                    Icons.arrow_back,
+                  )),
+            ),
+            body: ListView(
+              scrollDirection: Axis.vertical,
+              children: [
+                const SizedBox(
+                  height: 25,
+                ),
+                Center(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Form(
+                          key: _key,
+                          child: Column(
+                            children: [
+                              TextFormField(
+                                  keyboardType: TextInputType.name,
+                                  textInputAction: TextInputAction.next,
+                                  validator: (String? v) {
+                                    if (v != null && v.isNotEmpty) {
+                                      lname = v;
+                                      return null;
+                                    } else {
+                                      return "Entrez le nom de l'employé";
+                                    }
+                                  },
+                                  onSaved: (String? v) {
+                                    _nom = v!;
+                                  },
+                                  decoration: InputDecoration(
+                                      label: const Text('Nom:'),
+                                      hintText: "Ex: ADEDE",
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(0.0),
+                                        borderSide:
+                                            const BorderSide(color: Colors.red),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.green),
+                                      ))),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              TextFormField(
+                                  keyboardType: TextInputType.name,
+                                  textInputAction: TextInputAction.next,
+                                  validator: (String? v) {
+                                    if (v != null && v.isNotEmpty) {
+                                      fname = v;
+                                      return null;
+                                    }
+                                    return "Entrez le(s) prenom(s) de l'employé";
+                                  },
+                                  onSaved: (String? v) {
+                                    _nom = v!;
+                                  },
+                                  decoration: InputDecoration(
+                                      label: const Text('Prenom(s):'),
+                                      hintText: "Ex: John",
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(0.0),
+                                        borderSide:
+                                            const BorderSide(color: Colors.red),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.green),
+                                      ))),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              TextFormField(
+                                  keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  validator: (String? v) {
+                                    if (v != null &&
+                                        EmailValidator.validate(v)) {
+                                      email = v;
+                                      return null;
+                                    }
+                                    return "Email invalide";
+                                  },
+                                  onSaved: (String? v) {
+                                    _email = v!;
+                                  },
+                                  decoration: InputDecoration(
+                                      label: const Text('Email:'),
+                                      hintText: "Ex: employe@gmail.com",
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(0.0),
+                                        borderSide:
+                                            const BorderSide(color: Colors.red),
+                                      ),
+                                      focusedBorder: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0),
+                                        borderSide: const BorderSide(
+                                            color: Colors.green),
+                                      ))),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              DropdownButtonFormField(
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: "M",
+                                    child: Text("M"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "F",
+                                    child: Text("F"),
+                                  ),
+                                ],
+                                onChanged: (val) =>
+                                    setState(() => _valueChanged = val!),
+                                onSaved: (val) => setState(() {
+                                  _valueSaved = val ?? '';
+                                  //_service = int.parse(_valueSaved);
+                                }),
+                                validator: (String? v) {
+                                  if (v != null) {
+                                    gender = v;
+                                    return null;
+                                  }
+                                  return "Sélectionnez le sexe";
+                                },
+                                decoration: InputDecoration(
+                                    labelText: 'Selectionnez le sexe',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.red),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.green),
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              DropdownButtonFormField(
+                                items: items.map((String item) {
+                                  return DropdownMenuItem<String>(
+                                    value: item,
+                                    child: Text(item),
+                                  );
+                                }).toList(),
+                                onChanged: (val) =>
+                                    setState(() => _valueChanged = val!),
+                                validator: (String? v) {
+                                  if (v != null) {
+                                    service = v;
+                                    return null;
+                                  }
+                                  return "Sélectionnez le service";
+                                },
+                                onSaved: (val) => setState(() {
+                                  _valueSaved = val ?? '';
+                                  // _service = int.parse(_valueSaved);
+                                }),
+                                decoration: InputDecoration(
+                                    labelText: 'Selectionnez le service',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.red),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.green),
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              DropdownButtonFormField(
+                                items: itemsS = [
+                                  const DropdownMenuItem(
+                                    value: "07:00",
+                                    child: Text("07:00"),
+                                  ),
+                                  const DropdownMenuItem(
+                                    value: "08:00",
+                                    child: Text("08:00"),
+                                  ),
+                                  const DropdownMenuItem(
+                                    value: "09:00",
+                                    child: Text("09:00"),
+                                  ),
+                                  const DropdownMenuItem(
+                                    value: "10:00",
+                                    child: Text("10:00"),
+                                  ),
+                                ],
+                                onChanged: (val) =>
+                                    setState(() => _valueChanged = val!),
+                                validator: (String? v) {
+                                  if (v != null) {
+                                    entryTime = v;
+                                    return null;
+                                  }
+                                  return "Sélectionnez l'heure d'arrivée";
+                                },
+                                onSaved: (val) => setState(() {
+                                  _valueSaved = val ?? '';
+                                  // _service = int.parse(_valueSaved);
+                                }),
+                                decoration: InputDecoration(
+                                    labelText: "Selectionnez l'heure d'arrivée",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.red),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.green),
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              DropdownButtonFormField(
+                                items: const [
+                                  DropdownMenuItem(
+                                    value: "12:00",
+                                    child: Text("12:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "13:00",
+                                    child: Text("13:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "14:00",
+                                    child: Text("14:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "15:00",
+                                    child: Text("15:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "16:00",
+                                    child: Text("16:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "17:00",
+                                    child: Text("17:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "18:00",
+                                    child: Text("18:00"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "19:00",
+                                    child: Text("19:00"),
+                                  ),
+                                ],
+                                onChanged: (val) =>
+                                    setState(() => _valueChanged = val!),
+                                onSaved: (val) => setState(() {
+                                  _valueSaved = val ?? '';
+                                  // _service = int.parse(_valueSaved);
+                                }),
+                                validator: (String? v) {
+                                  if (v != null) {
+                                    exitTime = v;
+                                    return null;
+                                  }
+                                  return "Sélectionnez l'heure de sortie";
+                                },
+                                decoration: InputDecoration(
+                                    labelText: "Selectionnez l'heure de sortie",
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.red),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide:
+                                          const BorderSide(color: Colors.green),
+                                    )),
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () => Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterEmployee())),
+                                    /* Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const StatistiquesForServices())),*/
+                                    child: const Text("Annuler"),
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      if (_key.currentState!.validate()) {
+                                        _key.currentState!.save();
+                                      } else {
+                                        return;
+                                      }
+                                      log.d('Lets start registration');
+                                      int code =
+                                          await RegisterEmployeeController
+                                              .register(
+                                                  fname,
+                                                  lname,
+                                                  email,
+                                                  gender,
+                                                  service,
+                                                  entryTime,
+                                                  exitTime);
+                                      String message;
+                                      switch (code) {
+                                        
+                                        case emailInUse:
+                                          message =
+                                              'Cette adresse email a été déjà attribuée à un employé';
+
+                                          break;
+
+                                        case adminExists:
+                                          message =
+                                              'Cette adresse email a été déjà attribuée à un admin';
+                                          break;
+                                        case success:
+                                          message =
+                                              'Employé enregistré avec succès';
+
+                                        default:
+                                            message='Erreur inconnue';
+                                              break;
+
+                                             
+                                          
+                                      }
+                                      showToast(message);
+                                       if(code==success)
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      const RegisterEmployee()));
+                                    },
+                                    child: const Text('Confirmer'),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ],
+            )));
+  }
+}
