@@ -7,6 +7,7 @@ import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/services/admin_manager.dart';
 import 'package:presence_app/backend/services/day_manager.dart';
 import 'package:presence_app/backend/services/planning_manager.dart';
+import 'package:presence_app/backend/services/presence_manager.dart';
 import 'package:presence_app/backend/services/service_manager.dart';
 import 'package:presence_app/utils.dart';
 
@@ -24,7 +25,7 @@ class EmployeeManager {
 
   Future<int> getCount() async {
     var data = await getData();
-    log.i('data: $data');
+    //log.i('data: $data');
 
     return data == false ? 0 : data.length;
   }
@@ -35,10 +36,10 @@ class EmployeeManager {
   }
 
   Future<int> create(Employee employee) async {
-    log.d('****Lets create ');
+    //log.d('****Lets create ');
 
     int val = employee.isValid();
-    log.i('val:$val');
+    //log.i('val:$val');
 
     if (val != success) {
       log.e('Invalid employee');
@@ -58,7 +59,7 @@ class EmployeeManager {
 
       return adminExists;
     }
-    log.d('****Lets create ');
+    //log.d('****Lets create ');
 
     PlanningManager().create(employee.getPlanning());
     ServiceManager().create(employee.getService());
@@ -66,14 +67,14 @@ class EmployeeManager {
     int num = await getNextNum();
 
     _ref.child('$emp$num').set(employee.toMap());
-    log.d('Employee created successfully');
+    //log.d('Employee created successfully');
     
 
     return success;
   }
 
   Future<int> exists(Employee employee) async {
-    log.d('check exists');
+    //log.d('check exists');
     if (!employee.hasValidEmail()) {
       log.e('invalid email');
 
@@ -82,13 +83,13 @@ class EmployeeManager {
     int test = emailNotExists;
     var data = await getData();
 
-    log.i(data);
+    //log.i(data);
 
     if (data != false) {
       (data as Map).forEach((node, childs) {
         if (childs['email'] == employee.getEmail()) {
           test = emailExists;
-          log.d('Ok the employee exists');
+         // log.d('Ok the employee exists');
 
           return;
         }
@@ -106,19 +107,19 @@ class EmployeeManager {
 
     var data = await getData();
 
-    log.i('Not empty?$data');
+    //log.i('Not empty?$data');
 
     if (data == false) return emailNotExists;
 
-    (data as Map).forEach((node, childs) {
-      if (childs['email'] == employee.getEmail()) {
-        employee.setFname(childs['firstname']);
-        employee.setLname(childs['lastname']);
-        //employee.setGender(childs['gender']);
-        employee.setService(Service(childs['service']['name']));
+    (data as Map).forEach((node, children) {
+      if (children['email'] == employee.getEmail()) {
+        employee.setFname(children['firstname']);
+        employee.setLname(children['lastname']);
+        employee.setGender(children['gender']);
+        employee.setService(Service(children['service']));
         employee.setCurrentStatus(EStatus.absent);
         employee.setPlanning(Planning(
-            childs['planning']['entry_time'], childs['planning']['exit_time']));
+            children['planning']['entry_time'], children['planning']['exit_time']));
 
         return;
       }
@@ -154,7 +155,7 @@ class EmployeeManager {
     try {
       return snapshot.value as Map;
     } catch (e) {
-      log.e('***An error occured: $e');
+      log.e('***An error occurred: $e');
       return false;
     }
   }
@@ -171,7 +172,7 @@ class EmployeeManager {
       return emailNotExists;
     }
     _ref.child(await getKey(employee)).remove();
-    log.e('Employee removed successsfully');
+    PresenceManager().x(employee);
 
     return success;
   }
@@ -180,7 +181,7 @@ class EmployeeManager {
     int val = await exists(employee);
 
     if (val != emailExists) {
-      log.e('That employee doesnt exist and then canot be modified');
+      log.e('That employee doesnt exist and then cannot be modified');
 
       return val;
     }
@@ -206,7 +207,7 @@ class EmployeeManager {
 
     _ref.child(await getKey(employee)).update({'email': newEmail});
     employee.setEmail(newEmail);
-    log.d('Admin email updated successsfully');
+    //log.d('Admin email updated successfully');
 
     return success;
   }
@@ -234,7 +235,7 @@ class EmployeeManager {
       return sameService;
     }
     _ref.child(await getKey(employee)).update({'service': service.toMap()});
-    log.d('Employeee service updated successsfully');
+    log.d('Employee service updated successfully');
 
     return success;
   }
@@ -263,7 +264,7 @@ class EmployeeManager {
     }
 
     _ref.child(await getKey(employee)).update({'planning': planning.toMap()});
-    log.d('Employeee planning updated successsfully');
+    log.d('Employee planning updated successfully');
 
     return success;
   }
@@ -272,14 +273,14 @@ class EmployeeManager {
     int val = await exists(employee);
 
     if (val != emailExists) {
-      log.e('That employee doesnt exist and then canot be modified');
+      log.e('That employee doesnt exist and then cannot be modified');
 
       return val;
     }
     await fetch(employee);
 
     _ref.child(await getKey(employee)).update({'status': utils.str(status)});
-    log.d('Employeee status updated successsfully');
+    log.d('Employee status updated successfully');
 
     return success;
   }
@@ -288,14 +289,14 @@ class EmployeeManager {
     int val = await exists(employee);
 
     if (val != emailExists) {
-      log.e('That employee doesnt exist and then canot be modified');
+      log.e('That employee doesnt exist and then cannot be modified');
 
       return val;
     }
     await fetch(employee);
 
     _ref.child(await getKey(employee)).update({'fingerprint': fingerprint});
-    log.d('Employeee fingerprint enrolled successsfully');
+    log.d('Employeee fingerprint enrolled successfully');
 
     return success;
   }

@@ -48,7 +48,7 @@ class Presence {
   String? getExitTime() => _exitTime;
 
   Map<String, dynamic> toMap() => {
-        'employee': _employee.getEmail(),
+        'employee': {'email':_employee.getEmail(),'service':_employee.getService().getName()},
         'day': _day.getDate(),
         'entry_time': _entryTime,
         'exit_time': _exitTime,

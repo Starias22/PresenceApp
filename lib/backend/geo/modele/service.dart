@@ -1,18 +1,28 @@
+import 'package:presence_app/backend/services/planning_manager.dart';
+import 'package:presence_app/backend/services/presence_manager.dart';
+
+import '../../../utils.dart';
+import '../../models/day.dart';
+
 class DataService{
   String service;
-  double poucent;
-  String serviceColor;
+ List<double>poucent;
+  //String serviceColor;
 
-  DataService(this.service, this.poucent, this.serviceColor);
+
+  DataService(this.service, this.poucent);
+
 }
+List<DataService> convertToDataService(Map<String, List<double>> inputMap) {
+  return inputMap.entries.map((entry) {
+    return DataService(entry.key, [entry.value[0],entry.value[1],entry.value[2] ]);
+  }).toList();
+}
+Future<List<DataService>> data() async {
+ var x=await  PresenceManager().getMonthReportForAllServices(Day.today());
+ List<DataService> pie = convertToDataService(x);
+log.d(x);
+ log.d(pie);
 
-List<DataService> data(){
-  final List<DataService> pieData = [
-    new DataService("Comptabilité", 20, "green"),
-    new DataService("Direction", 10, "bleu"),
-    new DataService("Secrétariat Administratif", 15, "red"),
-    new DataService("Service coopération", 35, "orange"),
-    new DataService("Service scolarité", 30, "indigo")
-  ];
-  return pieData;
+  return pie;
 }

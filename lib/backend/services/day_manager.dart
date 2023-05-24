@@ -1,10 +1,6 @@
 import 'dart:core';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:presence_app/backend/models/employe.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/presence.dart';
-import 'package:presence_app/backend/services/presence_manager.dart';
 import 'package:presence_app/utils.dart';
 
 import '../models/day.dart';
@@ -19,7 +15,7 @@ class DayManager {
 
   Future<int> getCount() async {
     var data = await getData();
-    log.i('data: $data');
+    //log.i('data: $data');
 
     return data == false ? 0 : data.length;
   }
@@ -30,23 +26,23 @@ class DayManager {
   }
 
   Future<int> create(Day day) async {
-    dynamic val = day.isValid();
-    if (!val) {
-      log.e('Invalid day');
+
+    if (! day.isValid()) {
+      //log.e('Invalid day');
       return invalidDate;
     }
     int vl = await exists(day);
     if (vl == dayExists) {
-      log.e('That day already exists');
+      //log.e('That day already exists');
 
       return vl;
     }
 
-    log.d('Can be created*****');
+    //log.d('Can be created*****');
     int num = await getNextNum();
     log.i(day.getStatus());
     _ref.child('${this.day}$num').set(day.toMap());
-    log.d('Day created successfully');
+    //log.d('Day created successfully');
 
     return success;
   }
@@ -59,18 +55,15 @@ class DayManager {
     }
     int test = dayNotExists;
     var data = await getData();
-    log.d('A test');
+   // log.d('A test');
 
-    log.i(data);
+    //log.i(data);
 
     if (data != false) {
-      (data as Map).forEach((node, childs) {
-        if (childs['date'] == day.getDate()) {
-          log.d('***Of course');
-          day.setStatus(utils.convert(childs['status']));
+      (data as Map).forEach((node, children) {
+        if (children['date'] == day.getDate()) {
+          day.setStatus(utils.convert(children['status']));
           test = dayExists;
-          log.d('Ok the day exists');
-
           return;
         }
       });
@@ -86,14 +79,10 @@ class DayManager {
     }
     Map data = await getData();
 
-    data.forEach((key, chields) {
-      if (chields['date'] == day.getDate()) {
-        log.d('Okay we can get the key');
-
+    data.forEach((key, children) {
+      if (children['date'] == day.getDate()) {
         k = key;
-        log.i('key:$key');
-
-        return;
+               return;
       }
     });
     return k;
@@ -106,9 +95,35 @@ class DayManager {
     try {
       return snapshot.value as Map;
     } catch (e) {
-      log.e('An error occured: $e');
+      log.e('An error occurred: $e');
       return false;
     }
+  }
+  Future<int> getMonthWorkdaysCount(Day day) async {
+    Day d;
+    int count=0;
+   var days= await getData() as Map;
+
+   Day today=Day.today();
+   if(!day.equals(today)) {
+
+     log.d('Day is not today');
+     day=Day.day(day.getYear(),day.getMonth(),day.getLengthOfMonth());
+   }
+   //else{ log.d('Day is today');}
+   days.forEach((key, value)
+   {
+     d=Day(value['date']);
+     if(day.getYear()==d.getYear()&&
+         day.getMonth()==d.getMonth()&&
+         d.getDayOfMonth()<= day.getDayOfMonth()
+     ) {
+       if (d.getStatus() == DStatus.workday) {
+         count++;
+       }
+     }
+   });
+   return count;
   }
 
   void clear() {
@@ -133,7 +148,7 @@ class DayManager {
     }
 
     if (day.getStatus() == status) {
-      log.i('Same status provided');
+      //log.i('Same status provided');
       return sameDStatus;
     }
 
@@ -171,7 +186,12 @@ class DayManager {
     await dm.update(day, DStatus.holiday);
 
     await getData();*/
+    var count=await getMonthWorkdaysCount(Day.today());
+    log.i('There are $count workdays in the month');
+    count=await getMonthWorkdaysCount(Day('2023-04-01'));
+    log.i('There were $count workdays in the previous month(april)');
 
-   
+
+
   }
 }

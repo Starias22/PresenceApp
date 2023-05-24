@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/services/day_manager.dart';
 import 'package:presence_app/backend/services/presence_manager.dart';
 import 'package:presence_app/utils.dart' as u;
+import 'package:presence_app/utils.dart';
 
+import 'backend/services/planning_manager.dart';
+import 'backend/services/service_manager.dart';
 import 'firebase_options.dart';
 import 'frontend/screens/welcome.dart';
 
@@ -25,8 +28,9 @@ void main() async {
   //DayManager().test();
 
 //EmployeeManager().test();
-  //PresenceManager().test();
-
+ // log.d('Before test');
+ //PresenceManager().test();
+//log.d('Okay');
   runApp(const MyApp());
 }
 

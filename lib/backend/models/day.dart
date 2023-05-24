@@ -46,7 +46,6 @@ class Day {
 
   Day.today() {
     DateTime now = DateTime.now();
-    log.d('In today');
     _date =
         '${now.year}-${utils.formatTwoDigits(now.month)}-${utils.formatTwoDigits(now.day)}';
     var dTime = DateTime.parse(_date).toLocal();
@@ -56,7 +55,6 @@ class Day {
     _weekday = dTime.weekday;
     _weekend = utils.isWeekEnd(_weekday);
     _status = _weekend ? DStatus.weekend : DStatus.workday;
-    log.d('End of today');
   }
 
   void setDate(String date) {

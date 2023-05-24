@@ -15,7 +15,7 @@ class ServiceManager {
 
   Future<int> getCount() async {
     var data = await getData();
-    log.i('data:$data');
+    //log.i('data:$data');
     return data == false ? 0 : data.length;
   }
 
@@ -76,7 +76,7 @@ class ServiceManager {
       if (chields['name'] == service.getName()) {
         k = key;
 
-        log.d('Okay we can get the key');
+        //log.d('Okay we can get the key');
         return;
       }
     });
@@ -89,10 +89,10 @@ class ServiceManager {
         if (snapshot.value == null) return false;
 
     try {
-      log.i(snapshot.value as Map);
+      //log.i(snapshot.value as Map);
       return snapshot.value  as Map;
     } catch (e) {
-      log.e('An error occured: $e');
+      log.e('An error occurred: $e');
       return false;
     }
   }
@@ -108,7 +108,7 @@ class ServiceManager {
       return serviceNotExists;
     }
     _ref.child(await getKey(service)).remove();
-        log.e('Service removed successsfully');
+        log.e('Service removed successfully');
 
     return success;
     
@@ -151,8 +151,9 @@ class ServiceManager {
 
 
 Future<void> test() async {
-  log.d('Service testing');
   ServiceManager sm = ServiceManager();
+  //log.d('Service testing');
+ /*
   sm.clear();
 
   Service service = Service('');
@@ -185,6 +186,12 @@ Future<void> test() async {
 
   await sm.delete(service); //delete successful
   await sm.getData();
+  */
+  await sm.create(Service('Service scolarité'));
+  await sm.create(Service('Service de coopération'));
+  await sm.create(Service('Comptabilité'));
+  await sm.create(Service('Infirmerie'));
+
 }
 
 }

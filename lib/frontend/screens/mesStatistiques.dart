@@ -9,7 +9,7 @@ import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 import '../widgets/calendrierCard.dart';
-import '../widgets/diagrammeBandes.dart';
+import 'diagrammeBandes.dart';
 import 'monCompte.dart';
 
 class MesStatistiques extends StatefulWidget {
@@ -101,47 +101,19 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                   // action pour l'option 5
                 } else if (value == 6) {
                   // action pour l'option 6
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            actionsAlignment: MainAxisAlignment.spaceAround,
-                            title: const Text(
-                                'Voulez-vous vraiment vous déconnecter ?'),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 10, 184, 39),
-                                      shape: const StadiumBorder(),
-                                      padding: const EdgeInsets.all(8.0)),
-                                  child: const Text("Annuler")),
-                              ElevatedButton(
-                                  onPressed: () async {
-                                    EmployeeManager().signOut();
-                                    ToastUtils.showToast(
-                                        context, 'Vous êtes déconnecté', 3);
 
-                                    Future.delayed(const Duration(seconds: 3),
-                                        () {
-                                      Navigator.push(context, MaterialPageRoute(
-                                          builder: (BuildContext context) {
-                                        return const Welcome();
-                                      }));
-                                    });
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color.fromARGB(
-                                          255, 184, 50, 10),
-                                      shape: const StadiumBorder(),
-                                      padding: const EdgeInsets.all(8.0)),
-                                  child: const Text("Déconnecter")),
-                            ],
-                          )).then((value) {
-                    //setState(() {});
-                  });
+                  EmployeeManager().signOut();
+                  ToastUtils.showToast(
+                      context, 'Vous êtes déconnecté', 3);
+
+                  Future.delayed(const Duration(seconds: 3),
+                          () {
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return const Welcome();
+                            }));
+                      });
+
                 }
               },
             ),

@@ -17,9 +17,6 @@ class Login {
       return invalidEmail;
     }
     try {
-      //
-
-      log.d('Inside try');
       var credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
@@ -125,7 +122,7 @@ class Login {
         credential = (await withoutWeb())!;
       }
     } catch (e) {
-      log.e('*******');
+
       log.e(e);
       log.e(e.toString());
       if (e.toString().contains('popup-closed-by-user') ||
@@ -249,10 +246,7 @@ class Login {
 
   Future<int> updateEmail(User? user, String newEmail) async {
     try {
-      FirebaseAuth.instance.currentUser!.updateEmail('adedeezechiel@gmail.com');
-
-      log.i('****/');
-
+      FirebaseAuth.instance.currentUser!.updateEmail(newEmail);
       return success;
     } on FirebaseAuthException catch (e) {
       if (e.message!.contains('invalid-email')) {
@@ -295,7 +289,7 @@ class Login {
 
         user = userCredential.user;
       } catch (e) {
-        print(e);
+        log.e(e);
       }
     } else {
       final GoogleSignIn googleSignIn = GoogleSignIn();

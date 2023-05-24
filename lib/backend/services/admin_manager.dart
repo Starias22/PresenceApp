@@ -39,34 +39,34 @@ class AdminManager {
       return val;
     }
     if (!admin.hasValidPassword()) {
-      log.e('Invalid password');
+     // log.e('Invalid password');
 
       return invalidPassword;
     }
     val = await exists(admin);
 
     if (val == emailExists) {
-      log.e('That email is already assigned to an admin');
+     // log.e('That email is already assigned to an admin');
       return emailInUse;
     }
      if (await 
    EmployeeManager().exists(Employee.target(admin.getEmail())) ==
         emailExists) {
-        log.e('That email is already assigned to an employee');
+        //log.e('That email is already assigned to an employee');
 
       return employeeExists;
     }
 
     int num = await getNextNum();
     _ref.child('$adm$num').set(admin.toMap());
-    log.d('Admin created successfully');
+    //log.d('Admin created successfully');
 
     return success;
   }
 
   Future<int> exists(Admin admin) async {
     if (!admin.hasValidEmail()) {
-      log.e('Invalid email');
+      //log.e('Invalid email');
 
       return invalidEmail;
     }
@@ -90,21 +90,21 @@ class AdminManager {
 
   Future<int> fetch(Admin admin) async {
     if (!admin.hasValidEmail()) {
-      log.e('Invalid email');
+      //log.e('Invalid email');
 
       return invalidEmail;
     }
 
     var data = await getData();
 
-    log.i('Not empty?$data');
+    //log.i('Not empty?$data');
 
     if (data != false) {
       (data as Map).forEach((node, childs) {
         if (childs['email'] == admin.getEmail()) {
           admin.setFname(childs['firstname']);
           admin.setLname(childs['lastname']);
-          log.d('Names retrieved');
+          //log.d('Names retrieved');
           return;
         }
       });
@@ -123,7 +123,7 @@ class AdminManager {
 
     data.forEach((key, chields) {
       if (chields['email'] == admin.getEmail()) {
-        log.d('Okay we can get the key');
+       // log.d('Okay we can get the key');
 
         k = key;
         return;
@@ -146,30 +146,30 @@ class AdminManager {
 
   void clear() {
     _ref.remove();
-    log.d('All admins removed');
+    //log.d('All admins removed');
   }
 
   Future<int> delete(Admin admin) async {
     if (await exists(admin) != emailExists) {
-      log.e('Invalid email or no such admin');
+      //log.e('Invalid email or no such admin');
 
       return emailNotExists;
     }
     _ref.child(await getKey(admin)).remove();
-    log.e('Admin removed successsfully');
+    //log.e('Admin removed successfully');
 
     return success;
   }
 
   Future<int> update(Admin admin, String newEmail) async {
     if (!utils.isValidEmail(newEmail)) {
-      log.e('Invalid email for that admin');
+      //log.e('Invalid email for that admin');
 
       return invalidEmail;
     }
 
     if (newEmail == admin.getEmail()) {
-      log.i('Same email provided');
+      //log.i('Same email provided');
 
       return sameEmail;
     }
@@ -177,7 +177,7 @@ class AdminManager {
     int val = await exists(admin);
 
     if (val != emailExists) {
-      log.e('That admin doesnt exist and then canot be modified');
+      //log.e('That admin doesnt exist and then canot be modified');
 
       return val;
     }
@@ -190,7 +190,7 @@ class AdminManager {
 
     _ref.child(await getKey(admin)).update({'email': newEmail});
     admin.setEmail(newEmail);
-    log.d('Admin email updated successsfully');
+    //log.d('Admin email updated successsfully');
 
     return success;
   }
@@ -204,7 +204,7 @@ class AdminManager {
     }
 
     if (newFname == admin.getFname()) {
-      log.i('Same firstname provided');
+      //log.i('Same firstname provided');
 
       return sameEmail;
     }
@@ -212,14 +212,14 @@ class AdminManager {
     int val = await exists(admin);
 
     if (val != emailExists) {
-      log.e('That admin doesnt exist and then canot be modified');
+      //log.e('That admin doesnt exist and then canot be modified');
 
       return val;
     }
 
     _ref.child(await getKey(admin)).update({'firstname': newFname});
     admin.setFname(newFname);
-    log.d('Admin firstname updated successsfully');
+    //log.d('Admin firstname updated successfully');
 
     return success;
   }
@@ -234,7 +234,7 @@ class AdminManager {
     }
 
     if (newLname == admin.getLname()) {
-      log.i('Same lastname provided');
+      //log.i('Same lastname provided');
 
       return sameLname;
     }
@@ -249,7 +249,7 @@ class AdminManager {
 
     _ref.child(await getKey(admin)).update({'lastname': newLname});
     admin.setFname(newLname);
-    log.d('Admin lastname updated successsfully');
+    //log.d('Admin lastname updated successfully');
 
     return success;
   }
@@ -275,10 +275,10 @@ if (val == tooManyRequests) {
 
     
     if (val == success && await exists(admin) == emailNotExists) {
-      log.i('Your account has been deleted for you are no longer admin');
+      //log.i('Your account has been deleted for you are no longer admin');
       return await _deleteCurrentUser();
     }
-    log.d('val equals:$val');
+    //log.d('val equals:$val');
     return val;
   }
 

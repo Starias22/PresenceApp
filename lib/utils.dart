@@ -144,4 +144,21 @@ class Utils {
     RegExp regex = RegExp(r'^([01]\d|2[0-3]):([0-5]\d)$');
     return regex.hasMatch(timeString);
   }
+  //sum  lists of same number of lists of integers with same numbers of items
+  List<int> sum(List<List<int>> dbList){
+    int n=dbList.length,m=dbList.first.length;
+
+
+
+    List<int> sm=[];
+    for(int j=0;j<m;j++) {
+      sm.add(0);
+      for (int i = 0; i < n; i++) {
+
+
+        sm[j] += dbList[i][j];
+      }
+    }
+    return sm;
+  }
 }

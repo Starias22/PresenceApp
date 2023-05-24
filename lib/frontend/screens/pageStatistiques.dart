@@ -1,13 +1,9 @@
-import 'package:dropdown_search/dropdown_search.dart';
-
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/services/admin_manager.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/backend/services/service_manager.dart';
-import 'package:presence_app/bridge/register_employee_controller.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/listeEmployes.dart';
-import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -29,7 +25,6 @@ class StatistiquesForServices extends StatefulWidget {
 
 class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   //with SingleTickerProviderStateMixin;
-
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -38,26 +33,31 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   }
 
   int _selectedIndex = 0;
+  int ind=0;
   //late TabController _tabController;
   List<String> tabBars = ['Présences', 'Retards', 'Abscences'];
   List<DataService> chartData = [];
   List<DataService> chartDataAff = [];
-  final myKey = GlobalKey<DropdownSearchState<MultiLevelString>>();
-  final List<MultiLevelString> myItems = [
+  //final myKey = GlobalKey<DropdownSearchState<MultiLevelString>>();
+  /*final List<MultiLevelString> myItems = [
     MultiLevelString(level: "Comptabilité"),
     MultiLevelString(level: "Direction"),
     MultiLevelString(level: "Secrétariat administratif"),
     MultiLevelString(level: "Service de coorpération"),
     MultiLevelString(level: "Service scolarité"),
-  ];
+  ];*/
 
   void _etat(int index) async {
     chartDataAff = chartData;
+    ind=index;
     if (index == 0) {
+      log.d('Presence');
       chartDataAff = chartData;
     } else if (index == 1) {
+      log.d('late');
       chartDataAff = chartData;
     } else if (index == 2) {
+      log.d('absence');
       chartDataAff = chartData;
     }
   }
@@ -65,8 +65,10 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      chartData = data();
+    data().then((x) {
+      setState(() {
+        chartData = x;
+      });
     });
   }
 
@@ -210,8 +212,7 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  StatistiquesCard(chartData: chartData),
-                  //Text("Je suis a la recherche d'idée, vais y arriver"),
+                  StatistiquesCard(chartData: chartData,index: ind,),
                 ],
               ),
             ),
@@ -222,7 +223,7 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   }
 }
 
-class MultiLevelString {
+/*class MultiLevelString {
   final String level;
   final List<MultiLevelString> subLevel;
   bool isExpanded;
@@ -247,3 +248,4 @@ class MultiLevelString {
   @override
   String toString() => level;
 }
+*/

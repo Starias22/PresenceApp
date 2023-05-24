@@ -26,7 +26,7 @@ class PlanningManager {
 
   Future<int> create(Planning planning) async {
     bool val = planning.isValid();
-    log.i('val:$val');
+    //log.i('val:$val');
     if (!val) {
       log.e('Invalid planning');
       return invalidPlanning;
@@ -61,7 +61,7 @@ class PlanningManager {
         if (childs['entry_time'] == planning.getEntryTime() &&
             childs['exit_time'] == planning.getExitTime()) {
           test = planningExists;
-          log.d('Ok the planning exists');
+         // log.d('Ok the planning exists');
 
           return;
         }
@@ -82,7 +82,7 @@ class PlanningManager {
       if (chields['entry_time'] == planning.getEntryTime() &&
           chields['exit_time'] == planning.getExitTime()) {
         k = key;
-        log.d('Okay we can get the key');
+        //log.d('Okay we can get the key');
 
         return;
       }
@@ -100,7 +100,7 @@ class PlanningManager {
 
       return snapshot.value as Map;
     } catch (e) {
-      log.e('An error occured: $e');
+      log.e('An error occurred: $e');
 
       return false;
     }
@@ -118,7 +118,7 @@ class PlanningManager {
       return planningNotExists;
     }
     _ref.child(await getKey(planning)).remove();
-    log.d('Planning removed successsfully');
+    log.d('Planning removed successfully');
 
     return success;
   }
@@ -144,7 +144,7 @@ class PlanningManager {
     int val = await exists(planning);
 
     if (val != planningExists) {
-          log.e('That planning doesnt exist and then canot be modified');
+          log.e('That planning doesnt exist and then cannot be modified');
       return val;
     }
     val = await exists(newPlan);
@@ -155,7 +155,7 @@ class PlanningManager {
     }
 
     _ref.child(await getKey(planning)).update(newPlan.toMap());
-         log.d('Planning updated successsfully');
+         log.d('Planning updated successfully');
 
     return success;
   }

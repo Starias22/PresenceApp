@@ -2,9 +2,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/day.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/backend/services/presence_manager.dart';
+import '../../utils.dart';
 import '../screens/mesStatistiques.dart';
-import 'digrammeBarCard.dart';
+import '../widgets/digrammeBarCard.dart';
+
 
 class DiagrammeBar extends StatefulWidget {
   const DiagrammeBar({Key? key}) : super(key: key);
@@ -14,19 +17,20 @@ class DiagrammeBar extends StatefulWidget {
 }
 
 class _DiagrammeBarState extends State<DiagrammeBar> {
-  List<List<double>> p = [];
-  List<double> counts = [];
+  late Day addDate;
+  late List<double>x=[];
+ late Employee employee;
+ // List<double> counts = [];
+  List<double> poucent=[];
   Future<void> retrieve() async {
     String? email = FirebaseAuth.instance.currentUser!.email;
-    var employee = Employee.target(email!);
-    var x = await PresenceManager().count(employee, Day.today());
+    employee = Employee.target(email!);
+    await EmployeeManager().fetch(employee);
+    addDate=employee.getAddDay();
+    x = await PresenceManager().count(employee, Day.today());
     setState(() {
-      counts = x;
-       p = [
-     [20,10,23],   //[...counts], // Create a new instance of the counts list
-     [45,20,13],   //[...counts], // Create another new instance of the counts list
-      [20,15,30]  //[...counts] // Create yet another new instance of the counts list
-      ];
+      poucent=x;
+
     });
   }
 
@@ -38,27 +42,64 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
 
   int index = 0;
 
-  //late List<Map<String, List<double>>> data;
+  int a = Day.today().getYear();
+  late int b = addDate.getYear(),
+      m_courant = Day.today().getMonth(),
+      m_debut = addDate.getMonth();
 
-  void _previousChart() {
-    setState(() {
-      if (index > 0) {
-        index--;
+  Future<void> _previousChart() async {
+    log.d('Access previous month');
+    setState(()  {
+      if(b < a)
+      {
+        if(m_courant > 1) {
+          m_courant--;
+        }
+        if(m_courant == 1)
+        {
+          m_courant=12; a--;
+        }
       }
+      if(a==b){
+        if(m_debut < m_courant) {
+          m_courant--;
+        }
+      }
+
+
     });
+    Day day=Day.day(a,m_courant,1);
+    x = await PresenceManager().count(employee, day);
   }
 
-  void _nextChart() {
-    setState(() {
-      if (index < p.length - 1) {
-        index++;
-      }
+  Future<void> _nextChart() async {
+    log.d('Access next month');
+    setState(()  {
+     if(a<Day.today().getYear()){
+       if(m_courant<12) {
+         m_courant++;
+       }
+       if(m_courant==12){
+         m_courant=1;
+         a++;
+       }
+
+     }
+
+     if(a==Day.today().getYear()){
+       if(m_courant<Day.today().getMonth()){
+         m_courant++;
+       }
+     }
+
     });
+    Day day=Day.day(a,m_courant,1);
+    x = await PresenceManager().count(employee, day);
   }
 
   @override
   Widget build(BuildContext context) {
-    List<double> poucent = p[index];
+poucent=x;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -93,9 +134,10 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
                       Icons.arrow_back_ios,
                       color: Colors.blue,
                     ),
-                    onTap: () {
-                      print("On m'a appuyé");
-                      _previousChart();
+                    onTap: () async {
+                      log.d('///////////////Before call to previous');
+                      await _previousChart();
+                      log.d('//////////////After call to previous');
                     }),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.75,
@@ -105,9 +147,10 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
                     Icons.arrow_forward_ios,
                     color: Colors.blue,
                   ),
-                  onTap: () {
-                    _nextChart();
-                    print("On m'a appuyé");
+                  onTap: () async {
+                    log.d('///////////////Before call to next chart');
+                   await  _nextChart();
+                    log.d('/////////////After call to next chart');
                   },
                 )
               ],

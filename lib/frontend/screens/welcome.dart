@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/services/admin_manager.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -13,6 +15,16 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+
+  late String action;
+
+
+  bool isSignedIn() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    return user!=null;
+  }
   bool loginInProcess = false;
 
   Future<void> sign() async {
@@ -52,15 +64,17 @@ class _WelcomeState extends State<Welcome> {
 
     log.d(message);
     ToastUtils.showToast(context, message, 3);
-    if (loginCode == success)
+    if (loginCode == success) {
       Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) {
-        return MesStatistiques();
+        return const MesStatistiques();
       }));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
@@ -84,9 +98,17 @@ class _WelcomeState extends State<Welcome> {
                   value: 1,
                   child: Text('Administrateur'),
                 ),
-                const PopupMenuItem(
+                 PopupMenuItem(
+
                   value: 2,
-                  child: Text('Mes statistiques'),
+
+                  child: Text(isSignedIn()?'Mes statistiques':'Connexion Google'),
+                ),
+                if(isSignedIn()) const PopupMenuItem(
+
+                  value: 3,
+
+                  child: Text('Déconnexion'),
                 ),
               ],
               onSelected: (value) async {
@@ -100,6 +122,11 @@ class _WelcomeState extends State<Welcome> {
                   // action pour l'option 2
                   sign();
                 }
+                else if (value == 3) {
+                  await AdminManager().signOut();
+                  ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
+                }
+
               },
             ),
           )
@@ -168,7 +195,7 @@ class _WelcomeState extends State<Welcome> {
                   const Padding(
                     padding: EdgeInsets.all(15.0),
                     child: Text(
-                      "Touchez le capteur d'empreinte !",
+                      "Touchez le capteur d'empreintes !",
                       style: TextStyle(
                         fontStyle: FontStyle.italic,
                         fontSize: 30,
@@ -194,8 +221,8 @@ class _WelcomeState extends State<Welcome> {
                           padding: const EdgeInsets.only(bottom: 20),
                           child: ElevatedButton(
                               onPressed: () => {sign()},
-                              child: const Text(
-                                "Mes statistiques",
+                              child: Text(
+                                isSignedIn()?'Mes statistiques':'Connexion Google',
                                 style: TextStyle(
                                     fontStyle: FontStyle.italic, fontSize: 20),
                               )),

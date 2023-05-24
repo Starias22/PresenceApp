@@ -15,11 +15,8 @@ class Authentification extends StatefulWidget {
 
 class _AuthentificationState extends State<Authentification> {
   bool loginInProcess=false;
-  late String _login = '';
-  late String _pw = '';
   final _key = GlobalKey<FormState>();
   bool _isSecret = true;
-  final RegExp loginRule = RegExp(r"[a-z0-9\._]+@[a-z0-9\._] +\.+[a-z]+");
 
   TextEditingController emailC = TextEditingController(),
       passwordC = TextEditingController();
@@ -63,13 +60,6 @@ class _AuthentificationState extends State<Authentification> {
               padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Column(
                 children: [
-                  /*Text("Connectez vous à votre compte !",
-                    style: TextStyle(
-                      fontStyle: FontStyle.italic,
-                      fontSize: 20,
-                    ),
-                  ),*/
-
                   Card(
                     color: Colors.blue,
                     child: SizedBox(
@@ -107,7 +97,6 @@ class _AuthentificationState extends State<Authentification> {
                                 }
                               },
                               onSaved: (String? v) {
-                                _login = v!;
                               },
                               decoration: InputDecoration(
                                   label: const Text('Login:'),
@@ -130,7 +119,6 @@ class _AuthentificationState extends State<Authentification> {
                               keyboardType: TextInputType.visiblePassword,
                               textInputAction: TextInputAction.next,
                               onChanged: (value) => setState(() {
-                                    _pw = value;
                                   }),
                               obscureText: _isSecret,
                               validator: (String? v) {
@@ -141,7 +129,6 @@ class _AuthentificationState extends State<Authentification> {
                                 }
                               },
                               onSaved: (String? v) {
-                                _pw = v!;
                               },
                               decoration: InputDecoration(
                                   suffixIcon: InkWell(
@@ -275,7 +262,7 @@ class _AuthentificationState extends State<Authentification> {
                                     await LoginController.forgottenPassword(
                                         email!);
                                 String message;
-                                log.e(email);
+                               // log.e(email);
                                 switch (forgot) {
                                   case invalidEmail:
                                     message = 'Email invalide';
