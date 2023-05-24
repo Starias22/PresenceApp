@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:presence_app/backend/models/day.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
@@ -7,7 +8,9 @@ import 'package:presence_app/backend/services/presence_manager.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
+import 'package:provider/provider.dart';
 
+import '../app_settings.dart';
 import '../widgets/calendrierCard.dart';
 import 'diagrammeBandes.dart';
 import 'monCompte.dart';
@@ -20,6 +23,7 @@ class MesStatistiques extends StatefulWidget {
 }
 
 class _MesStatistiquesState extends State<MesStatistiques> {
+  bool isDarkMode = false;
   Map<DateTime, EStatus> _events = {};
   
   Future<void> retrieveReport() async {
@@ -42,7 +46,11 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var appSettings = Provider.of<AppSettings>(context); // Obtain the AppSettings instance from the Provider
+    return Theme(
+        // Utilisez le thème sombre conditionnellement
+        data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+    child: Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text(
@@ -73,9 +81,9 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                   value: 3,
                   child: Text('Langue'),
                 ),
-                const PopupMenuItem(
+                 PopupMenuItem(
                   value: 4,
-                  child: Text('Mode sombre'),
+                  child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
                 ),
                 const PopupMenuItem(
                   value: 5,
@@ -97,6 +105,15 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                       MaterialPageRoute(builder: (context) => MonCompte()));
                 } else if (value == 3) {
                 } else if (value == 4) {
+
+                  log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
+                  Provider.of<AppSettings>(context, listen: false).setDarkMode(
+                    !Provider.of<AppSettings>(context, listen: false).isDarkMode,
+                  );
+                  log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
+
+                  // Exit the app to trigger the restart
+                //SystemNavigator.pop();
                 } else if (value == 5) {
                   // action pour l'option 5
                 } else if (value == 6) {
@@ -131,6 +148,6 @@ class _MesStatistiquesState extends State<MesStatistiques> {
       body: CalendrierCard(
         events: _events,
       ),
-    );
+    ));
   }
 }

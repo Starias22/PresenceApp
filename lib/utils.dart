@@ -4,7 +4,7 @@ import 'package:logger/logger.dart';
 
 int x = 0;
 final utils = Utils();
-
+bool darkMode=false;
 const success = 0,
     invalidFname = 1,
     invalidLname = 2,

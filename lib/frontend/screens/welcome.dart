@@ -39,7 +39,7 @@ class _WelcomeState extends State<Welcome> {
     switch (loginCode) {
       case popupClosedByUser:
         message =
-            "Vous avez fermé la popup avant la finalisation de l'authentification Google";
+            "La pop up a été fermée avant la finalisation de l'authentification Google";
         break;
       case accountDeleted:
         message =
