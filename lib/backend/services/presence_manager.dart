@@ -1,7 +1,6 @@
 import 'dart:core';
 
 import 'package:firebase_database/firebase_database.dart';
-import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/service.dart';
 import 'package:presence_app/backend/services/day_manager.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
@@ -10,12 +9,13 @@ import 'package:presence_app/utils.dart';
 
 import '../models/day.dart';
 import '../models/presence.dart';
+import '../new_back/models/employee.dart';
 
 class PresenceManager {
   late DatabaseReference _ref;
   final pre = "presence";
 
-  PresenceManager() {
+ PresenceManager() {
     _ref = FirebaseDatabase.instance.ref('${pre}s');
   }
 
@@ -51,136 +51,26 @@ class PresenceManager {
   }
 
   Future<int> exists(Presence presence) async {
-    if (!presence.isValid()) {
-      return invalidPresence;
-    }
-    int test = presenceNotExists;
-    var data = await getData();
-
-    //log.i(data);
-
-    if (data != false) {
-      (data as Map).forEach((node, children) {
-        if (Employee.target(children['employee']['email'])
-                .equals(presence.getEmployee()) &&
-            (Day(children['day'])).equals(presence.getDay())) {
-          test = presenceExists;
-         // log.d('Ok that presence tree exists');
-
-          return;
-        }
-      });
-    }
-    return test;
+   return 0;
   }
 
-  /*Future<int> fetch(presence presence) async {
-    if (!presence.hasValidEmail()) {
-      log.e('Invalid email');
+  Future<int> fetch(Presence presence) async {
+    /*if (!presence.hasValidEmail()) {
+      log.e('Invalid email');*/
 
       return invalidEmail;
     }
 
-    var data = await getData();
 
-    log.i('Not prety?$data');
-
-    if (data == false) return emailNotExists;
-
-    (data as Map).forEach((node, childs) {
-      if (childs['email'] == presence.getEmail()) {
-        presence.setFname(childs['firstname']);
-        presence.setLname(childs['lastname']);
-        log.d('Names settled');
-        return;
-      }
-    });
-
-    return success;
-  }*/
-
-  Future<String> getKey(Presence presence) async {
-    String k = '';
-
-    if (await exists(presence) != presenceExists) {
-      return '';
-    }
-    Map data = await getData();
-
-    data.forEach((node, children) {
-      if ((children['employee']['email'] as Employee).equals(presence.getEmployee()) &&
-          (children['day'] as Day).equals(presence.getDay())) {
-        //log.d('Okay we can get the key');
-
-        k = node;
-        return;
-      }
-    });
-    return k;
   }
+
+
 
   dynamic getData() async {
-    DatabaseEvent event = (await _ref.orderByChild(pre).once());
-    var snapshot = event.snapshot;
-    if (snapshot.value == null) return false;
 
-    try {
-      return snapshot.value as Map;
-    } catch (e) {
-      log.e('An error occurred: $e');
-      return false;
-    }
-  }
-Future<void> x(Employee employee) async {
-    var data =await getData() as Map;
-    data.forEach((key, value) {
-      if(value['employee']['email']==employee.getEmail()) {
-        _ref.child(key).remove();
-      }
-    });
 
 }
   void clear() {
-    _ref.remove();
-    //log.d('All presence infos removed');
-  }
-/// Returns the final status of an employee the given day*
-  Future<EStatus> getDailyFinalStatus(Employee employee, Day day) async {
-
-    await DayManager().create(day);
-
-    if (day.getStatus() == DStatus.holiday) return EStatus.inHoliday;
-    if (day.getStatus() == DStatus.weekend) return EStatus.inWeekend;
-    String status = 'inHolidays';
-    var presences = await getData() as Map;
-    presences.forEach((key, values) {
-      if (employee.getEmail() == values['employee']['email'] &&
-          day.getDate() == values['day']) {
-        status = values['status'];
-        return;
-      }
-    });
-    return utils.convertES(status);
-  }
-
-  Future<Map<DateTime, EStatus>> getMonthReport(
-      Employee employee, Day day) async {
-        Day today = Day.today();
-    int currentYear = today.getYear();
-    int currentMonth = today.getMonth();
-    EStatus status;
-    int last =
-        today.equals(day) ? today.getDayOfMonth() : day.getLengthOfMonth();
-    Day d;
-    Map<DateTime, EStatus> report = {};
-
-    for (int i = 1; i <= last; i++) {
-      d = Day.day(currentYear, currentMonth, i);
-      status = await getDailyFinalStatus(employee, d);
-      report[(DateTime(currentYear, currentMonth, i))] = status;
-    }
-    return report;
-  }
 
 
 
@@ -206,7 +96,7 @@ Future<void> x(Employee employee) async {
 
     for(var i=1;i<=last;i++){
       d=Day.day(day.getYear(),day.getMonth(),i);
-     report.add(await getDailyReportCounts(service, d));
+     //report.add(await getDailyReportCounts(service, d));
 
      //log.e('Okay');
 
@@ -236,40 +126,18 @@ Future<void> x(Employee employee) async {
       log.e(service);
 
       report[service] = await getMonthReportForAService(Service(service), day);
-      //log.i(report[service]);
-     // log.e("**********");
-      //log.d(report);
+
     }
 
     return report;
   }
 
-  Future<int> updateEntryTime(Presence presence, String entryTime) async {
-    int val = await exists(presence);
 
-    if (val != presenceExists) {
-      //log.e("That presence doesnt exist and then canot be modified");
-
-      return val;
-    }
-
-    if (!utils.checkFormat(entryTime)) {
-      //log.e('Invalid entry time');
-
-      return invalidEmail;
-    }
-
-    _ref.child(await getKey(presence)).update({'entry_time': entryTime});
-
-    //log.d('Entry time updated successfully');
-
-    return success;
-  }
-
-  Future<List<double>> count(Employee employee, Day day) async {
+  /*Future<List<double>> count(Employee employee, Day day) async {
     int late = 0, absent = 0, present = 0;
 
-    var data = await getMonthReport(employee, day);
+    //var data = await getMonthReport(employee, day);
+    var data={};
 
     int length = await DayManager().getMonthWorkdaysCount(day);
 
@@ -285,29 +153,7 @@ Future<void> x(Employee employee) async {
       }
     });
     return [100*present / length, 100*late / length, 100*absent / length];
-  }
-
-  Future<int> updateExitTime(Presence presence, String exitTime) async {
-    int val = await exists(presence);
-
-    if (val != presenceExists) {
-      log.e("That presence doesn't exist and then cannot be modified");
-
-      return val;
-    }
-
-    if (!utils.checkFormat(exitTime)) {
-      log.e('Invalid exit time');
-
-      return invalidEmail;
-    }
-
-    _ref.child(await getKey(presence)).update({'exit_time': exitTime});
-
-    //log.d('Exit time updated successfully');
-
-    return success;
-  }
+  }*/
 
   Future<void> testAll() async {
     log.d('****');
@@ -323,22 +169,6 @@ Future<void> x(Employee employee) async {
       log.i('${value[2]}% of absences(s)');
 
     });
-  }
-
-  Future<int> updateStatus(Presence presence, EStatus status) async {
-    int val = await exists(presence);
-
-    if (val != presenceExists) {
-     // log.e('That presence doesnt exist and then cannot be modified');
-
-      return val;
-    }
-
-    _ref.child(await getKey(presence)).update({'status': status});
-
-    //log.d('Entry time updated successfully');
-
-    return success;
   }
 
  Future<List<int>>getDailyReportCounts(Service service, Day day) async {
@@ -365,87 +195,15 @@ Future<void> x(Employee employee) async {
     return [presence,late,absence];
   }
 
-  Future<void> generatePresences(String email) async {
-    Day day;
 
-    List<EStatus> employeeStatuses = [
-
-      EStatus.present,
-      EStatus.present,
-      EStatus.absent,
-      EStatus.absent,
-      EStatus.absent,
-      EStatus.inWeekend,
-      EStatus.inWeekend,
-
-      EStatus.present,
-      EStatus.present,
-      EStatus.absent,
-      EStatus.absent,
-      EStatus.absent,
-
-      EStatus.inWeekend,
-      EStatus.inWeekend,
-
-      EStatus.present,
-      EStatus.present,
-      EStatus.absent,
-      EStatus.absent,
-      EStatus.absent,
-
-      EStatus.inWeekend,
-      EStatus.inWeekend,
-
-
-
-      EStatus.present,
-      EStatus.late,
-     /* EStatus.late,
-      EStatus.absent,
-      EStatus.present,
-
-      EStatus.inWeekend,
-      EStatus.inWeekend,*/
-    ];
-
-    Employee employee = Employee.target(email);
-    await EmployeeManager().fetch(employee);
-    Presence presence;
-
-    for (int i = 1; i <= 23; i++) {
-
-      day = Day.day(2023, 5, i);
-      await DayManager().create(day);
-      presence = Presence(day, employee);
-      presence.setStatus(employeeStatuses[i - 1]);
-       await PresenceManager().create(presence);
-
-    }
   }
 
-  Future<void> test() async {
-    //generatePresences('andrew@gmail.com');
-    //testMonthReport('andrew@gmail.com');
-    //testCount();
- //tests('Direction');
- //tests('Secrétariat administratif');
-   // tests('Comptabilité');
-    //tests('Service scolarité');
-    //tests('Service de coopération');
-
-   //test2('Direction');
-   //test2('Service scolarité');
-   //test2('Service de coopération');
-    //test2('Secrétariat administratif');
-    //testAll();
-    x(Employee.target('koko@gmail.com'));
-  }
 
   Future<void> test2(String service) async {
 
     log.d('The start point');
-    var x=await getMonthReportForAService(Service(service), Day.today());
-
+    //var x=await getMonthReportForAService(Service(service), Day.today());
+var x=[];
     log.i('In this month for the $service service there are :');
     log.i('${x[0]}% of presence(s)');
     log.i('${x[1]}% of late(s)');
@@ -456,32 +214,33 @@ Future<void> x(Employee employee) async {
   }
 
   Future<void> testMonthReport(String email) async {
-    Employee employee = Employee.target(email);
+   /* Employee employee = Employee.target(email);
     var report = await getMonthReport(employee, Day.today());
     log.i('report:$report');
 
     report.forEach((key, value) {
       log.i('date:$key status:$value');
-    });
+    });*/
   }
 
   Future<void> tests(String service) async {
-    var x=await getDailyReportCounts(Service(service), Day.today());
+    /*var x=await getDailyReportCounts(Service(service), Day.today());
     log.d('Test****');
     log.i('The 2023-05-23, in the $service service there are :');
     log.i('${x[0]} presence(s)');
     log.i('${x[1]} late(s)');
-    log.i('${x[2]} absences(s)');
+    log.i('${x[2]} absences(s)');*/
   }
 
   Future<void> testCount() async {
-    var data=await count(Employee.target('ezechieladede@gmail.com'), Day.today());
+    /*var data=await count(Employee.target('ezechieladede@gmail.com'), Day.today());
 double sum=0;
     for(var item in data) {
       sum+=item;
-      log.i(item);
+      log.i(item);*/
     }
 
-    log.i('Sum of percentages:$sum');
-  }
-}
+
+
+
+

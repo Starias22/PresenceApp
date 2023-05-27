@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
 import 'package:presence_app/backend/services/admin_manager.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
+import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
 import 'package:presence_app/utils.dart';
+
+import '../../backend/services/login.dart';
 
 class Welcome extends StatefulWidget {
   const Welcome({Key? key}) : super(key: key);
@@ -15,16 +19,24 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+  bool isSignedInWithEmail = false;
+
+  String text(){
+    //if it's an employee that's logged in
+    if(Login().isSignedIn() &&!Login().isSignedInWithPassword()) {
+
+      return 'Mes statistiques';
+    } else  if(!Login().isSignedIn()) {
+      return 'Connexion Google';
+    }
+    return '';
+  }
 
   late String action;
+  User? user;
 
 
-  bool isSignedIn() {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    User? user = auth.currentUser;
 
-    return user!=null;
-  }
   bool loginInProcess = false;
 
   Future<void> sign() async {
@@ -33,34 +45,41 @@ class _WelcomeState extends State<Welcome> {
     setState(() {
       loginInProcess = true;
     });
-    loginCode = await EmployeeManager().signIn();
+    loginCode = await Login().googleSignIn();
 
-    log.d('login code:$loginCode');
+
+
     switch (loginCode) {
       case popupClosedByUser:
         message =
             "La pop up a été fermée avant la finalisation de l'authentification Google";
         break;
-      case accountDeleted:
-        message =
-            "Votre compte vient d'être supprimé car vous n'êtes plus employé";
+      case success:
+        String? email=FirebaseAuth.instance.currentUser!.email;
+
+        //log.d('Checking');
+
+        if(await EmployeeDB().exists(email!)) {
+          message = 'Authentification Google réussie';
+        }
+        else {
+          //new user with wrong email
+          message =
+          "Adresse email non reconnue! Utilisez l'adresse de votre compte employé";
+
+          Login().googleSingOut();
+          Login().deleteCurrentUser();
+          loginCode=failure;
+        }
         break;
       case networkError:
         message =
             'Erreur de réseau! Vérifiez votre connexion internet et reessayez';
         break;
-      case success:
-        message = 'Authentification Google réussie';
-        break;
-      case emailInCorrect:
-        message =
-            "Adresse email non reconnue! Utilisez l'adresse de votre compte employé";
-        break;
       default:
         message = 'Erreur inconnue';
         break;
     }
-    //loginInProcess = false;
 
     log.d(message);
     ToastUtils.showToast(context, message, 3);
@@ -70,7 +89,15 @@ class _WelcomeState extends State<Welcome> {
         return const MesStatistiques();
       }));
     }
+
+    else {
+      setState(() {
+        loginInProcess = false; // Arrêter l'animation du cercle de progression
+      });
+    }
+
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -94,17 +121,17 @@ class _WelcomeState extends State<Welcome> {
                 // size: 30,
               ),
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                const PopupMenuItem(
+               if(!Login().isSignedIn()||Login().isSignedInWithPassword()) PopupMenuItem(
                   value: 1,
                   child: Text('Administrateur'),
                 ),
-                 PopupMenuItem(
+                 if(!Login().isSignedIn()||!Login().isSignedInWithPassword())  PopupMenuItem(
 
                   value: 2,
 
-                  child: Text(isSignedIn()?'Mes statistiques':'Connexion Google'),
+                  child: Text(text()),
                 ),
-                if(isSignedIn()) const PopupMenuItem(
+                if(Login().isSignedIn()) const PopupMenuItem(
 
                   value: 3,
 
@@ -113,19 +140,44 @@ class _WelcomeState extends State<Welcome> {
               ],
               onSelected: (value) async {
                 if (value == 1) {
-                  // action pour l'option 1
-                  Navigator.push(context,
+                  if(Login().isSignedInWithPassword()) {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (BuildContext context) {
+                          return const  StatistiquesForServices();
+                        }));
+                  }
+
+
+                  else {
+                    Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
                     return const Authentification();
                   }));
+                  }
                 } else if (value == 2) {
-                  // action pour l'option 2
-                  sign();
+
+              if(Login().isSignedIn()) {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                      return const MesStatistiques();
+                    }));
+
+              }
+              else {
+                sign();
+              }
                 }
                 else if (value == 3) {
-                  await AdminManager().signOut();
+                  await  Login().signOut();
+                  setState(() {
+
+                  });
                   ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
                 }
+
+                setState(() {
+
+                });
 
               },
             ),
@@ -219,13 +271,26 @@ class _WelcomeState extends State<Welcome> {
                         )
                       : Padding(
                           padding: const EdgeInsets.only(bottom: 20),
-                          child: ElevatedButton(
-                              onPressed: () => {sign()},
-                              child: Text(
-                                isSignedIn()?'Mes statistiques':'Connexion Google',
-                                style: TextStyle(
+                          child:(!Login().isSignedIn())||(!Login().isSignedInWithPassword()) ?
+                            ElevatedButton(
+                              onPressed: ()  {
+
+    if(Login().isSignedIn()) {
+    Navigator.push(context,
+    MaterialPageRoute(builder: (BuildContext context) {
+    return const MesStatistiques();
+    }));
+
+    }
+    else {
+    sign();
+    }
+
+                              },
+                              child:  Text(text(),
+                                style: const TextStyle(
                                     fontStyle: FontStyle.italic, fontSize: 20),
-                              )),
+                              )):Container(),
                         )
                 ],
               )

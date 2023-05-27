@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/services/employee_manager.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/utils.dart';
 
+import '../screens/listeEmployes.dart';
+import '../screens/pageModifierEmployer.dart';
+
 class AfficherEmployeCard extends StatelessWidget {
-  //final Employe employe;
   final Employee employee;
 
-  const AfficherEmployeCard({Key? key, required this.employee})
+    const AfficherEmployeCard({Key? key, required this.employee})
       : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return InkWell(
       onTap: () {
         log.d("tapppp");
@@ -45,23 +48,23 @@ class AfficherEmployeCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                employee.getLname(),
+                                employee.lastname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                employee.getFname(),
+                                employee.firstname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                employee.getService().getName(),
+                                employee.service,
                                 style: const TextStyle(color: Colors.grey),
                               ),
                               Text(
-                                utils.str(employee.getCurrentStatus()),
+                                utils.str(employee.status),
                                 style: const TextStyle(
                                   //color: color()
                                   //if(employe.EtatPresence.present)
@@ -76,6 +79,14 @@ class AfficherEmployeCard extends StatelessWidget {
                             child: DropdownButton(
                           onChanged: (String? v) {
                             if (v == "modifier") {
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (BuildContext context) {
+                                  return FormulaireModifierEmploye(employee: employee,);
+                                }),
+                              );
+
                             } else if (v == "supprimer") {
                               showDialog(
                                   context: context,
@@ -100,9 +111,15 @@ class AfficherEmployeCard extends StatelessWidget {
                                           ElevatedButton(
                                               onPressed: () async {
 
-                                                await EmployeeManager().signOut();
-                                                    
-                                                  Navigator.of(context).pop();
+                                            String? id= await EmployeeDB().getEmployeeIdByEmail(employee.email);
+                                            EmployeeDB().delete(id!);
+                                        Navigator.of(context).pop();
+                                            Navigator.pushReplacement(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) => const AfficherEmployes()));
+
+
 ;
                                               },
                                               style: ElevatedButton.styleFrom(
@@ -130,9 +147,7 @@ class AfficherEmployeCard extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              /*onTap: ()=> (value){
-                                  Navigator.push(context, MaterialPageRoute(builder: (context)=>FormulaireModifierProduit(produit: snap.data![index])));
-                                  },*/
+
                             ),
                             DropdownMenuItem(
                               value: 'supprimer',
@@ -144,13 +159,7 @@ class AfficherEmployeCard extends StatelessWidget {
                                   ),
                                 ],
                               ),
-                              /*onTap: () => (value){
-                                  FirebaseProduit.deleteProduit(snap.data![index].id).then((value) {
-                                    setState(() {
 
-                                    });
-                                  });
-                                  },*/
                             )
                           ],
                           icon: const Padding(

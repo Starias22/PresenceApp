@@ -255,7 +255,8 @@ class AdminManager {
   }
 
   Future<int> signUp(Admin admin, String password) async {
-    return await Login().signUp(admin.getEmail(), password);
+    return 0;
+    //return await Login().signUp(admin.getEmail(), password);
   }
 
   Future<int> signIn(Admin admin, String password) async {
@@ -295,7 +296,8 @@ if (val == tooManyRequests) {
   }
 
   Future<int> resetPassword(Admin admin) async {
-    return await Login().resetPassword(admin.getEmail());
+    return 0;
+    //return await Login().resetPassword(admin.getEmail());
   }
 
   Future<int> _deleteCurrentUser() async {

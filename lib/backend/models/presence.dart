@@ -1,12 +1,13 @@
 import 'package:presence_app/utils.dart';
 
+import '../new_back/models/employee.dart' as emp;
 import 'day.dart';
 import 'employee.dart';
 
 class Presence {
   late Day _day;
   late Employee _employee;
-  late EStatus _status;
+  late emp.EStatus _status;
 
   String? _entryTime;
   String? _exitTime;
@@ -29,11 +30,11 @@ class Presence {
 
   String? getEntryTime() => _entryTime;
 
-  void setStatus(EStatus status) {
+  void setStatus(emp.EStatus status) {
     _status = status;
   }
 
-  EStatus getStatus() => _status;
+  emp.EStatus getStatus() => _status;
 
   void setDays(Day day) {
     _day = day;

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/new_back/models/employee.dart';
+import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
 
-
-import '../../backend/models/employe.dart';
-import '../../backend/models/employee.dart';
 
 class CompteCard extends StatelessWidget {
   Employee employee;
+
 
    CompteCard({Key? key, required this.employee}) : super(key: key);
 
@@ -65,14 +65,14 @@ class CompteCard extends StatelessWidget {
                       children: [
                         Padding(
                           padding: const EdgeInsets.all(10.0),
-                          child: Text(employee.getLname(),
+                          child: Text(employee.lastname,
                             style: TextStyle(
                                 fontSize: 15
                             ),),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
-                          child: Text(employee.getFname(),
+                          child: Text(employee.firstname,
                             style: TextStyle(
                                 fontSize: 15
                             ),
@@ -102,7 +102,12 @@ class CompteCard extends StatelessWidget {
                   ),
 
                   onTap: (){
-                    print("On m'a appuyé");
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return FormulaireModifierEmploye(employee: employee,);
+                      }),
+                    );
                   },
                 ),
               )
@@ -135,7 +140,7 @@ class CompteCard extends StatelessWidget {
                     Icon(Icons.email),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Text(employee.getEmail(),
+                      child: Text(employee.email,
                         style: TextStyle(
                             fontSize: 20,
                             color: Colors.blue

@@ -1,19 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
-import 'package:presence_app/utils.dart';
+
+import '../../backend/new_back/models/employee.dart';
+import '../../utils.dart';
+
 
 class CalendrierCard extends StatelessWidget {
   Map<DateTime, EStatus> events;
-  CalendrierCard({Key? key, required this.events}) : super(key: key);
+  Function(DateTime) onCalendarChanged; // Ajoutez cette ligne
+  DateTime minSelectedDate;
+
+  CalendrierCard({Key? key, required this.events, required this.onCalendarChanged,required this.minSelectedDate}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CalendarCarousel(
-      onCalendarChanged: (DateTime newMonth) {
+
+      onCalendarChanged: onCalendarChanged
+        /* (DateTime newMonth) {
+
         log.d('Calendar changed');
         log.i('new month:$newMonth');
-      },
-      maxSelectedDate: DateTime(2050, 12, 30),
+      },*/,
+      maxSelectedDate: DateTime.now(),
+      minSelectedDate: minSelectedDate,
+
       pageScrollPhysics: const NeverScrollableScrollPhysics(),
       locale: "fr",
 
@@ -31,9 +42,9 @@ class CalendrierCard extends StatelessWidget {
         // Récupérer l'état correspondant à la date du jour
         EStatus? event = events[day];
 
-        // Choisir la couleur en fonction de l'état
+
         Color color;
-        if (day.weekday == 6 || day.weekday == 7) {}
+        if (utils.isWeekend(day)) {}
 
         if (event == EStatus.present) {
           color = Colors.green;

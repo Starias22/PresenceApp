@@ -1,8 +1,11 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/bridge/register_employee_controller.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/firestore/service_db.dart';
+import 'package:presence_app/backend/new_back/models/employee.dart';
+
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-import 'package:presence_app/utils.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
 
 class RegisterEmployee extends StatefulWidget {
   const RegisterEmployee({Key? key}) : super(key: key);
@@ -12,15 +15,8 @@ class RegisterEmployee extends StatefulWidget {
 }
 
 class _RegisterEmployeeState extends State<RegisterEmployee> {
-  //final key = GlobalKey<DropdownSearchState>();
 
-  late String _nom;
-  late String _prenom;
-  late String _sexe;
-  late String _email;
-  late int _service;
-
-  late String fname, lname, email, service, gender, entryTime, exitTime;
+  late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
 
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -30,12 +26,11 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   }
 
   Future<void> retrieveServices() async {
-    items = await RegisterEmployeeController.getServices();
+    items = await ServiceDB().getServicesNames();
   }
 
   late List<String> items = [];
   String _valueChanged = '';
-  String _valueSaved = '';
   final _key = GlobalKey<FormState>();
 
   TextEditingController? _controller;
@@ -57,7 +52,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   @override
   Widget build(BuildContext context) {
-    //while(items)
+
     retrieveServices();
 
     List<DropdownMenuItem<String>> itemsS;
@@ -103,14 +98,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
                                     if (v != null && v.isNotEmpty) {
-                                      lname = v;
+                                      lastname = v;
                                       return null;
                                     } else {
                                       return "Entrez le nom de l'employé";
                                     }
                                   },
                                   onSaved: (String? v) {
-                                    _nom = v!;
                                   },
                                   decoration: InputDecoration(
                                       label: const Text('Nom:'),
@@ -135,13 +129,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
                                     if (v != null && v.isNotEmpty) {
-                                      fname = v;
+                                      firstname = v;
                                       return null;
                                     }
                                     return "Entrez le(s) prenom(s) de l'employé";
                                   },
                                   onSaved: (String? v) {
-                                    _nom = v!;
                                   },
                                   decoration: InputDecoration(
                                       label: const Text('Prenom(s):'),
@@ -173,7 +166,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                     return "Email invalide";
                                   },
                                   onSaved: (String? v) {
-                                    _email = v!;
                                   },
                                   decoration: InputDecoration(
                                       label: const Text('Email:'),
@@ -207,7 +199,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 onSaved: (val) => setState(() {
-                                  _valueSaved = val ?? '';
                                   //_service = int.parse(_valueSaved);
                                 }),
                                 validator: (String? v) {
@@ -244,13 +235,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                     setState(() => _valueChanged = val!),
                                 validator: (String? v) {
                                   if (v != null) {
-                                    service = v;
+                                    serviceName = v;
                                     return null;
                                   }
                                   return "Sélectionnez le service";
                                 },
                                 onSaved: (val) => setState(() {
-                                  _valueSaved = val ?? '';
                                   // _service = int.parse(_valueSaved);
                                 }),
                                 decoration: InputDecoration(
@@ -298,7 +288,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   return "Sélectionnez l'heure d'arrivée";
                                 },
                                 onSaved: (val) => setState(() {
-                                  _valueSaved = val ?? '';
                                   // _service = int.parse(_valueSaved);
                                 }),
                                 decoration: InputDecoration(
@@ -355,7 +344,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 onSaved: (val) => setState(() {
-                                  _valueSaved = val ?? '';
                                   // _service = int.parse(_valueSaved);
                                 }),
                                 validator: (String? v) {
@@ -405,48 +393,29 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                       } else {
                                         return;
                                       }
-                                      log.d('Lets start registration');
-                                      int code =
-                                          await RegisterEmployeeController
-                                              .register(
-                                                  fname,
-                                                  lname,
-                                                  email,
-                                                  gender,
-                                                  service,
-                                                  entryTime,
-                                                  exitTime);
+
+                                      Employee employee=Employee
+
+                                        ( firstname: firstname, gender: gender, lastname: lastname,
+                                          email: email, service:serviceName, startDate: DateTime.now(), entryTime: entryTime, exitTime: exitTime);
+
                                       String message;
-                                      switch (code) {
-                                        
-                                        case emailInUse:
-                                          message =
-                                              'Cette adresse email a été déjà attribuée à un employé';
-
-                                          break;
-
-                                        case adminExists:
-                                          message =
-                                              'Cette adresse email a été déjà attribuée à un admin';
-                                          break;
-                                        case success:
-                                          message =
-                                              'Employé enregistré avec succès';
-
-                                        default:
-                                            message='Erreur inconnue';
-                                              break;
-
-                                             
-                                          
+                                      var created=await EmployeeDB().create(employee);
+                                      if(created){
+                                        message='Employé enregistré avec succès';
                                       }
-                                      showToast(message);
-                                       if(code==success)
-                                          Navigator.pushReplacement(
+                                      else{
+                                      message=  'Cette adresse email a été déjà attribuée à un employé';
+                                      }
+                                     ToastUtils.showToast(context, message, 3);
+
+                                       if(created) {
+                                         Navigator.pushReplacement(
                                               context,
                                               MaterialPageRoute(
                                                   builder: (context) =>
                                                       const RegisterEmployee()));
+                                       }
                                     },
                                     child: const Text('Confirmer'),
                                   ),

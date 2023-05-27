@@ -1,15 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:presence_app/backend/models/day.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/services/employee_manager.dart';
-import 'package:presence_app/backend/services/presence_manager.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
-import 'package:presence_app/utils.dart';
+
 import 'package:provider/provider.dart';
 
+import '../../backend/new_back/models/employee.dart' as emp;
+import '../../backend/services/login.dart';
+import '../../utils.dart';
 import '../app_settings.dart';
 import '../widgets/calendrierCard.dart';
 import 'diagrammeBandes.dart';
@@ -23,32 +23,55 @@ class MesStatistiques extends StatefulWidget {
 }
 
 class _MesStatistiquesState extends State<MesStatistiques> {
-  bool isDarkMode = false;
-  Map<DateTime, EStatus> _events = {};
-  
-  Future<void> retrieveReport() async {
-    String? email = FirebaseAuth.instance.currentUser!.email;
-    var employee = Employee.target(email!);
-    var x = await PresenceManager().getMonthReport(employee, Day.today());
+
+  late DateTime startDate;
+  String? employeeId;
+  bool isLoading = true;
+  String? email = FirebaseAuth.instance.currentUser!.email;
+  Future<void> onCalendarChanged(DateTime newMonth) async {
+    // ...
+    log.i('new month:$newMonth');
     setState(() {
-      _events = x;
-      _events.forEach((key, value) {
-        log.i('date:$key status:$value');
+      isLoading = true;
+    });
+      var newEventsData = await PresenceDB().getMonthReport(employeeId!, newMonth);
+      log.i('new events: $newEventsData');
+      setState(() {
+        _events = newEventsData;
+        isLoading = false;
       });
+
+  }
+
+  bool isDarkMode = false;
+  Map<DateTime, emp.EStatus> _events = {};
+
+  Future<void> retrieveReport() async {
+    employeeId= await EmployeeDB().getEmployeeIdByEmail(email!);
+    var y=(await EmployeeDB().getEmployeeById(employeeId!)).startDate;
+    var x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
+
+
+    setState(() {
+
+      _events = x;
+      startDate=y;
+      isLoading=false;
+
     });
   }
 
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
     retrieveReport();
   }
 
   @override
   Widget build(BuildContext context) {
-    var appSettings = Provider.of<AppSettings>(context); // Obtain the AppSettings instance from the Provider
+    var appSettings = Provider.of<AppSettings>(context);
+    // Obtain the AppSettings instance from the Provider
     return Theme(
-        // Utilisez le thème sombre conditionnellement
         data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
     child: Scaffold(
       appBar: AppBar(
@@ -119,7 +142,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                 } else if (value == 6) {
                   // action pour l'option 6
 
-                  EmployeeManager().signOut();
+                  Login().googleSingOut();
                   ToastUtils.showToast(
                       context, 'Vous êtes déconnecté', 3);
 
@@ -145,8 +168,19 @@ class _MesStatistiquesState extends State<MesStatistiques> {
               Icons.arrow_back,
             )),
       ),
-      body: CalendrierCard(
-        events: _events,
+      body: Stack(
+          children: [
+          if (_events.isEmpty)
+        Center(
+        child: CircularProgressIndicator(),
+    )
+    else
+    CalendrierCard(
+    events: _events,
+    onCalendarChanged: onCalendarChanged,
+    minSelectedDate: startDate,
+    ),
+    ],
       ),
     ));
   }

@@ -1,10 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import 'package:presence_app/bridge/login.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
-import '../../backend/models/admin.dart';
+import '../../backend/services/login.dart';
+import '../screens/pageModifierAdmin.dart';
+
 
 class CompteCard extends StatelessWidget {
   
@@ -16,7 +19,7 @@ class CompteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     User? currentUser = FirebaseAuth.instance.currentUser;
     String? email = currentUser?.email;
-    admin.setEmail(email!);
+    admin.email=email!;
     return ListView(
       children: [
         const Center(
@@ -68,14 +71,14 @@ class CompteCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(
-                            admin.getLname(),
+                            admin.lastname,
                             style: const TextStyle(fontSize: 15),
                           ),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: Text(
-                            admin.getFname(),
+                            admin.firstname,
                             style: const TextStyle(fontSize: 15),
                           ),
                         )
@@ -100,7 +103,13 @@ class CompteCard extends StatelessWidget {
                     ],
                   ),
                   onTap: () {
-                    print("On m'a appuyé");
+
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return FormulaireModifierAdmin(admin: admin,updateEmail: false,);
+                      }),
+                    );
                   },
                 ),
               )
@@ -125,14 +134,17 @@ class CompteCard extends StatelessWidget {
                 ],
               ),
               Padding(
+
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
                     const Icon(Icons.email),
                     Padding(
+
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        admin.getEmail(),
+
+                        admin.email,
                         style:
                             const TextStyle(fontSize: 20, color: Colors.blue),
                       ),
@@ -178,21 +190,14 @@ class CompteCard extends StatelessWidget {
                     ],
                   ),
                   onTap: () async {
-                    log.d("On m'a appuyé");
 
-                   var code= await LoginController.forgottenPassword(admin.getEmail());
-                  String message;
-                                switch (code) {
-                                 
-                                  case success:
-                                    message =
+String message;
+        if(await Login().resetPassword(email))  {
+                     message =
                                         'Un email de réinitialisation de mot de passe a été envoyé à cette adresse';
-                                    break;
-                                  default:
-                                    log.e(code);
-                                    message = 'An error occured';
-                                    break;
-                                }
+                   } else {
+                     message='Erreur inconnue';
+                   }
 
                                 log.d(message);
                                 ToastUtils.showToast(context, message, 3);

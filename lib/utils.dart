@@ -2,6 +2,8 @@ import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logger/logger.dart';
 
+import 'backend/new_back/models/employee.dart';
+
 int x = 0;
 final utils = Utils();
 bool darkMode=false;
@@ -48,7 +50,8 @@ const success = 0,
     sameLname = 39,
     networkError = 40,
     adminExists = 41,
-    employeeExists = 42;
+    employeeExists = 42,
+newEmployee=43;
 
 Map<String, String> clientIds = {
   'web':
@@ -67,7 +70,7 @@ const FirebaseOptions firebaseOptions = FirebaseOptions(
     storageBucket: "myapp-fd370.appspot.com",
     measurementId: "G-X2X7BS1GMD");
 
-enum EStatus { present, late, absent, out, inHoliday, inWeekend }
+//enum EStatus { present, late, absent, out, inHoliday, inWeekend }
 //enum EStatus { present, late, absent, inHoliday, inWeekend }
 
 enum DStatus { weekend, holiday, workday }
@@ -90,6 +93,11 @@ class Utils {
 
   String str(dynamic enm) {
     return enm.toString().split('.')[1];
+  }
+  String formatDateTime(DateTime dateTime){
+
+    String formattedDate = '${dateTime.year}-${formatTwoDigits(dateTime.month)}-${formatTwoDigits(dateTime.day)}';
+   return formattedDate;
   }
 
   DStatus convert(String status) {
@@ -160,5 +168,34 @@ class Utils {
       }
     }
     return sm;
+  }
+
+  bool isWeekend(DateTime date){
+    return date.weekday == DateTime.saturday||date.weekday==DateTime.sunday;
+
+  }
+
+  DateTime? format(String? timeString){
+    if (timeString==null) return null;
+    List<String> timeParts = timeString.split(':');
+    int hours = int.parse(timeParts[0]);
+    int minutes = int.parse(timeParts[1]);
+    DateTime now=DateTime.now();
+    DateTime dateTime = DateTime(now.year, now.month, now.day, hours, minutes);
+
+    return dateTime;
+  }
+  int lengthOfMonth(DateTime date){
+    return DateTime(date.year,date.month+1,0).day;
+  }
+
+  String formatTime(DateTime dateTime) {
+
+
+    final localDateTime = dateTime.toLocal();
+    final hours = formatTwoDigits(localDateTime.hour);
+    final minutes = formatTwoDigits(localDateTime.minute);
+
+    return "$hours:$minutes";
   }
 }

@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/day.dart';
-import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/backend/services/presence_manager.dart';
 import '../../utils.dart';
@@ -17,17 +18,18 @@ class DiagrammeBar extends StatefulWidget {
 }
 
 class _DiagrammeBarState extends State<DiagrammeBar> {
-  late Day addDate;
+  late DateTime startDate;
   late List<double>x=[];
  late Employee employee;
  // List<double> counts = [];
   List<double> poucent=[];
   Future<void> retrieve() async {
     String? email = FirebaseAuth.instance.currentUser!.email;
-    employee = Employee.target(email!);
-    await EmployeeManager().fetch(employee);
-    addDate=employee.getAddDay();
-    x = await PresenceManager().count(employee, Day.today());
+    String? id=await EmployeeDB().getEmployeeIdByEmail(email!);
+    employee = await EmployeeDB().getEmployeeById(id!);
+    startDate=employee.startDate;
+   // x = await PresenceManager().count(employee, Day.today());
+    x=[];
     setState(() {
       poucent=x;
 
@@ -42,14 +44,14 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
 
   int index = 0;
 
-  int a = Day.today().getYear();
-  late int b = addDate.getYear(),
-      m_courant = Day.today().getMonth(),
-      m_debut = addDate.getMonth();
+  //int a = Day.today().getYear();
+  //late int b = addDate.getYear(),
+     // m_courant = Day.today().getMonth(),
+      //m_debut = addDate.getMonth();
 
   Future<void> _previousChart() async {
     log.d('Access previous month');
-    setState(()  {
+   /* setState(()  {
       if(b < a)
       {
         if(m_courant > 1) {
@@ -68,13 +70,13 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
 
 
     });
-    Day day=Day.day(a,m_courant,1);
-    x = await PresenceManager().count(employee, day);
+    Day day=Day.day(a,m_courant,1);*/
+    //x = await PresenceManager().count(employee, day);
   }
 
   Future<void> _nextChart() async {
     log.d('Access next month');
-    setState(()  {
+   /* setState(()  {
      if(a<Day.today().getYear()){
        if(m_courant<12) {
          m_courant++;
@@ -94,7 +96,8 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
 
     });
     Day day=Day.day(a,m_courant,1);
-    x = await PresenceManager().count(employee, day);
+   // x = await PresenceManager().count(employee, day);
+    x=[0];*/
   }
 
   @override

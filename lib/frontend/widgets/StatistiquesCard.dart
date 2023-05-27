@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../backend/geo/modele/service.dart';
+import '../../backend/new_back/service.dart';
 
 
 class StatistiquesCard extends StatelessWidget {
@@ -29,7 +29,7 @@ class StatistiquesCard extends StatelessWidget {
             PieSeries<DataService, String>(
               dataSource: chartData,
               xValueMapper: (DataService data,_) => data.service,
-              yValueMapper: (DataService data,_) => data.poucent[index],
+              yValueMapper: (DataService data,_) => data.percentages[index],
 
               dataLabelSettings: const DataLabelSettings(isVisible: true),
               enableTooltip: true,

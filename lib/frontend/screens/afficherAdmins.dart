@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 
-import '../../bridge/list_admin.dart';
+
+import '../../utils.dart';
 import '../widgets/afficheAdminCard.dart';
 
 class AfficherAdmins extends StatefulWidget {
@@ -16,14 +18,14 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
   late List<Admin> admins = [];
   late List<Admin> adminsAff = [];
 
+
+
   Future<void> retrieve() async {
-    var x = await ListAdminController.retrieveAdmins();
+    var x = await AdminDB().getAllAdmins();
+
     setState(() {
       admins = x;
-      adminsAff = x;
-      for (var e in x) {
-        e.logInformations();
-      }
+      adminsAff = admins;
     });
   }
 
@@ -38,7 +40,7 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
   @override
   Widget build(BuildContext context) {
     
-    adminsAff = admins;
+    //adminsAff = admins;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -69,11 +71,11 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
                 setState(() {
                  adminsAff = admins
     .where((admin) =>
-        admin.getLname().toLowerCase().contains(value.toLowerCase()) 
-        //admin.getFname().toLowerCase().contains(value.toLowerCase())||
+        admin.firstname.toLowerCase().contains(value.toLowerCase())||
+        admin.lastname.toLowerCase().contains(value.toLowerCase())
         //admin.getEmail().toLowerCase().contains(value.toLowerCase())
-        )
-    .toList();
+        ).toList();
+
 
                 });
               }),
@@ -81,12 +83,12 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
           ),
           SliverList(
               delegate: SliverChildListDelegate(
-                  List.generate(admins.length, (int index) {
+                  List.generate(adminsAff.length, (int index) {
             return Column(
               children: [
                 InkWell(
                   onTap: () {},
-                  child: AfficherAdminCard(admin: admins[index]),
+                  child: AfficherAdminCard(admin: adminsAff[index]),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),

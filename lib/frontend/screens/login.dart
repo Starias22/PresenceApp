@@ -1,10 +1,13 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
 import 'package:presence_app/bridge/login.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
+
+import '../../backend/services/login.dart';
 
 class Authentification extends StatefulWidget {
   const Authentification({Key? key}) : super(key: key);
@@ -14,7 +17,7 @@ class Authentification extends StatefulWidget {
 }
 
 class _AuthentificationState extends State<Authentification> {
-  bool loginInProcess=false;
+  bool loginInProcess = false;
   final _key = GlobalKey<FormState>();
   bool _isSecret = true;
 
@@ -96,8 +99,7 @@ class _AuthentificationState extends State<Authentification> {
                                   return "Login invalide";
                                 }
                               },
-                              onSaved: (String? v) {
-                              },
+                              onSaved: (String? v) {},
                               decoration: InputDecoration(
                                   label: const Text('Login:'),
                                   hintText: "Ex: admin@gmail.com",
@@ -118,8 +120,7 @@ class _AuthentificationState extends State<Authentification> {
                               controller: passwordC,
                               keyboardType: TextInputType.visiblePassword,
                               textInputAction: TextInputAction.next,
-                              onChanged: (value) => setState(() {
-                                  }),
+                              onChanged: (value) => setState(() {}),
                               obscureText: _isSecret,
                               validator: (String? v) {
                                 if (v != null && v.length >= 6) {
@@ -128,8 +129,7 @@ class _AuthentificationState extends State<Authentification> {
                                   return "Mot de passe invalide";
                                 }
                               },
-                              onSaved: (String? v) {
-                              },
+                              onSaved: (String? v) {},
                               decoration: InputDecoration(
                                   suffixIcon: InkWell(
                                     onTap: () => setState(() {
@@ -178,9 +178,9 @@ class _AuthentificationState extends State<Authentification> {
 
                                     retrieveTexts();
                                     String message;
-                                    var loginCode = await LoginController.login(
-                                        email!, password!);
-
+                                    log.d(email);
+                                    var loginCode= await Login().signIn(email!, password!);
+                                    //loginCode=success;
                                     switch (loginCode) {
                                       case networkRequestFailed:
                                         message =
@@ -195,22 +195,28 @@ class _AuthentificationState extends State<Authentification> {
                                         message =
                                             'Adresse email non vérifiée! Accédez à votre boite Gmail pour vérifier';
                                         break;
-                                      /* case invalidPassword:
-                                        message = 'Mot de passe invalide';
-                                        break;*/
+
                                       case wrongPassword:
                                         message = 'Mot de passe incorrect';
                                         break;
 
                                       case tooManyRequests:
+                                        Login().resetPassword(email!);
                                         message =
                                             "L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez immédiatement le restaurez en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. Un email de reinitialisation est envoyé à cette adresse";
                                         break;
 
                                       case success:
-                                        message = 'Vous êtes connecté!';
+                                        log.d(email);
+                                        if(await AdminDB().exists(email!)) {
+                                          message = 'Vous êtes connecté!';
 
-                                        reset();
+                                          reset();
+                                        }
+                                        else{
+                                          message="Votre compte admin vient d'être supprimé car vous n'êtes plus admin";
+                                        loginCode=accountDeleted;
+                                        }
 
                                         break;
 
@@ -258,30 +264,19 @@ class _AuthentificationState extends State<Authentification> {
                               ),
                               onTap: () async {
                                 retrieveTexts();
-                                var forgot =
-                                    await LoginController.forgottenPassword(
-                                        email!);
                                 String message;
-                               // log.e(email);
-                                switch (forgot) {
-                                  case invalidEmail:
-                                    message = 'Email invalide';
-                                    break;
+                               if(await AdminDB().exists(email!)){
+                                 if(await Login().resetPassword(email!)) {
+                                   message =
+                                 'Un email de réinitialisation de mot de passe a été envoyé à cette adresse';
+                                 } else {
+                                   message="Veillez reessayer";
+                                 }
+                               }
+                               else{
+                                 message="Aucun admin avec une telle adresse email";
+                               }
 
-                                  case emailNotExists:
-                                    message =
-                                        'Aucun admin avec une telle adresse email';
-                                    break;
-
-                                  case success:
-                                    message =
-                                        'Un email de réinitialisation de mot de passe a été envoyé à cette adresse';
-                                    break;
-                                  default:
-                                    log.e(forgot);
-                                    message = 'An error occured';
-                                    break;
-                                }
 
                                 log.d(message);
                                 ToastUtils.showToast(context, message, 3);

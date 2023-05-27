@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/services/admin_manager.dart';
-import 'package:presence_app/backend/services/employee_manager.dart';
-import 'package:presence_app/backend/services/service_manager.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/listeEmployes.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
@@ -9,7 +8,8 @@ import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
-import '../../backend/geo/modele/service.dart';
+import '../../backend/new_back/service.dart';
+import '../../backend/services/login.dart';
 import '../widgets/StatistiquesCard.dart';
 import '../widgets/cardTabbar.dart';
 import 'adminCompte.dart';
@@ -24,42 +24,20 @@ class StatistiquesForServices extends StatefulWidget {
 }
 
 class _StatistiquesForServicesState extends State<StatistiquesForServices> {
-  //with SingleTickerProviderStateMixin;
-  void showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 3),
-    ));
-  }
+
 
   int _selectedIndex = 0;
   int ind=0;
-  //late TabController _tabController;
+
   List<String> tabBars = ['Présences', 'Retards', 'Abscences'];
   List<DataService> chartData = [];
   List<DataService> chartDataAff = [];
-  //final myKey = GlobalKey<DropdownSearchState<MultiLevelString>>();
-  /*final List<MultiLevelString> myItems = [
-    MultiLevelString(level: "Comptabilité"),
-    MultiLevelString(level: "Direction"),
-    MultiLevelString(level: "Secrétariat administratif"),
-    MultiLevelString(level: "Service de coorpération"),
-    MultiLevelString(level: "Service scolarité"),
-  ];*/
+
 
   void _etat(int index) async {
     chartDataAff = chartData;
     ind=index;
-    if (index == 0) {
-      log.d('Presence');
-      chartDataAff = chartData;
-    } else if (index == 1) {
-      log.d('late');
-      chartDataAff = chartData;
-    } else if (index == 2) {
-      log.d('absence');
-      chartDataAff = chartData;
-    }
+
   }
 
   @override
@@ -122,7 +100,7 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                 ],
                 onSelected: (value) async {
                   if (value == 1) {
-                    if (await EmployeeManager().getCount() == 0) {
+                    if ((await EmployeeDB().getAllEmployees()).isEmpty) {
                       ToastUtils.showToast(
                           context, 'Aucun employé enregistré', 3);
                       return;
@@ -139,9 +117,9 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                         MaterialPageRoute(
                             builder: (context) => const AfficherAdmins()));
                   } else if (value == 3) {
-                    if (await ServiceManager().getCount() == 0) {
+                    if ((await ServiceDB().getAllServices()).isEmpty) {
                       log.e('Aucun service enregistré');
-                      showToast('Aucun service enregistré');
+                      ToastUtils.showToast(context, 'Aucun service enregistré', 3);
                       return;
                     }
                     Navigator.pushReplacement(
@@ -157,12 +135,13 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const AdminCompte()));
+                            builder: (context) =>
+                            const AdminCompte()));
                   } else if (value == 6) {
-                    // action pour l'option 5
-                    var out = await AdminManager().signOut();
 
-                    log.d('Vous êtes déconnecté:$out');
+                     await Login().signOut();
+                    ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
+
 
                     Navigator.pushReplacement(
                         context,
@@ -223,29 +202,3 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   }
 }
 
-/*class MultiLevelString {
-  final String level;
-  final List<MultiLevelString> subLevel;
-  bool isExpanded;
-
-  MultiLevelString({
-    this.level = "",
-    this.subLevel = const [],
-    this.isExpanded = false,
-  });
-
-  MultiLevelString copy({
-    String? level,
-    List<MultiLevelString>? subLevel,
-    bool? isExpanded,
-  }) =>
-      MultiLevelString(
-        level: level ?? this.level,
-        subLevel: subLevel ?? this.subLevel,
-        isExpanded: isExpanded ?? this.isExpanded,
-      );
-
-  @override
-  String toString() => level;
-}
-*/

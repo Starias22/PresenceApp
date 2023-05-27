@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/employe.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/bridge/list_employee.dart';
+import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/models/employee.dart' as emp;
+import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
-import 'package:presence_app/utils.dart';
 
 import '../widgets/cardTabbar.dart';
 
@@ -18,9 +17,8 @@ class AfficherEmployes extends StatefulWidget {
 class _AfficherEmployesState extends State<AfficherEmployes> {
   List<String> tabBars = ["Tous", 'Présents', 'Retards', 'Absents', 'Sorties'];
   int _selectedIndex = 0;
-  final List<Employe> _employes = employes;
 
-  List<Employe> employesAff = employes;
+
   late List<Employee> employees = [];
   late List<Employee> employeesAff = [];
 
@@ -31,7 +29,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
   }
 
   Future<void> retrieve() async {
-    var x = await ListEmployeeController.retrieveEmployees();
+    var x = await EmployeeDB().getAllEmployees();
 
     setState((){
       employees=x;
@@ -40,59 +38,36 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
     });
   }
 
-  @override
-  /*void initState() {
-    // TODO: implement initState
-    super.initState();
-    //FirebaseProduit.getProduits().then((value) {
-      setState(() {
-        //employes = value;
-        employesAff = employes;
-      });
-    }
-  }*/
+    void _trier(int index) async {
+       if (index == 0) {
 
-  void _trier(int index) async {
-    employesAff = _employes;
-    employeesAff = employees;
-
-    if (index == 0) {
-      employesAff = _employes;
       employeesAff = employees;
     } else if (index == 1) {
-      var list = _employes.where((e) => e.etat == EtatPresence.present);
-      employesAff = list.toList();
 
-      var lst = employees.where((e) => e.getCurrentStatus() == EStatus.present);
+      var lst = employees.where((e) => e.status == emp.EStatus.present);
       employeesAff = lst.toList();
     } else if (index == 2) {
-      var list = _employes.where((e) => e.etat == EtatPresence.retard);
-      employesAff = list.toList();
 
-      var lst = employees.where((e) => e.getCurrentStatus() == EStatus.late);
+      var lst = employees.where((e) => e.status ==emp.EStatus.late);
       employeesAff = lst.toList();
     } else if (index == 3) {
-      var list = _employes.where((e) => e.etat == EtatPresence.absent);
-      employesAff = list.toList();
 
-      var lst = employees.where((e) => e.getCurrentStatus() == EStatus.absent);
+      var lst = employees.where((e) => e.status == emp.EStatus.absent);
       employeesAff = lst.toList();
     } else if (index == 4) {
-      var list = _employes.where((e) => e.etat == EtatPresence.sortie);
-      employesAff = list.toList();
 
-      var lst = employees.where((e) => e.getCurrentStatus() == EStatus.out);
+      var lst = employees.where((e) => e.status == emp.EStatus.out);
       employeesAff = lst.toList();
     }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
     //retrieve();
 
-    for (var emp in employees) {
-      emp.logInformations();
-    }
 
     return DefaultTabController(
       length: tabBars.length,
@@ -125,7 +100,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
                 child: SearchBar(onChanged: (value) {
                   setState(() {
                     employeesAff = employees
-                        .where((employe) => (employe.getFname())
+                        .where((employee) => (employee.firstname)
                             .toLowerCase()
                             .contains(value.toLowerCase()))
                         .toList();

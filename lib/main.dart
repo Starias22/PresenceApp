@@ -1,8 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:presence_app/backend/services/day_manager.dart';
-import 'package:presence_app/backend/services/presence_manager.dart';
+import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
+
 import 'package:presence_app/utils.dart' as u;
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +11,7 @@ import 'backend/services/service_manager.dart';
 import 'firebase_options.dart';
 import 'frontend/app_settings.dart';
 import 'frontend/screens/welcome.dart';
-import 'frontend/widgets/theme_bloc.dart';
+
 
 final utils = u.Utils();
 
@@ -24,18 +23,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  
 
-  //AdminManager().test(); //db
-  //AdminManager().test2; //login
-  //ServiceManager().test();
-  //PlanningManager().test();
-  //DayManager().test();
-
-//EmployeeManager().test();
- // log.d('Before test');
- //PresenceManager().test();
-//log.d('Okay');
+  //PresenceDB().test();
   runApp(
+
       ChangeNotifierProvider(
         //create: (context) => AppSettings(),
         create: (_) => AppSettings(),
@@ -54,7 +46,7 @@ class MyApp extends StatelessWidget {
     return Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(
-            title: 'Flutter Demo',
+            title: 'PresenceApp ',
             debugShowCheckedModeBanner: false,
             theme: appSettings.isDarkMode ? ThemeData.dark() : ThemeData(
               primarySwatch: Colors.blue,

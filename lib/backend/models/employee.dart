@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:presence_app/utils.dart';
 
+import '../new_back/models/employee.dart';
 import 'service.dart';
 import 'planning.dart';
 import 'day.dart';

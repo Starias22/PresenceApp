@@ -1,8 +1,13 @@
 import 'package:email_validator/email_validator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/bridge/register_admin.dart';
 import 'package:presence_app/utils.dart';
+
+import '../../backend/services/login.dart';
 
 class RegisterAdmin extends StatefulWidget {
   const RegisterAdmin({Key? key}) : super(key: key);
@@ -15,16 +20,16 @@ class RegisterAdmin extends StatefulWidget {
 class _RegisterAdminState extends State<RegisterAdmin> {
   late String passwd;
   TextEditingController fnameC = TextEditingController();
-     TextEditingController lnameC = TextEditingController(),
+  TextEditingController lnameC = TextEditingController(),
       emailC = TextEditingController(),
       passwordC = TextEditingController(),
       confirmC = TextEditingController();
-  String? fname, lname, email, password, confirm;
+  late String fname, lname, email, password, confirm;
   final _key = GlobalKey<FormState>();
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
-      duration: Duration(seconds: 3),
+      duration: const Duration(seconds: 3),
     ));
   }
 
@@ -188,12 +193,12 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       keyboardType: TextInputType.visiblePassword,
                       textInputAction: TextInputAction.next,
                       validator: (String? v) {
-                        if (v!.isNotEmpty && v==passwd) {
+                        if (v!.isNotEmpty && v == passwd) {
                           return null;
                         }
-                         if ( v!=passwd) {
+                        if (v != passwd) {
                           return 'Confirmation incorrecte';
-                        }  /*else {
+                        } /*else {
                           return "Confirmez le mot de passe";
                         }*/
                       },
@@ -222,7 +227,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       ),
                       ElevatedButton(
                         onPressed: () async {
-                          bool okay = false;
+                          
                           if (_key.currentState!.validate()) {
                             _key.currentState!.save();
                           } else {
@@ -230,46 +235,37 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                           }
 
                           retrieveTexts();
-                          var reg = await RegisterAdminController().register(
-                              fname!, lname!, email!, password!, confirm!);
+                          Admin admin = Admin(
+                              firstname: fname,
+                              lastname: lname,
+                              email: email,
+                              password: password);
+
 
                           String message;
 
-                          switch (reg) {
-                           
-                           
-                            case diffPass:
-                              message = 'Mots de passe diférents';
 
-                              break;
+        if(await AdminDB().create(admin)){
 
-                            case emailInUse:
-                              message =
-                                  'Cette adresse email a été déjà attribuée à un admin';
+          if(await Login().signUp(email, password)){
+            message = 'Admin enregistré avec succès';
+            reset();
+          }
+          else{
+            String? id=await AdminDB().getAdminIdByEmail(email);
+            AdminDB().delete(id!);
+            message="Une erreur s'est produite! Veillez reessayer!";
+          }
 
-                              break;
-                              
-                              case employeeExists:
-                              message =
-                                  'Cette adresse email a été déjà attribuée à un employé';
+        }
+        else{
+          message = 'Email déjà attribué';
+        }
 
-                              break;
-                              
-
-                            case success:
-                              okay = true;
-                              message = 'Admin enregistré avec succès';
-                              reset();
-                              break;
-                            default:
-                              message = 'Erreur inconnue';
-                              break;
-                          }
+                  
 
                           showToast(message);
-                          // if()
-
-                          //log.d(message);
+                          
                         },
                         child: const Text('Confirmer'),
                       ),

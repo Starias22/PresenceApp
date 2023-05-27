@@ -1,33 +1,39 @@
 import 'package:email_validator/email_validator.dart';
 
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
+
+import '../../backend/services/login.dart';
+import '../../utils.dart';
 
 
 class FormulaireModifierAdmin extends StatefulWidget {
   Admin admin;
-  FormulaireModifierAdmin({Key? key, required this.admin}) : super(key: key);
+  bool updateEmail;
+  FormulaireModifierAdmin({Key? key, required this.admin, this.updateEmail=false}) : super(key: key);
 
   @override
   State<FormulaireModifierAdmin> createState() => _FormulaireModifierAdminState();
 }
 
 class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
+  void updateAdminData(Admin newAdmin) {
+    setState(() {
+      widget.admin = newAdmin;
+    });
+  }
 
   //final key = GlobalKey<DropdownSearchState>();
 
   late String _nom;
   late String _prenom;
-  late String _sexe;
   late String _email;
 
-  String _valueChanged = '';
-  String _valueToValidate = '';
-  String _valueSaved = '';
   final _key = GlobalKey<FormState>();
 
-  final GlobalKey<FormState> _oFormKey = GlobalKey<FormState>();
   TextEditingController? _controller;
 
   Future<void> _getValue() async {
@@ -52,7 +58,6 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
   @override
   Widget build(BuildContext context) {
-    List<DropdownMenuItem<String>> itemsS;
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -84,16 +89,15 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                             children: [
 
                               TextFormField(
-                                  initialValue: widget.admin.getLname(),
+                                  initialValue: widget.admin.lastname,
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
-                                    if (v != null && v.length !=0) {
+                                    if (v != null && v.isNotEmpty) {
                                       return null;
                                     }
-                                    else {
-                                      return "Entrez le nom de l'employé";
-                                    }
+                                      return "Entrez le nom de l'admin";
+
                                   },
                                   onSaved: (String? v) {
                                     _nom = v!;
@@ -115,19 +119,19 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                               const SizedBox(height: 12,),
 
                               TextFormField(
-                                  initialValue: widget.admin.getFname(),
+                                  initialValue: widget.admin.firstname,
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
-                                    if (v != null && v.length !=0) {
+                                    if (v != null && v.isNotEmpty) {
                                       return null;
                                     }
-                                    else {
+
                                       return "Entrez le(s) prenom(s) de l'employé";
-                                    }
+
                                   },
                                   onSaved: (String? v) {
-                                    _nom = v!;
+                                    _prenom = v!;
                                   },
                                   decoration: InputDecoration(
                                       label: const Text('Prenom(s):'), hintText: "Ex: John",
@@ -146,7 +150,8 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                               const SizedBox(height: 12,),
 
                               TextFormField(
-                                  initialValue: widget.admin.getEmail(),
+                                enabled: widget.updateEmail,
+                                  initialValue: widget.admin.email,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
 
@@ -191,13 +196,51 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 
                                   ElevatedButton(
-                                    onPressed: () async {
+                                    onPressed: ()  async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
-                                        widget.admin.setLname(_nom);
-                                        widget.admin.setFname(_prenom);
-                                        widget.admin.setEmail( _email);
+
+
+
+                                       /* widget.admin.lastname= _nom;
+                                        widget.admin.firstname=_prenom;
+                                        widget.admin.email=_email;*/
                                        }
+                                      String message;
+                                      Admin admin=Admin(firstname: _prenom, lastname:_nom, email: _email,isSuper:widget.admin.isSuper );
+
+                                      if(_prenom==widget.admin.firstname&&
+                                          _nom==widget.admin.lastname&&
+                                          _email==widget.admin.email
+                                      ){
+                                        message="Rien n'a changé";
+                                      }
+                                     else if(widget.admin.email!=_email&&
+                                          await AdminDB().exists(admin.email))
+                                        {
+                                          log.d(widget.admin.email);
+                                          log.d(_email);
+
+                                          message="Email déjà attribué à un admin";
+                                        }
+                                     else{
+
+                                       admin.id=(await AdminDB().getAdminIdByEmail(widget.admin.email))!;
+                                       AdminDB().update(admin);
+                                       message='Admin modifié avec succès';
+                                      }
+
+
+                                     log.d(message);
+
+                                     updateAdminData(admin);
+                                      ToastUtils.showToast(context, message, 3);
+                                      if(_email!=widget.admin.email){
+                                        Login().updateEmailForCurrentUser(_email);
+
+                                        ToastUtils.showToast(context, "Un email de modification d'adresse email a été envoyé à votre adresse $widget.admin.email", 3);
+                                      }
+
                                     },
                                     child: const Text('Confirmer'),
                                   ),

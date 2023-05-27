@@ -13,6 +13,7 @@ import 'package:presence_app/utils.dart';
 
 import '../models/planning.dart';
 import '../models/service.dart';
+import '../new_back/models/employee.dart' as emp;
 import 'login.dart';
 
 class EmployeeManager {
@@ -117,7 +118,7 @@ class EmployeeManager {
         employee.setLname(children['lastname']);
         employee.setGender(children['gender']);
         employee.setService(Service(children['service']));
-        employee.setCurrentStatus(EStatus.absent);
+       // employee.setCurrentStatus(emp.EStatus.absent);
         employee.setPlanning(Planning(
             children['planning']['entry_time'], children['planning']['exit_time']));
 
@@ -171,8 +172,9 @@ class EmployeeManager {
 
       return emailNotExists;
     }
+
     _ref.child(await getKey(employee)).remove();
-    PresenceManager().x(employee);
+   // PresenceManager().x(employee);
 
     return success;
   }
@@ -269,21 +271,6 @@ class EmployeeManager {
     return success;
   }
 
-  Future<int> updateStatus(Employee employee, EStatus status) async {
-    int val = await exists(employee);
-
-    if (val != emailExists) {
-      log.e('That employee doesnt exist and then cannot be modified');
-
-      return val;
-    }
-    await fetch(employee);
-
-    _ref.child(await getKey(employee)).update({'status': utils.str(status)});
-    log.d('Employee status updated successfully');
-
-    return success;
-  }
 
   Future<int> enrollFingerprint(Employee employee, String fingerprint) async {
     int val = await exists(employee);

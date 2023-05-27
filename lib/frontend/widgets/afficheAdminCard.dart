@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/admin.dart';
-import 'package:presence_app/backend/services/admin_manager.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/pageModifierAdmin.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
 
 class AfficherAdminCard extends StatelessWidget {
   final Admin admin;
-   AfficherAdminCard({Key? key, required this.admin}) : super(key: key);
+   const AfficherAdminCard({Key? key, required this.admin}) : super(key: key);
 
  
   @override
@@ -44,19 +45,19 @@ class AfficherAdminCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                admin.getLname(),
+                                admin.lastname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                admin.getFname(),
+                                admin.firstname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                admin.getEmail(),
+                                admin.email,
                                 style: const TextStyle(color: Colors.grey),
                               ),
                             ],
@@ -64,15 +65,21 @@ class AfficherAdminCard extends StatelessWidget {
                         ),
                         DropdownButtonHideUnderline(
                             child: DropdownButton(
-                          onChanged: (String? v) async {
+                          onChanged: (String? v)  {
                             if (v == "modifier") {
-                              print('Hello***');
+
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (BuildContext context) {
+                                  return FormulaireModifierAdmin(admin: admin);
+                                }),
+                              );
                             } else if (v == "supprimer") {
-                              print('////Hello***');
-
-                          
-
-
+                              if(admin.isSuper)
+                                {
+                                  ToastUtils.showToast(context, 'Le super admin ne peut pas être supprimé', 3);
+                                  return;
+                                }
 
                               showDialog(
                                   context: context,
@@ -87,7 +94,7 @@ class AfficherAdminCard extends StatelessWidget {
                                                 Navigator.of(context).pop();
                                               },
                                               style: ElevatedButton.styleFrom(
-                                                  primary: const Color.fromARGB(
+                                                  backgroundColor: const Color.fromARGB(
                                                       255, 10, 184, 39),
                                                   shape: const StadiumBorder(),
                                                   padding: const EdgeInsets.all(
@@ -95,13 +102,15 @@ class AfficherAdminCard extends StatelessWidget {
                                               child: const Text("Annuler")),
                                           ElevatedButton(
                                               onPressed: () async {
-                                                
-                                            await AdminManager().delete(Admin.target(admin.getEmail()));
+                                                String? id=await AdminDB().getAdminIdByEmail(admin.email);
+                                             AdminDB().delete(id!);
 
-                                            
-                                            
 
                                                 Navigator.of(context).pop();
+                                                Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) => const AfficherAdmins()));
 
                                                  
                                               },
@@ -130,10 +139,11 @@ class AfficherAdminCard extends StatelessWidget {
                                 ],
                               ),
                               onTap: () {
+                               /* log.d('**********');
                                 Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
                     return FormulaireModifierAdmin(admin: admin,);
-                  }));
+                  }));*/
                               },
                             ),
                             const DropdownMenuItem(

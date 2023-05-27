@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../backend/models/admin.dart';
+import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
+import 'package:presence_app/backend/new_back/models/admin.dart';
 import '../screens/pageStatistiques.dart';
 import '../widgets/adminCompteCard.dart';
 
@@ -11,11 +13,28 @@ class AdminCompte extends StatefulWidget {
   State<AdminCompte> createState() => _AdminCompteState();
 }
 
-class _AdminCompteState extends State<AdminCompte> {
 
-  late Admin admin = Admin.target('adedeezechiel@gmail.com.com');
+
+class _AdminCompteState extends State<AdminCompte> {
+String? email=FirebaseAuth.instance.currentUser?.email;
+late String id;
+late Admin admin;
+Future<void> retrieve() async {
+  String? id=await  AdminDB().getAdminIdByEmail(email!);
+  admin= await AdminDB().getAdminById(id!);
+}
+
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    retrieve();
+  }
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -31,7 +50,22 @@ class _AdminCompteState extends State<AdminCompte> {
           ),
         ),
 
-        body: CompteCard(admin: admin)
+    body: FutureBuilder<void>(
+    future: retrieve(),
+    builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+    return const Center(
+    child: CircularProgressIndicator(),
+    );
+    } else if (snapshot.hasError) {
+    return const Center(
+    child: Text('Error retrieving admin data'),
+    );
+    } else {
+    return CompteCard(admin: admin);
+    }
+    },
+    )
     );
   }
 }

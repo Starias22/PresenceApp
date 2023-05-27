@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:presence_app/backend/models/day.dart';
-import 'package:presence_app/backend/models/employee.dart';
 
 
 
 class DiagrammeBarCard extends StatelessWidget {
   final List<double> porcent;
-   DiagrammeBarCard({Key? key, required this.porcent}) : super(key: key);
+   const DiagrammeBarCard({Key? key, required this.porcent}) : super(key: key);
 
 
   @override

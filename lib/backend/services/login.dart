@@ -7,15 +7,9 @@ import 'package:presence_app/backend/services/employee_manager.dart';
 import 'package:presence_app/utils.dart';
 
 class Login {
-  Future<int> signUp(String email, String password) async {
-    if (password == '') {
-      log.e('Empty password!');
-      return emptyPassword;
-    }
-    if (!utils.isValidEmail(email)) {
-      log.e('Invalid email!');
-      return invalidEmail;
-    }
+  Future<bool> signUp(String email, String password) async {
+
+
     try {
       var credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -25,20 +19,16 @@ class Login {
       await credential.user!.sendEmailVerification();
     } catch (e) {
       if (e is FirebaseAuthException) {
-        if (e.message!.contains('weak-password')) {
-          log.e('The password provided is too weak: at least 6 chars required');
-          return weekPassword;
-        }
-        if (e.message!.contains('already in use')) {
-          log.e('The account already exists for that email.');
-          return emailInUse;
-        }
+        if(e.message!.contains('email address is already in use'))
+      {
+  return true;
+    }
         log.e(e);
-        return failure;
+        return false;
       }
     }
     log.d('Sign up successful');
-    return success;
+    return true;
   }
 
   Future<int> signOut() async {
@@ -70,6 +60,7 @@ class Login {
           return emailNotExists;
         }
         if (e.message!.contains('too-many-requests')) {
+
           log.e('too many requests');
           return tooManyRequests;
         }
@@ -116,11 +107,13 @@ class Login {
 
     try {
       if (kIsWeb) {
-        log.d("L'application s'exécute dans un navigateur Web.");
+        //log.d("L'application s'exécute dans un navigateur Web.");
         credential = (await withWeb())!;
       } else {
         credential = (await withoutWeb())!;
       }
+
+      return success;
     } catch (e) {
 
       log.e(e);
@@ -138,46 +131,8 @@ class Login {
       return failure;
     }
 
-    // Check if the user is newly registered
-    bool isNewUser = credential.additionalUserInfo!.isNewUser;
-    String? mail = credential.user!.email;
 
-    try {
-      if (isNewUser) {
-        // Retrieve the user's email
 
-        log.d('New user*********');
-
-        // Perform your desired operations with the user's email during sign-up or first sign-in
-        if (await EmployeeManager().exists(Employee.target(mail!)) ==
-            emailNotExists) {
-          deleteCurrentUser();
-          log.e(
-              'Wrong email provided: Enter the email saved during registration');
-          return emailInCorrect;
-        }
-      }
-      if (await EmployeeManager().exists(Employee.target(mail!)) ==
-          emailNotExists) {
-        log.i('Your account has been deleted for you are no longer employee');
-        googleSingOut();
-        return deleteCurrentUser();
-      }
-      return success;
-    } catch (e) {
-      // Handle the sign-in error
-      log.e('Error signing in with Google: $e');
-      log.e(e.toString());
-      if (e.toString().contains('popup-closed-by-user')) {
-        log.e('Pop up closed by user');
-        return popupClosedByUser;
-      }
-      if (e.toString().contains('network_error')) {
-        log.e('Check your internet connection and try again!');
-        return networkError;
-      }
-      return failure;
-    }
   }
 
   // Function to handle Google Sign-Out
@@ -198,20 +153,22 @@ class Login {
     }
   }
 
-  Future<int> resetPassword(String email) async {
+  Future<bool> resetPassword(String email) async {
     try {
       await FirebaseAuth.instance
           .sendPasswordResetEmail(email: email)
           .then((_) {
+            return true;
         // Email verification sent successfully
       }).catchError((error) {
         // Handle the error
         log.e('Error while sending email:$error');
+        return false;
       });
-      return success;
+      return true;
     } catch (e) {
       log.e(e);
-      return failure;
+      return false;
     }
   }
 
@@ -249,6 +206,7 @@ class Login {
       FirebaseAuth.instance.currentUser!.updateEmail(newEmail);
       return success;
     } on FirebaseAuthException catch (e) {
+      log.e('error during mail sending');
       if (e.message!.contains('invalid-email')) {
         return invalidEmail;
       }
@@ -362,5 +320,18 @@ class Login {
     // Sign in to Firebase using the obtained credential
 
     return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+  bool isSignedIn() {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+
+    return user!=null;
+  }
+  bool isSignedInWithPassword(){
+    if(!isSignedIn()) return false;
+    FirebaseAuth auth = FirebaseAuth.instance;
+    User? user = auth.currentUser;
+    return user?.providerData[0].providerId=='password';
+
   }
 }
