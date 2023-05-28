@@ -25,6 +25,7 @@ class StatistiquesForServices extends StatefulWidget {
 
 class _StatistiquesForServicesState extends State<StatistiquesForServices> {
 
+  bool dataLoading = true;
 
   int _selectedIndex = 0;
   int ind=0;
@@ -44,9 +45,13 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
   void initState() {
     super.initState();
     data().then((x) {
-      setState(() {
+
+      if(mounted) {
+        setState(() {
         chartData = x;
+        dataLoading = false;
       });
+      }
     });
   }
 
@@ -191,7 +196,9 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
             SliverToBoxAdapter(
               child: Column(
                 children: [
-                  StatistiquesCard(chartData: chartData,index: ind,),
+                  if (dataLoading) // Show circular progress indicator if data is loading
+                    const Center(child: CircularProgressIndicator())
+                  else StatistiquesCard(chartData: chartData,index: ind,),
                 ],
               ),
             ),

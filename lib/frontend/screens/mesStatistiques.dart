@@ -16,7 +16,8 @@ import 'diagrammeBandes.dart';
 import 'monCompte.dart';
 
 class MesStatistiques extends StatefulWidget {
-  const MesStatistiques({Key? key}) : super(key: key);
+  String? email;
+   MesStatistiques({Key? key,this.email}) : super(key: key);
 
   @override
   State<MesStatistiques> createState() => _MesStatistiquesState();
@@ -26,11 +27,10 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
   late DateTime startDate;
   String? employeeId;
+  late String email;
   bool isLoading = true;
-  String? email = FirebaseAuth.instance.currentUser!.email;
+  //String? email = FirebaseAuth.instance.currentUser!.email;
   Future<void> onCalendarChanged(DateTime newMonth) async {
-    // ...
-    log.i('new month:$newMonth');
     setState(() {
       isLoading = true;
     });
@@ -47,7 +47,8 @@ class _MesStatistiquesState extends State<MesStatistiques> {
   Map<DateTime, emp.EStatus> _events = {};
 
   Future<void> retrieveReport() async {
-    employeeId= await EmployeeDB().getEmployeeIdByEmail(email!);
+    email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
+    employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
     var y=(await EmployeeDB().getEmployeeById(employeeId!)).startDate;
     var x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
 
@@ -122,7 +123,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const DiagrammeBar()));
+                          builder: (context) =>  DiagrammeBar(email: widget.email,)));
                 } else if (value == 2) {
                   Navigator.pushReplacement(context,
                       MaterialPageRoute(builder: (context) => MonCompte()));
@@ -171,7 +172,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
       body: Stack(
           children: [
           if (_events.isEmpty)
-        Center(
+        const Center(
         child: CircularProgressIndicator(),
     )
     else

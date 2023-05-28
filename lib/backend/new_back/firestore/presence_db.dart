@@ -1,11 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
 import 'package:presence_app/backend/new_back/firestore/holiday_db.dart';
+import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/backend/new_back/models/presence.dart';
 
 
 import '../../../utils.dart';
+import 'employee_db.dart';
+import 'employee_db.dart';
+import 'employee_db.dart';
 
 class PresenceDB {
   final CollectionReference _presence =
@@ -196,6 +200,108 @@ Future<List<String>> getPresenceIds(String employeeId) async {
       EmployeeDB().updateCurrentStatus(employeeId, status);
     }
   }
+
+  Future<List<double>> getCount(String employeeId,DateTime date) async {
+    DateTime now=DateTime.now();
+    DateTime today=DateTime(now.year,now.month,now.day);
+    date=DateTime(date.year,date.month,date.day);
+    if(!date.isAtSameMomentAs(today)) {
+      log.d('Not this month');
+      date=DateTime(date.year,date.month,utils.lengthOfMonth(date));
+    }
+    String start=utils.formatDateTime(DateTime(date.year,date.month,1));
+    String end=utils.formatDateTime(date);
+    QuerySnapshot querySnapshot = await _presence
+        .where('employee_id',isEqualTo: employeeId)
+        .where('date', isGreaterThanOrEqualTo:start )
+        .where('date',isLessThanOrEqualTo: end)
+        .where('status',whereIn: ['present','late','absent'])
+        .orderBy('date')
+    //.orderBy('status')
+        .get()
+    ;
+
+
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+    int total=presences.length;
+
+    log.i('Total:$total');
+
+   int pre= presences.where((doc) =>doc.status==EStatus.present ).length;
+  int late= presences.where((doc) =>doc.status==EStatus.late ).length;
+  int abs= presences.where((doc) =>doc.status==EStatus.absent ).length;
+
+
+    return total==0?[0,0,0]:[100*pre/total,100*late/total,100*abs/total];
+  }
+
+
+
+
+  Future<List<double>> getServiceReport(String service) async {
+    DateTime now=DateTime.now();
+    DateTime today=DateTime(now.year,now.month,now.day);
+
+    String end=utils.formatDateTime(DateTime(today.year,today.month,today.day));
+    String start=utils.formatDateTime(DateTime(today.year,today.month));
+    log.i('start:$start');
+        log.i('end: $end');
+    QuerySnapshot querySnapshot = await _presence
+        .where('date', isGreaterThanOrEqualTo:start )
+        .where('date',isLessThanOrEqualTo: end)
+        .where('status',whereIn: ['present','late','absent'])
+        .orderBy('date')
+        .get()
+    ;
+
+    //log.d('*size:  ${querySnapshot.size}');
+
+
+
+
+
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+    List<Presence> filteredPresences=[];
+    for (var doc in presences) {
+      Employee employee = await EmployeeDB().getEmployeeById(doc.employeeId);
+    /*  log.i('Employee ID: ${doc.employeeId},'
+          ' Employee Service: ${employee.service},'
+          ' Filter Service: $service');*/
+      if (employee.service == service) {
+       // log.d('Of course');
+        filteredPresences.add(doc);
+      }
+    }
+
+    log.d('filter: ${filteredPresences.length}');
+    log.d('presences.length: ${presences.length}');
+    int total=filteredPresences.length;
+
+    log.d('total: $total');
+
+    int pre= filteredPresences.where((doc) =>doc.status==EStatus.present ).length;
+    int late= filteredPresences.where((doc) =>doc.status==EStatus.late ).length;
+    int abs= filteredPresences.where((doc) =>doc.status==EStatus.absent ).length;
+
+    return total==0?[0,0,0]:[100*pre/total,100*late/total,100*abs/total];
+  }
+
+  Future<Map<String, List<double>>> getServicesReport() async {
+    var services=await ServiceDB().getServicesNames();
+    Map<String,List<double>> report={};
+    for(var service in services){
+      report[service]= await getServiceReport(service);
+      log.d('report: ${report[service]}');
+    }
+    return report;
+
+  }
+
+
   Future<void> setAllEmployeesAttendances(DateTime date) async {
     var employees = await EmployeeDB().getAllEmployees();
     for (var employee in employees) {

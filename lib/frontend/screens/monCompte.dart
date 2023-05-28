@@ -15,9 +15,10 @@ class MonCompte extends StatefulWidget {
 
 class _MonCompteState extends State<MonCompte> {
   late Employee employee;
+  String? email;
 
   Future<void> retrieve() async {
-    String? email=FirebaseAuth.instance.currentUser!.email;
+    email=FirebaseAuth.instance.currentUser!.email;
     String? id=await EmployeeDB().getEmployeeIdByEmail(email!);
      employee=await EmployeeDB().getEmployeeById(id!);
 
@@ -45,8 +46,8 @@ class _MonCompteState extends State<MonCompte> {
 
         leading: IconButton(
             onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => MesStatistiques()))},
-            icon: Icon(Icons.arrow_back,)
+                builder: (context) => MesStatistiques(email: email!,)))},
+            icon: const Icon(Icons.arrow_back,)
         ),
       ),
 

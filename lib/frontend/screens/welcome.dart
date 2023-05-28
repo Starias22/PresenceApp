@@ -20,6 +20,7 @@ class Welcome extends StatefulWidget {
 
 class _WelcomeState extends State<Welcome> {
   bool isSignedInWithEmail = false;
+  String? email;
 
   String text(){
     //if it's an employee that's logged in
@@ -55,9 +56,9 @@ class _WelcomeState extends State<Welcome> {
             "La pop up a été fermée avant la finalisation de l'authentification Google";
         break;
       case success:
-        String? email=FirebaseAuth.instance.currentUser!.email;
+        email=FirebaseAuth.instance.currentUser!.email;
 
-        //log.d('Checking');
+        log.d('email of the employee');
 
         if(await EmployeeDB().exists(email!)) {
           message = 'Authentification Google réussie';
@@ -84,9 +85,10 @@ class _WelcomeState extends State<Welcome> {
     log.d(message);
     ToastUtils.showToast(context, message, 3);
     if (loginCode == success) {
+
       Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) {
-        return const MesStatistiques();
+        return MesStatistiques(email: email!,);
       }));
     }
 
@@ -121,7 +123,9 @@ class _WelcomeState extends State<Welcome> {
                 // size: 30,
               ),
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-               if(!Login().isSignedIn()||Login().isSignedInWithPassword()) PopupMenuItem(
+
+               if(!Login().isSignedIn()||Login().isSignedInWithPassword())
+                 const PopupMenuItem(
                   value: 1,
                   child: Text('Administrateur'),
                 ),
@@ -157,9 +161,10 @@ class _WelcomeState extends State<Welcome> {
                 } else if (value == 2) {
 
               if(Login().isSignedIn()) {
+                String? email = FirebaseAuth.instance.currentUser!.email;
                 Navigator.push(context,
                     MaterialPageRoute(builder: (BuildContext context) {
-                      return const MesStatistiques();
+                      return  MesStatistiques(email: email!,);
                     }));
 
               }
@@ -276,9 +281,11 @@ class _WelcomeState extends State<Welcome> {
                               onPressed: ()  {
 
     if(Login().isSignedIn()) {
+      email=FirebaseAuth.instance.currentUser!.email;
+      log.d('email of the employee: $email');
     Navigator.push(context,
     MaterialPageRoute(builder: (BuildContext context) {
-    return const MesStatistiques();
+    return MesStatistiques(email: email!,);
     }));
 
     }

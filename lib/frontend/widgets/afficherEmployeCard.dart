@@ -4,6 +4,7 @@ import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/utils.dart';
 
 import '../screens/listeEmployes.dart';
+import '../screens/mesStatistiques.dart';
 import '../screens/pageModifierEmployer.dart';
 
 class AfficherEmployeCard extends StatelessWidget {
@@ -18,6 +19,13 @@ class AfficherEmployeCard extends StatelessWidget {
     return InkWell(
       onTap: () {
         log.d("tapppp");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (BuildContext context) {
+            return MesStatistiques(email: employee.email,);
+
+          }),
+        );
       },
       child: Container(
         color: Colors.white,
@@ -84,6 +92,7 @@ class AfficherEmployeCard extends StatelessWidget {
                                 context,
                                 MaterialPageRoute(builder: (BuildContext context) {
                                   return FormulaireModifierEmploye(employee: employee,);
+
                                 }),
                               );
 

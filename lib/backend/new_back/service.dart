@@ -1,4 +1,6 @@
 
+import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
+
 import '../../utils.dart';
 
 class DataService{
@@ -10,13 +12,15 @@ class DataService{
 }
 List<DataService> convertToDataService(Map<String, List<double>> inputMap) {
   return inputMap.entries.map((entry) {
-    return DataService(entry.key, [entry.value[0],entry.value[1],entry.value[2] ]);
+    return DataService(entry.key, [entry.value[0],
+      entry.value[1],entry.value[2] ]);
   }).toList();
 }
 Future<List<DataService>> data() async {
- //var x=await  PresenceManager().getMonthReportForAllServices(Day.today());
-  var x=0;
- List<DataService> pie = convertToDataService(x as Map<String, List<double>>);
+  // Simulate loading delay
+  await Future.delayed(const Duration(seconds: 2));
+ var x=await  PresenceDB().getServicesReport();
+ List<DataService> pie = convertToDataService(x);
 log.d(x);
  log.d(pie);
 

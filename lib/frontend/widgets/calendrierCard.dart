@@ -7,8 +7,9 @@ import '../../utils.dart';
 
 class CalendrierCard extends StatelessWidget {
   Map<DateTime, EStatus> events;
-  Function(DateTime) onCalendarChanged; // Ajoutez cette ligne
+  Function(DateTime) onCalendarChanged;
   DateTime minSelectedDate;
+
 
   CalendrierCard({Key? key, required this.events, required this.onCalendarChanged,required this.minSelectedDate}) : super(key: key);
 
