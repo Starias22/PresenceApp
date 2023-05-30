@@ -3,6 +3,7 @@ import 'package:presence_app/backend/new_back/firestore/holiday_db.dart';
 import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/backend/new_back/models/employee.dart';
+import 'package:presence_app/backend/new_back/models/presence.dart';
 
 import '../../../utils.dart';
 
@@ -14,10 +15,18 @@ class EmployeeDB{
   FirebaseFirestore.instance.collection('employees');
 
   Future<bool> create(Employee employee) async {
+
     if (await exists(employee.email)) return false;
     employee.serviceId=(await ServiceDB().getServiceIdByName(employee.service))!;
+    DateTime now=DateTime.now();
+    DateTime today=DateTime(now.year,now.month,now.day);
+       await _employee.add(employee.toMap());
+    employee.id=(await getEmployeeIdByEmail(employee.email))!;
 
-    _employee.add(employee.toMap());
+    if(employee.status==EStatus.absent) {
+
+      PresenceDB().create(Presence(date: today, employeeId: employee.id, status: EStatus.absent));
+    }
     return true;
   }
 
@@ -48,11 +57,15 @@ class EmployeeDB{
   }
 
   Future<Employee> getEmployeeById(String id) async {
-    DocumentSnapshot<Map<String, dynamic>> snapshot = await _employee.doc(id).get()as DocumentSnapshot<Map<String, dynamic>>;
-
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+    await _employee.doc(id).get()as DocumentSnapshot<Map<String, dynamic>>;
+  log.d('Checking');
     if (snapshot.exists) {
+
+
       // Convert the document snapshot into an Admin object
       Employee employee = Employee.fromMap(snapshot.data()!);
+      log.i('Yeah exists');
       employee.id = snapshot.id;
       return employee;
     } else {
@@ -84,7 +97,8 @@ class EmployeeDB{
 
 
   Future<void> update(Employee employee) async {
-   employee.serviceId=(await  ServiceDB().getServiceIdByName(employee.service))!;
+   employee.serviceId=(await  ServiceDB().getServiceIdByName
+     (employee.service))!;
     _employee.doc(employee.id).update(employee.toMap());
   }
 

@@ -47,10 +47,21 @@ class _MesStatistiquesState extends State<MesStatistiques> {
   Map<DateTime, emp.EStatus> _events = {};
 
   Future<void> retrieveReport() async {
+    Map<DateTime,emp.EStatus>x={};
+    log.d('/////');
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
     employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
-    var y=(await EmployeeDB().getEmployeeById(employeeId!)).startDate;
-    var x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
+    var employee=await EmployeeDB().getEmployeeById(employeeId!);
+    if(employee.status==emp.EStatus.pending){
+    x[employee.startDate]=emp.EStatus.pending;
+    ToastUtils.showToast(context, 'Employé en attente', 5);
+    }
+    //log.d('/////');
+    var y=(employee).startDate;
+    if(x.isEmpty) {
+      //log.d('11111111');
+      x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
+    }
 
 
     setState(() {

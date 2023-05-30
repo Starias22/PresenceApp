@@ -1,6 +1,6 @@
 import 'package:presence_app/main.dart';
 
-enum EStatus { present, late, absent, out, inHoliday, inWeekend,notYet }
+enum EStatus { present, late, absent, out, inHoliday, inWeekend,pending }
 
 EStatus convertES(String status) {
   if (status == 'inWeekend') return EStatus.inWeekend;
@@ -8,13 +8,13 @@ EStatus convertES(String status) {
   if (status == 'late') return EStatus.late;
   if (status == 'present') return EStatus.present;
   if (status == 'absent') return EStatus.absent;
-  /*if (status == 'notYet')*/ return EStatus.notYet;
+  /*if (status == 'notYet')*/ return EStatus.pending;
 
 }
 
 class Employee {
   late String id, firstname, lastname, email, gender, fingerprint;
-  late EStatus status;
+  EStatus status;
   late DateTime startDate;
 
   late String image;
@@ -35,14 +35,11 @@ class Employee {
       required this.startDate,
       required this.entryTime,
       required this.exitTime,
-      this.status=EStatus.absent}){
-    if(startDate.isAfter(DateTime.now())) {
-      status=EStatus.notYet;
-    }
+       this.status=EStatus.pending}){
 
-     else if(DateTime.now().weekday==DateTime.saturday||DateTime.now().weekday==DateTime.sunday) {
-        status=EStatus.inWeekend;
-      }
+    DateTime now=DateTime.now();
+    DateTime today=DateTime(now.year,now.month,now.day);
+    if(startDate.isAtSameMomentAs(today)) status=EStatus.absent;
 
   }
 

@@ -53,7 +53,9 @@ class CalendrierCard extends StatelessWidget {
           color = Colors.yellow;
         } else if (event == EStatus.absent) {
           color = Colors.red;
-        } else {
+        }
+
+        else {
           color = Colors.white;
         }
 

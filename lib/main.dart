@@ -1,13 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 
 import 'package:presence_app/utils.dart' as u;
 import 'package:presence_app/utils.dart';
-import 'package:provider/provider.dart';
 
-import 'backend/services/planning_manager.dart';
-import 'backend/services/service_manager.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'firebase_options.dart';
 import 'frontend/app_settings.dart';
 import 'frontend/screens/welcome.dart';
@@ -23,7 +24,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  
+
+  await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  prefs.setString('key', 'value');
+  String? value = prefs.getString('key');
+
+  log.i('value:$value');
 
   //PresenceDB().test();
   runApp(

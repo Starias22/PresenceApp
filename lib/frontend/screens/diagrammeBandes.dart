@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
 import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 import 'package:presence_app/backend/new_back/models/employee.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../utils.dart';
 import '../screens/mesStatistiques.dart';
 import '../widgets/digrammeBarCard.dart';
@@ -19,6 +21,7 @@ class _DiagrammeBarState extends State<DiagrammeBar> {
   late DateTime  date;
   late DateTime thisMonth;
 late String email;
+
   
   late DateTime startDate;
   late List<double> x = [];
@@ -35,12 +38,22 @@ late String email;
     date=thisMonth;
     id = await EmployeeDB().getEmployeeIdByEmail(email);
     employee = await EmployeeDB().getEmployeeById(id!);
+
+   if( employee.status==EStatus.pending) {
+     x=[0,0,0];
+     ToastUtils.showToast(context, 'Employé en attente', 5);
+     //return;
+   }
     startDate = employee.startDate;
     startDate=DateTime(startDate.year,startDate.month);
-    
-    x = await PresenceDB().getCount(id!, date);
+    if (!const ListEquality<double>().equals(x,[0,0,0])) {
+      x = await PresenceDB().getCount(id!, date);
+    }
 
-    log.d('x:::$x');
+   log.d('x:::$x');
+
+
+
     setState(() {
       percentages = x;
     });
@@ -147,7 +160,8 @@ late String email;
                 scrollDirection: Axis.horizontal,
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width,
-                  child: percentages.isEmpty
+                  child:
+                  percentages.isEmpty
                       ? const Center(child: CircularProgressIndicator())
                       : DiagrammeBarCard(
                     percentages: percentages,

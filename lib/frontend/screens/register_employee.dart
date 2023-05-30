@@ -1,11 +1,14 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
+import 'package:presence_app/backend/new_back/firestore/holiday_db.dart';
 import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/backend/new_back/models/employee.dart';
 
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
+
+import '../../utils.dart';
 
 class RegisterEmployee extends StatefulWidget {
   const RegisterEmployee({Key? key}) : super(key: key);
@@ -55,7 +58,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     retrieveServices();
 
-    List<DropdownMenuItem<String>> itemsS;
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -260,20 +262,20 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                items: itemsS = [
-                                  const DropdownMenuItem(
+                                items:  const [
+                                  DropdownMenuItem(
                                     value: "07:00",
                                     child: Text("07:00"),
                                   ),
-                                  const DropdownMenuItem(
+                                  DropdownMenuItem(
                                     value: "08:00",
                                     child: Text("08:00"),
                                   ),
-                                  const DropdownMenuItem(
+                                  DropdownMenuItem(
                                     value: "09:00",
                                     child: Text("09:00"),
                                   ),
-                                  const DropdownMenuItem(
+                                  DropdownMenuItem(
                                     value: "10:00",
                                     child: Text("10:00"),
                                   ),
@@ -394,15 +396,36 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                         return;
                                       }
 
+                                      DateTime now=DateTime.now();
+                                      DateTime today=DateTime(now.year,now.month,now.day);
+                                      DateTime start=DateTime(now.year,now.month,now.day+1);
+
+
                                       Employee employee=Employee
 
-                                        ( firstname: firstname, gender: gender, lastname: lastname,
-                                          email: email, service:serviceName, startDate: DateTime.now(), entryTime: entryTime, exitTime: exitTime);
+
+                                        ( firstname: firstname,
+                                          gender: gender, lastname: lastname,
+                                          email: email, service:serviceName,
+                                          startDate: start, entryTime: entryTime, exitTime: exitTime);
 
                                       String message;
-                                      var created=await EmployeeDB().create(employee);
-                                      if(created){
+                                      bool created=false;
+                                      if(start.isBefore(today)){
+                                        message="La date de début doit être au moins aujourd'hui";
+                                      }
+                                      else if(utils.isWeekend(start)){
+                                        message="Cette date de début est un weekend";
+                                      }
+
+                                      else if((await HolidayDB().isHoliday(start))){
+                                        message="Cettte date de début est définie comme un jour férié ou de congés";
+                                      }
+
+
+                                      else if(await EmployeeDB().create(employee)){
                                         message='Employé enregistré avec succès';
+                                        created=true;
                                       }
                                       else{
                                       message=  'Cette adresse email a été déjà attribuée à un employé';

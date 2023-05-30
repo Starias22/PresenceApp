@@ -1,8 +1,39 @@
+import 'dart:convert';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logger/logger.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'backend/new_back/models/employee.dart';
+
+
+Future<DateTime> getBeninTime() async {
+  FieldValue.serverTimestamp();
+  final response = await http.get(Uri.parse('http://worldclockapi.com/api/json/utc/now'));
+  if (response.statusCode == 200) {
+    final json = jsonDecode(response.body);
+    final utcTime = DateTime.parse(json['currentDateTime']);
+    const beninTimeZoneOffset = Duration(hours: 1);
+    final beninTime = utcTime.add(beninTimeZoneOffset);
+    return beninTime;
+  } else {
+    throw Exception('Failed to fetch Benin time.');
+  }
+}
+
+void main() async {
+  try {
+    final beninTime = await getBeninTime();
+    print('Current time in Benin: $beninTime');
+  } catch (e) {
+    print('Error: $e');
+  }
+}
+
 
 int x = 0;
 final utils = Utils();
@@ -89,6 +120,28 @@ class Utils {
 
   bool isWeekEnd(int weekday) {
     return weekday == DateTime.saturday || weekday == DateTime.sunday;
+  }
+
+  Future<DateTime> localTime() async {
+    CollectionReference timeCollection =
+    FirebaseFirestore.instance.collection('time');
+
+    QuerySnapshot snapshot = await timeCollection.limit(1).get();
+
+      DocumentSnapshot documentSnapshot = snapshot.docs[0];
+      DocumentReference timeDoc = documentSnapshot.reference;
+
+      await timeDoc.update({'time': FieldValue.serverTimestamp()});
+
+      // Retrieve the updated document
+       documentSnapshot = await timeDoc.get();
+      Timestamp? serverTimestamp =
+      (documentSnapshot.data() as Map<String,dynamic>)['time'] as Timestamp?;
+
+
+        DateTime currentServerTime = serverTimestamp!.toDate();
+        return currentServerTime.subtract(const Duration(hours: 1));
+
   }
 
   String str(dynamic enm) {
@@ -199,3 +252,4 @@ class Utils {
     return "$hours:$minutes";
   }
 }
+

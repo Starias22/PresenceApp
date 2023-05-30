@@ -4,12 +4,7 @@ import 'package:presence_app/backend/new_back/firestore/holiday_db.dart';
 import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/backend/new_back/models/presence.dart';
-
-
 import '../../../utils.dart';
-import 'employee_db.dart';
-import 'employee_db.dart';
-import 'employee_db.dart';
 
 class PresenceDB {
   final CollectionReference _presence =
@@ -25,9 +20,11 @@ class PresenceDB {
 
     _lastUpdate.add({'date':utils.formatDateTime(DateTime.now())});
 
+
   }
   Future<bool> create(Presence presence) async {
     if (await exists(presence.date,presence.employeeId)) return false;
+
     _presence.add(presence.toMap());
     return true;
   }
@@ -84,6 +81,7 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
 
   for (final doc in documentsToDelete) {
     batch.delete(doc.reference);
+   // DateTime.now().
   }
 
   await batch.commit();
@@ -109,10 +107,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
 
-    log.d('date asked: $date');
-    log.d('today: $today');
     if(!date.isAtSameMomentAs(today)) {
-      log.d('Not this month');
+      //log.d('Not this month');
       date=DateTime(date.year,date.month,utils.lengthOfMonth(date));
     }
     String start=utils.formatDateTime(DateTime(date.year,date.month,1));
@@ -157,9 +153,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   void delete(String id) {
     _presence.doc(id).delete();
 
-
-
-
   }
 
 
@@ -180,14 +173,30 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   }
   Future<void> setAttendance(String employeeId,DateTime date) async {
     EStatus status;
+
+    log.i('attendance setting for $employeeId');
+    Employee employee=await EmployeeDB().getEmployeeById(employeeId);
+    log.i('Email of the employee');
+
+    if(employee.startDate.isAfter(date)||(employee.status==EStatus.pending&&
+        !employee.startDate.isAtSameMomentAs(date))){
+      return;
+    }
+
+    log.d('******');
+
     if(utils.isWeekend(date)) {
       status=EStatus.inWeekend;
     }
-    else if(await HolidayDB().isInHoliday(employeeId, date)) {
+    /*else if(await HolidayDB().isInHoliday(employeeId, date)) {
       status=EStatus.inHoliday;
     }
+
+*/
+
     else{
       status=EStatus.absent;
+      log.i('///////');
     }
     Presence presence=Presence(date: date, employeeId: employeeId, status: status);
 
@@ -227,8 +236,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     }).toList();
     int total=presences.length;
 
-    log.i('Total:$total');
-
    int pre= presences.where((doc) =>doc.status==EStatus.present ).length;
   int late= presences.where((doc) =>doc.status==EStatus.late ).length;
   int abs= presences.where((doc) =>doc.status==EStatus.absent ).length;
@@ -243,7 +250,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   Future<List<double>> getServiceReport(String service) async {
     DateTime now=DateTime.now();
     DateTime today=DateTime(now.year,now.month,now.day);
-
+    log.i('//////');
     String end=utils.formatDateTime(DateTime(today.year,today.month,today.day));
     String start=utils.formatDateTime(DateTime(today.year,today.month));
     log.i('start:$start');
@@ -256,18 +263,18 @@ Future<List<String>> getPresenceIds(String employeeId) async {
         .get()
     ;
 
-    //log.d('*size:  ${querySnapshot.size}');
-
-
-
-
-
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).toList();
+
     List<Presence> filteredPresences=[];
     for (var doc in presences) {
+      log.d('employee id in doc: ${doc.employeeId}');
+      //String email=await EmployeeDB().getEmployeeIdByEmail(doc.)
+      //String employeeId=EmployeeDB().getEmployeeIdByEmail()
       Employee employee = await EmployeeDB().getEmployeeById(doc.employeeId);
+
+      log.d('**********');
     /*  log.i('Employee ID: ${doc.employeeId},'
           ' Employee Service: ${employee.service},'
           ' Filter Service: $service');*/
@@ -287,7 +294,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     int late= filteredPresences.where((doc) =>doc.status==EStatus.late ).length;
     int abs= filteredPresences.where((doc) =>doc.status==EStatus.absent ).length;
 
-    return total==0?[0,0,0]:[100*pre/total,100*late/total,100*abs/total];
+    return total==0?[0,0,0]:[(100*pre/total).roundToDouble(),
+      (100*late/total).roundToDouble(),(100*abs/total).roundToDouble()];
   }
 
   Future<Map<String, List<double>>> getServicesReport() async {
@@ -295,7 +303,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     Map<String,List<double>> report={};
     for(var service in services){
       report[service]= await getServiceReport(service);
-      log.d('report: ${report[service]}');
+      //log.d('report: ${report[service]}');
     }
     return report;
 
@@ -304,25 +312,52 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
   Future<void> setAllEmployeesAttendances(DateTime date) async {
     var employees = await EmployeeDB().getAllEmployees();
+    log.i('${employees.length} employees');
     for (var employee in employees) {
-      setAttendance(employee.id, date);
+      log.d('id of the employee: ${employee.id}');
+      log.d('email of the employee: ${employee.email}');
+      await setAttendance(employee.id, date);
     }
   }
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {
-       var lastUpdateDate=utils.format((_lastUpdate.limit(1).get() as
-       Map<String,dynamic>)['date']);
-       DateTime  date=lastUpdateDate!;
+      QuerySnapshot snapshot =await _lastUpdate.limit(1).get();
+      DocumentSnapshot documentSnapshot = snapshot.docs[0];
+      log.i(snapshot.size);
+      DocumentReference doc = documentSnapshot.reference;
+
+
+      Map<String,dynamic> map=(await doc.get()).data()
+      as  Map<String,dynamic>;
+      log.i(map);
+     String upd = map ['date']  ;
+
+      var luDate=DateTime.parse(upd);
+
+
        DateTime now=DateTime.now();
        DateTime today=DateTime(now.year,now.month,now.day);
-       date=DateTime(date.year,date.month,date.day);
+
+       if(luDate.isAtSameMomentAs(today)){
+         return;
+       }
+       var date=DateTime(luDate.year,luDate.month,luDate.day+1);
+
+
        while(!date.isAtSameMomentAs(today)){
+
          setAllEmployeesAttendances(date);
+         log.i('No problem before ++');
          date=date.add(const Duration(days: 1));
+         log.d('//////');
        }
 
-       String lastUpdateId=( await _lastUpdate.limit(1).get()).docs.first.id;
-       _lastUpdate.doc(lastUpdateId).update({'date':utils.formatDateTime(today)});
+       log.d('End of the while loop');
 
+       String lastUpdateId=( await _lastUpdate.limit(1).get()).docs.first.id;
+
+       log.i('last update id: $lastUpdateId');
+       _lastUpdate.doc(lastUpdateId).update({'date':utils.formatDateTime(today)});
+      log.d('Updated successfully');
     }
 
 

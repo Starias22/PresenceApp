@@ -20,7 +20,7 @@ class HolidayDB {
     QuerySnapshot querySnapshot = await _holiday
         .where('start_date', isEqualTo: startDate)
         .where('end_date', isEqualTo: endDate)
-        .where('employee_id', whereIn: [null,holiday.id])
+        .where('employee_id', isEqualTo: holiday.employeeId)
         .limit(1)
         .get();
 
@@ -97,6 +97,22 @@ class HolidayDB {
         .get();
     return querySnapshot.docs.isNotEmpty;
   }
+
+  Future<bool> isHoliday(DateTime dateTime) async {
+    String date=utils.formatDateTime(dateTime);
+    QuerySnapshot querySnapshot = await _holiday
+        .where('employee_id',isEqualTo:null)
+        .where('start_date', isLessThanOrEqualTo: date)
+        .limit(1)
+        .get();
+    QuerySnapshot endQuerySnapshot = await _holiday
+        .where('employee_id', isEqualTo: null)
+        .where('end_date', isGreaterThanOrEqualTo: date)
+        .limit(1)
+        .get();
+    return querySnapshot.docs.isNotEmpty&& endQuerySnapshot.docs.isNotEmpty ;
+  }
+
 
   Future<void> removeAllHolidayDocuments(String employeeId) async {
     final querySnapshot = await _holiday

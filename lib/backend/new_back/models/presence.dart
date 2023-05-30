@@ -27,8 +27,8 @@ class Presence {
     return Presence(date: DateTime.parse(map['date']),
         status: utils.convertES(map['status']),
         employeeId: map['employee_id'],
-    entryTime: utils.format(map['entry_time']),
-        exitTime: utils.format(map['exit_time'],
+    entryTime:map['entry_time']==null?null: utils.format(map['entry_time']),
+        exitTime:map['exit_time']==null?null: utils.format(map['exit_time'],
             //id: map['id']
         ));
   }

@@ -5,7 +5,8 @@ class Holiday {
   String? employeeId;
   late String id;
   late DateTime startDate, endDate;
-  Holiday({this.id='',this.employeeId, required this.startDate, required this.endDate});
+  Holiday({this.id='',this.employeeId, required this.startDate,
+    required this.endDate});
 
   Map<String, dynamic> toMap() => {
     'start_date': utils.formatDateTime(startDate),

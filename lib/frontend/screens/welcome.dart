@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
@@ -144,6 +145,8 @@ class _WelcomeState extends State<Welcome> {
               ],
               onSelected: (value) async {
                 if (value == 1) {
+
+
                   if(Login().isSignedInWithPassword()) {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
