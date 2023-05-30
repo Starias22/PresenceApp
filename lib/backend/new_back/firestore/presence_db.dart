@@ -325,18 +325,22 @@ Future<List<String>> getPresenceIds(String employeeId) async {
       log.i(snapshot.size);
       DocumentReference doc = documentSnapshot.reference;
 
+      log.d('Progressing***');
+
 
       Map<String,dynamic> map=(await doc.get()).data()
       as  Map<String,dynamic>;
-      log.i(map);
+      log.i('map:$map');
      String upd = map ['date']  ;
 
+     log.i('upd:$upd');
+
       var luDate=DateTime.parse(upd);
+      log.i('last update:$luDate');
 
 
        DateTime now=DateTime.now();
        DateTime today=DateTime(now.year,now.month,now.day);
-
        if(luDate.isAtSameMomentAs(today)){
          return;
        }

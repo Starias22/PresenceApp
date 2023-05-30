@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_file.dart';
 import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 
 import 'package:presence_app/utils.dart' as u;
@@ -26,18 +27,32 @@ void main() async {
   );
 
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  prefs.setString('key', 'value');
-  String? value = prefs.getString('key');
 
-  log.i('value:$value');
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool? isDarkModeValue = prefs.getBool('isDarkMode');
+
+  AppSettings appSettings = AppSettings();
+
+  //await appSettings.loadSettings();
+
+  if (isDarkModeValue != null) {
+
+    appSettings.setDarkMode(isDarkModeValue);
+    log.i('******${appSettings.isDarkMode}');
+  }
+
+  //await initializeDateFormatting('en_US', '');
+
+  log.i('fine*****');
+
 
   //PresenceDB().test();
   runApp(
 
-      ChangeNotifierProvider(
+      ChangeNotifierProvider.value(
+        value: appSettings,
         //create: (context) => AppSettings(),
-        create: (_) => AppSettings(),
+        //create: (_) => AppSettings(),
         child: const MyApp(),
       ));
 }
@@ -50,6 +65,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+
     return Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(

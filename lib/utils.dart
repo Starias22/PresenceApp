@@ -149,7 +149,8 @@ class Utils {
   }
   String formatDateTime(DateTime dateTime){
 
-    String formattedDate = '${dateTime.year}-${formatTwoDigits(dateTime.month)}-${formatTwoDigits(dateTime.day)}';
+    String formattedDate = '${dateTime.year}-'
+        '${formatTwoDigits(dateTime.month)}-${formatTwoDigits(dateTime.day)}';
    return formattedDate;
   }
 
@@ -245,7 +246,7 @@ class Utils {
   String formatTime(DateTime dateTime) {
 
 
-    final localDateTime = dateTime.toLocal();
+    final localDateTime = dateTime;
     final hours = formatTwoDigits(localDateTime.hour);
     final minutes = formatTwoDigits(localDateTime.minute);
 

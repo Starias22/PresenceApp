@@ -129,7 +129,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                   child: Text('Déconnexion'),
                 ),
               ],
-              onSelected: (value) {
+              onSelected: (value) async {
                 if (value == 1) {
                   Navigator.pushReplacement(
                       context,
@@ -142,7 +142,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                 } else if (value == 4) {
 
                   log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
-                  Provider.of<AppSettings>(context, listen: false).setDarkMode(
+                  await Provider.of<AppSettings>(context, listen: false).setDarkMode(
                     !Provider.of<AppSettings>(context, listen: false).isDarkMode,
                   );
                   log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
