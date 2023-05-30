@@ -48,7 +48,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
   Future<void> retrieveReport() async {
     Map<DateTime,emp.EStatus>x={};
-    log.d('/////');
+
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
     employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
     var employee=await EmployeeDB().getEmployeeById(employeeId!);
