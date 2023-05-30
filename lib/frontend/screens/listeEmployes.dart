@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart' as emp;
-import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
 
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/models/employee.dart';
 import '../widgets/cardTabbar.dart';
 
 class AfficherEmployes extends StatefulWidget {
@@ -44,19 +43,19 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
       employeesAff = employees;
     } else if (index == 1) {
 
-      var lst = employees.where((e) => e.status == emp.EStatus.present);
+      var lst = employees.where((e) => e.status == EStatus.present);
       employeesAff = lst.toList();
     } else if (index == 2) {
 
-      var lst = employees.where((e) => e.status ==emp.EStatus.late);
+      var lst = employees.where((e) => e.status ==EStatus.late);
       employeesAff = lst.toList();
     } else if (index == 3) {
 
-      var lst = employees.where((e) => e.status == emp.EStatus.absent);
+      var lst = employees.where((e) => e.status == EStatus.absent);
       employeesAff = lst.toList();
     } else if (index == 4) {
 
-      var lst = employees.where((e) => e.status == emp.EStatus.out);
+      var lst = employees.where((e) => e.status == EStatus.out);
       employeesAff = lst.toList();
     }
   }

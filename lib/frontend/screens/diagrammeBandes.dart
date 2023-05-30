@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/firestore/presence_db.dart';
+import '../../new_back/models/employee.dart';
 import '../../utils.dart';
 import '../screens/mesStatistiques.dart';
 import '../widgets/digrammeBarCard.dart';

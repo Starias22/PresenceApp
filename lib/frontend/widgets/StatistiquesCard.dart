@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import '../../backend/new_back/service.dart';
+import '../../new_back/service.dart';
+
 
 
 class StatistiquesCard extends StatelessWidget {

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
+
 import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
+
+import '../../new_back/models/employee.dart';
 
 
 class CompteCard extends StatelessWidget {

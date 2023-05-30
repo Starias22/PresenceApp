@@ -1,16 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/services/admin_manager.dart';
-import 'package:presence_app/backend/services/employee_manager.dart';
+
+
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
 import 'package:presence_app/utils.dart';
 
-import '../../backend/services/login.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/login.dart';
+
+
 
 class Welcome extends StatefulWidget {
   const Welcome({Key? key}) : super(key: key);

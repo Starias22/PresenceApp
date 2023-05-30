@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/firestore/holiday_db.dart';
-import 'package:presence_app/backend/new_back/firestore/service_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
-import 'package:presence_app/backend/new_back/models/presence.dart';
+import 'package:presence_app/new_back/firestore/service_db.dart';
+import 'package:presence_app/new_back/models/presence.dart';
+
 import '../../../utils.dart';
+import '../models/employee.dart';
+import 'employee_db.dart';
 
 class PresenceDB {
   final CollectionReference _presence =

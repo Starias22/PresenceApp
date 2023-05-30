@@ -1,13 +1,15 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
-import 'package:presence_app/backend/new_back/models/admin.dart';
+
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-import 'package:presence_app/bridge/register_admin.dart';
+
 import 'package:presence_app/utils.dart';
 
-import '../../backend/services/login.dart';
+import '../../new_back/firestore/admin_db.dart';
+import '../../new_back/login.dart';
+import '../../new_back/models/admin.dart';
+
 
 class RegisterAdmin extends StatefulWidget {
   const RegisterAdmin({Key? key}) : super(key: key);

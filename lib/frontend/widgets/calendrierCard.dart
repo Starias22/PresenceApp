@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
-
-import '../../backend/new_back/models/employee.dart';
+import '../../new_back/models/employee.dart';
 import '../../utils.dart';
 
 

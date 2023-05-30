@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/admin_db.dart';
-import 'package:presence_app/backend/new_back/models/admin.dart';
+
+import '../../new_back/firestore/admin_db.dart';
+import '../../new_back/models/admin.dart';
 import '../screens/pageStatistiques.dart';
 import '../widgets/adminCompteCard.dart';
 

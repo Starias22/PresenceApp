@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/utils.dart';
 
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/models/employee.dart';
 import '../screens/listeEmployes.dart';
 import '../screens/mesStatistiques.dart';
 import '../screens/pageModifierEmployer.dart';

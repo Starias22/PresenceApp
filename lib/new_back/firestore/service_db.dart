@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/models/service.dart';
+import 'package:presence_app/new_back/models/service.dart';
+
+import 'employee_db.dart';
+
 
 class ServiceDB {
   final CollectionReference _service =

@@ -2,15 +2,14 @@
 import 'package:email_validator/email_validator.dart';
 
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/employe.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-import 'package:select_form_field/select_form_field.dart';
 
-import '../../backend/new_back/firestore/service_db.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/firestore/service_db.dart';
+import '../../new_back/models/employee.dart';
+
 
 
 

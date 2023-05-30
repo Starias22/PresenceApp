@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/firestore/presence_db.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../backend/new_back/models/employee.dart' as emp;
-import '../../backend/services/login.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/firestore/presence_db.dart';
+import '../../new_back/login.dart';
+import '../../new_back/models/employee.dart';
 import '../../utils.dart';
 import '../app_settings.dart';
 import '../widgets/calendrierCard.dart';
@@ -44,16 +44,16 @@ class _MesStatistiquesState extends State<MesStatistiques> {
   }
 
   bool isDarkMode = false;
-  Map<DateTime, emp.EStatus> _events = {};
+  Map<DateTime, EStatus> _events = {};
 
   Future<void> retrieveReport() async {
-    Map<DateTime,emp.EStatus>x={};
+    Map<DateTime,EStatus>x={};
 
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
     employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
     var employee=await EmployeeDB().getEmployeeById(employeeId!);
-    if(employee.status==emp.EStatus.pending){
-    x[employee.startDate]=emp.EStatus.pending;
+    if(employee.status==EStatus.pending){
+    x[employee.startDate]=EStatus.pending;
     ToastUtils.showToast(context, 'Employé en attente', 5);
     }
     //log.d('/////');

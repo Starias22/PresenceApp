@@ -1,8 +1,8 @@
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/models/employee.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/models/employee.dart';
 import '../widgets/monCompteCard.dart';
 import 'mesStatistiques.dart';
 

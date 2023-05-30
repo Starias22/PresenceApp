@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/backend/new_back/models/holiday.dart';
+
 import 'package:presence_app/main.dart';
+
+import '../models/holiday.dart';
 
 
 class HolidayDB {

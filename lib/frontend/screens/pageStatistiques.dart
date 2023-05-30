@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/new_back/firestore/employee_db.dart';
-import 'package:presence_app/backend/new_back/firestore/service_db.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/listeEmployes.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
-
-import '../../backend/new_back/service.dart';
-import '../../backend/services/login.dart';
+import '../../new_back/firestore/employee_db.dart';
+import '../../new_back/firestore/service_db.dart';
+import '../../new_back/login.dart';
+import '../../new_back/service.dart';
 import '../widgets/StatistiquesCard.dart';
 import '../widgets/cardTabbar.dart';
 import 'adminCompte.dart';

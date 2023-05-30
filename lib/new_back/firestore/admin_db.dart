@@ -1,7 +1,9 @@
 import 'dart:html';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/backend/new_back/models/admin.dart';
+
+import '../models/admin.dart';
+
 
 class AdminDB {
   final CollectionReference _admin =
