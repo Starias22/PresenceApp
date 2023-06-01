@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/new_back/firestore/presence_db.dart';
-import 'package:presence_app/new_back/firestore/service_db.dart';
-import 'package:presence_app/new_back/models/employee.dart';
-import 'package:presence_app/new_back/models/presence.dart';
+import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 
-import '../../../utils.dart';
-import 'holiday_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/presence.dart';
+import 'package:presence_app/utils.dart';
+
 
 
 class EmployeeDB{

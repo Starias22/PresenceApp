@@ -2,6 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/date_symbol_data_file.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/app_settings/app_settings.dart';
+import 'package:presence_app/frontend/screens/welcome.dart';
 
 
 import 'package:presence_app/utils.dart' as u;
@@ -11,9 +14,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
-import 'frontend/app_settings.dart';
-import 'frontend/screens/welcome.dart';
-import 'new_back/firestore/presence_db.dart';
+
 
 
 final utils = u.Utils();

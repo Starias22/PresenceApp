@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/data_service.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
-import '../../new_back/service.dart';
-
-
 
 class StatistiquesCard extends StatelessWidget {
   List<DataService> chartData;

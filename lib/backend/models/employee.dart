@@ -8,12 +8,13 @@ EStatus convertES(String status) {
   if (status == 'late') return EStatus.late;
   if (status == 'present') return EStatus.present;
   if (status == 'absent') return EStatus.absent;
-  /*if (status == 'notYet')*/ return EStatus.pending;
+  /*if (status == 'pending')*/ return EStatus.pending;
 
 }
 
+
 class Employee {
-  late String id, firstname, lastname, email, gender, fingerprint;
+  late String id, firstname, lastname, email, gender, fingerprintId;
   EStatus status;
   late DateTime startDate;
 

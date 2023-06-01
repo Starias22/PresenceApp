@@ -5,8 +5,8 @@ import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
 
-import '../../new_back/firestore/admin_db.dart';
-import '../../new_back/login.dart';
+import '../../backend/firebase/firestore/admin_db.dart';
+import '../../backend/firebase/login_service.dart';
 
 class Authentification extends StatefulWidget {
   const Authentification({Key? key}) : super(key: key);

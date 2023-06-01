@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
+import 'package:presence_app/backend/models/admin.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/pageModifierAdmin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
-
-import '../../new_back/firestore/admin_db.dart';
-import '../../new_back/models/admin.dart';
 
 class AfficherAdminCard extends StatelessWidget {
   final Admin admin;

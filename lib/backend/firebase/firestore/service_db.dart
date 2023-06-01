@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/new_back/models/service.dart';
-
-import 'employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/models/service.dart';
 
 
 class ServiceDB {

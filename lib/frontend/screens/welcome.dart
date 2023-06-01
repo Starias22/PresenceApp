@@ -1,6 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
 
 
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
@@ -8,10 +9,6 @@ import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
 import 'package:presence_app/utils.dart';
-
-import '../../new_back/firestore/employee_db.dart';
-import '../../new_back/login.dart';
-
 
 
 class Welcome extends StatefulWidget {

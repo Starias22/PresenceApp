@@ -1,19 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/app_settings/app_settings.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/diagrammeBandes.dart';
+import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
+import 'package:presence_app/frontend/widgets/calendrierCard.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/utils.dart';
 
 import 'package:provider/provider.dart';
 
-import '../../new_back/firestore/employee_db.dart';
-import '../../new_back/firestore/presence_db.dart';
-import '../../new_back/login.dart';
-import '../../new_back/models/employee.dart';
-import '../../utils.dart';
-import '../app_settings.dart';
-import '../widgets/calendrierCard.dart';
-import 'diagrammeBandes.dart';
-import 'monCompte.dart';
 
 class MesStatistiques extends StatefulWidget {
   String? email;

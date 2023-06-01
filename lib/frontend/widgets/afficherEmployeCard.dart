@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/listeEmployes.dart';
+import 'package:presence_app/frontend/screens/mesStatistiques.dart';
+import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
 import 'package:presence_app/utils.dart';
 
-import '../../new_back/firestore/employee_db.dart';
-import '../../new_back/models/employee.dart';
-import '../screens/listeEmployes.dart';
-import '../screens/mesStatistiques.dart';
-import '../screens/pageModifierEmployer.dart';
 
 class AfficherEmployeCard extends StatelessWidget {
   final Employee employee;

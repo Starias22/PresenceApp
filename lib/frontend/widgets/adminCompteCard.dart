@@ -1,9 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/backend/models/admin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
-import '../../new_back/login.dart';
-import '../../new_back/models/admin.dart';
 import '../screens/pageModifierAdmin.dart';
 
 

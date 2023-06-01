@@ -1,16 +1,11 @@
-
 import 'package:email_validator/email_validator.dart';
-
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/service_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-
-import '../../new_back/firestore/employee_db.dart';
-import '../../new_back/firestore/service_db.dart';
-import '../../new_back/models/employee.dart';
-
-
 
 
 class FormulaireModifierEmploye extends StatefulWidget {

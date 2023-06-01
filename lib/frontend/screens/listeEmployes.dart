@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
-
-import '../../new_back/firestore/employee_db.dart';
-import '../../new_back/models/employee.dart';
-import '../widgets/cardTabbar.dart';
+import 'package:presence_app/frontend/widgets/cardTabbar.dart';
 
 class AfficherEmployes extends StatefulWidget {
   const AfficherEmployes({Key? key}) : super(key: key);

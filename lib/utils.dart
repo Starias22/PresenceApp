@@ -6,8 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:logger/logger.dart';
+import 'package:presence_app/backend/models/employee.dart';
 
-import 'new_back/models/employee.dart';
 
 
 

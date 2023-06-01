@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-
-
-import '../../new_back/firestore/admin_db.dart';
-import '../../new_back/models/admin.dart';
-import '../../utils.dart';
+import '../../backend/firebase/firestore/admin_db.dart';
+import '../../backend/models/admin.dart';
 import '../widgets/afficheAdminCard.dart';
 
 class AfficherAdmins extends StatefulWidget {

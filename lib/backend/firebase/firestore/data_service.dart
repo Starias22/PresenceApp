@@ -1,7 +1,5 @@
-
-
-import '../../utils.dart';
-import 'firestore/presence_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/utils.dart';
 
 class DataService{
   String service;
