@@ -5,8 +5,10 @@ import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/presence.dart';
 import 'package:presence_app/frontend/screens/diagrammeBandes.dart';
 import 'package:presence_app/frontend/screens/monCompte.dart';
+import 'package:presence_app/frontend/screens/presence_details.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -29,7 +31,6 @@ class _MesStatistiquesState extends State<MesStatistiques> {
   String? employeeId;
   late String email;
   bool isLoading = true;
-  //String? email = FirebaseAuth.instance.currentUser!.email;
   Future<void> onCalendarChanged(DateTime newMonth) async {
     setState(() {
       isLoading = true;
@@ -51,6 +52,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
     employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
+    log.d('Id de lemp: $employeeId');
     var employee=await EmployeeDB().getEmployeeById(employeeId!);
     if(employee.status==EStatus.pending){
     x[employee.startDate]=EStatus.pending;
@@ -59,7 +61,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
     //log.d('/////');
     var y=(employee).startDate;
     if(x.isEmpty) {
-      //log.d('11111111');
+
       x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
     }
 
@@ -106,25 +108,25 @@ class _MesStatistiquesState extends State<MesStatistiques> {
               itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                 const PopupMenuItem(
                   value: 1,
-                  child: Text('Statistiques'),
+                  child: Text('Diagramme en bandes'),
                 ),
-                const PopupMenuItem(
+                if(!Login().isSignedInWithPassword()) const PopupMenuItem(
                   value: 2,
                   child: Text('Mon compte'),
                 ),
-                const PopupMenuItem(
+                if(!Login().isSignedInWithPassword()) const PopupMenuItem(
                   value: 3,
                   child: Text('Langue'),
                 ),
-                 PopupMenuItem(
+                if(!Login().isSignedInWithPassword())  PopupMenuItem(
                   value: 4,
                   child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
                 ),
-                const PopupMenuItem(
+                if(!Login().isSignedInWithPassword())  const PopupMenuItem(
                   value: 5,
                   child: Text('Signaler un problème'),
                 ),
-                const PopupMenuItem(
+                if(!Login().isSignedInWithPassword())  const PopupMenuItem(
                   value: 6,
                   child: Text('Déconnexion'),
                 ),
@@ -141,11 +143,10 @@ class _MesStatistiquesState extends State<MesStatistiques> {
                 } else if (value == 3) {
                 } else if (value == 4) {
 
-                  log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
                   await Provider.of<AppSettings>(context, listen: false).setDarkMode(
                     !Provider.of<AppSettings>(context, listen: false).isDarkMode,
                   );
-                  log.d('dark?${Provider.of<AppSettings>(context, listen: false).isDarkMode}');
+
 
                   // Exit the app to trigger the restart
                 //SystemNavigator.pop();
@@ -173,8 +174,9 @@ class _MesStatistiquesState extends State<MesStatistiques> {
         ],
         leading: IconButton(
             onPressed: () => {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const Welcome()))
+                 /* Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (context) => const Welcome()))*/
+              Navigator.pop(context)
                 },
             icon: const Icon(
               Icons.arrow_back,
@@ -189,11 +191,30 @@ class _MesStatistiquesState extends State<MesStatistiques> {
     else
     CalendrierCard(
     events: _events,
+    onDayLongPressed: onDayLongPressed,
     onCalendarChanged: onCalendarChanged,
     minSelectedDate: startDate,
     ),
     ],
       ),
     ));
+  }
+
+  onDayLongPressed(DateTime date) {
+    Presence myPresence = Presence(
+      date: date,
+      entryTime: date,
+      exitTime: date,
+      status: EStatus.present, employeeId: employeeId!
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => PresenceDetails(presence: myPresence),
+      ),
+    );
+
+    ToastUtils.showToast(context, date.toString(),3);
   }
 }

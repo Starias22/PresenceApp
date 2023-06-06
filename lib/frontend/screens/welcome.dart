@@ -1,11 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/esp32.dart';
 
 
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
+import 'package:presence_app/frontend/screens/save_fingerprint.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
 import 'package:presence_app/utils.dart';
@@ -19,8 +23,54 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+  /*may be:
+  both esp32 and the device are not connected to the same network
+  wrong ip address provided in the code for the esp32
+  */
+  final connectionError="Erreur de connexion! Veillez reessayer";
   bool isSignedInWithEmail = false;
   String? email;
+
+  String getMessage(int code){
+    if(code==isWeekend){
+      return "Aujourdh'ui est un weekend";
+
+    }
+    if(code==inHoliday){
+      return "Congé, permission ou jour férié auparavent activé";
+    }
+    if(code==exitAlreadyMarked){
+      return "Sortie déjà marquée";
+    }
+    if(code==exitMarkedSuccessfully){
+      return "Sortie marquée avec succès";
+    }
+    if(code==entryMarkedSuccessfully){
+      return "Entrée marqué avec succès";
+    }
+
+    if(code==desireToExitBeforeEntryTime){
+      return "Sortie marquée avant heure d'entrée' officiel";
+    }
+    if(code==desireToExitEarly){
+      return "Sortie marquée avant heure de sortie officiel";
+    }
+    return 'Inconnu';
+
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+  }
+
+  @override
+  void dispose() {
+    // Perform cleanup tasks here
+    super.dispose();
+  }
+
 
   String text(){
     //if it's an employee that's logged in
@@ -141,6 +191,14 @@ class _WelcomeState extends State<Welcome> {
 
                   child: Text('Déconnexion'),
                 ),
+                const PopupMenuItem(
+                  value: 4,
+                  child: Text("Pointer"),
+                ),
+                const PopupMenuItem(
+                  value: 5,
+                  child: Text("Enregistrer empreinte"),
+                ),
               ],
               onSelected: (value) async {
                 if (value == 1) {
@@ -181,6 +239,102 @@ class _WelcomeState extends State<Welcome> {
                   });
                   ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
                 }
+                else if(value==4){
+                  log.d('Just***');
+                  ToastUtils.showToast(context,'Placez votre doigt sur le capteur', 3);
+                  log.d('Just***');
+
+                  bool v = await ESP32().sendData('On');
+
+                  log.d('v:$v');
+                    if(!v) {
+                      ToastUtils.showToast(context,connectionError, 3);
+                      log.d('Connnection failed***');
+                    }
+
+
+                    else{
+                      log.d('Connnection successful');
+                     int data=await ESP32().receiveData();
+                     if(data==espConnectionFailed){
+                       ToastUtils.showToast(context, connectionError, 3);
+                     }
+                     else{
+                       log.d('Data: $data');
+
+                       while(data==153){
+                         ToastUtils.showToast(context,'Placez votre doigt sur le capteur', 3);
+                         data=await ESP32().receiveData();
+                         log.d('Data: $data');
+                        /* if(data==espConnectionFailed){
+                           ToastUtils.showToast(context, connectionError, 3);
+                         }*/
+
+                       }
+
+                       String message;
+
+
+
+                       if(data==espConnectionFailed) {
+                         message = "Connexion non reussie avec le micrôtrolleur!";
+                         ToastUtils.showToast(context, message, 3);
+                       }
+                       else if(data==-1) {
+                         message =
+                         "Employé non reconnue! Veuillez reessayer!";
+                         ToastUtils.showToast(context, message, 3);
+
+                       }
+
+                       else {
+                         bool send;
+
+                         do {
+                           send=await  ESP32().sendData(
+                               'idSaved');
+                         } while (!send);
+
+                         var employeeId = await EmployeeDB()
+                             .getEmployeeIdByFingerprintId(data);
+                         if (employeeId == null) {
+                           ToastUtils.showToast(context, 'Vous êtes un intru', 3);
+                           return;
+                         }
+
+                        int code=await  PresenceDB().handleEmployeeAction(data);
+                         var employee=await EmployeeDB().getEmployeeById(employeeId);
+                         String civ=employee.gender=='M'?'Monsieur':'Madame';
+                         ToastUtils.showToast(context, '$civ ${employee.firstname} ${employee.lastname}:${getMessage(code)}', 3);
+
+
+
+
+
+                       }
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                }
+
+
+                }
+                else if (value == 5) {
+
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (BuildContext context) {
+                        return const SaveFingerprint();
+                      }));
+                              }
 
                 setState(() {
 

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
@@ -82,7 +83,17 @@ const success = 0,
     networkError = 40,
     adminExists = 41,
     employeeExists = 42,
-newEmployee=43;
+newEmployee=43,
+espConnectionFailed=400,
+isWeekend=45,
+inHoliday=46,
+    entryMarkedSuccessfully=47,
+    exitMarked=48,
+    entryAlreadyMarked=49,
+    exitAlreadyMarked=50,
+    exitMarkedSuccessfully=51,
+    desireToExitEarly=52,
+    desireToExitBeforeEntryTime=53;
 
 Map<String, String> clientIds = {
   'web':
@@ -119,7 +130,7 @@ class Utils {
   }
 
   bool isWeekEnd(int weekday) {
-    return weekday == DateTime.saturday || weekday == DateTime.sunday;
+    return /*weekday == DateTime.saturday ||*/ weekday == DateTime.sunday;
   }
 
   Future<DateTime> localTime() async {
@@ -151,6 +162,8 @@ class Utils {
 
     String formattedDate = '${dateTime.year}-'
         '${formatTwoDigits(dateTime.month)}-${formatTwoDigits(dateTime.day)}';
+
+    log.i('***$formattedDate');
    return formattedDate;
   }
 
@@ -181,17 +194,15 @@ class Utils {
     return name != '';
   }
 
-  int getNextNum(dynamic data, String name) {
-    if (data == false) return 1;
-
-    List<String> keys = data.keys.toList();
+  int getNextNum(List<String> data, String name) {
+    if (data.isEmpty) return 1;
 
     List<int> intKeys =
-        keys.map((key) => int.parse(key.replaceAll(name, ''))).toList();
+        data.map((key) => int.parse(key.replaceAll(name, ''))).toList();
 
     int maxValue =
         intKeys.reduce((value, element) => value > element ? value : element);
-    log.i('last num:$maxValue');
+   
     return maxValue + 1;
   }
 
@@ -225,7 +236,7 @@ class Utils {
   }
 
   bool isWeekend(DateTime date){
-    return date.weekday == DateTime.saturday||date.weekday==DateTime.sunday;
+    return /*date.weekday == DateTime.saturday||*/date.weekday==DateTime.sunday;
 
   }
 
@@ -243,6 +254,17 @@ class Utils {
     return DateTime(date.year,date.month+1,0).day;
   }
 
+  DateTime parseDate(String dateString) {
+    List<String> parts = dateString.split('-');
+
+    int year = int.parse(parts[0]);
+    int month = int.parse(parts[1]);
+    int day = int.parse(parts[2]);
+
+    return DateTime(year, month, day);
+  }
+
+
   String formatTime(DateTime dateTime) {
 
 
@@ -251,6 +273,13 @@ class Utils {
     final minutes = formatTwoDigits(localDateTime.minute);
 
     return "$hours:$minutes";
+  }
+  int generateRandomCode() {
+    var random = Random();
+    // Generates a random number between 100000 and 999999 (inclusive)
+    var code = random.nextInt(900000) + 100000;
+
+    return code;
   }
 }
 

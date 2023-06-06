@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/presence.dart';
@@ -39,9 +40,55 @@ class PresenceDB {
     return querySnapshot.docs.isNotEmpty;
   }
 
+Future<bool> entered(String employeeId) async {
+  log.d('before');
+    String? presenceId=await getPresenceId(DateTime.now(), employeeId);
+
+    log.d('After');
+    log.i('document id:$presenceId');
+
+    return (await getPresenceById(presenceId!)).entryTime!=null;
+}
+  Future<bool> exited(String employeeId) async {
+    String? presenceId=await getPresenceId(DateTime.now(), employeeId);
+    return (await getPresenceById(presenceId!)).exitTime!=null;
+  }
+  Future<int> handleEmployeeAction( int fingerprintId) async {
+
+    DateTime dateTime=DateTime.now();
+    if(utils.isWeekend(dateTime)) {
+      return isWeekend;
+    }
+
+    String? employeeId=await  EmployeeDB().getEmployeeIdByFingerprintId(fingerprintId);
+
+    log.i('Still working');
+    log.i('employee id: $employeeId');
+
+   if(await HolidayDB().isInHoliday(employeeId!, dateTime)) {
+     return inHoliday;
+   }
+    log.i('We will handle');
+
+   if(await entered(employeeId)) {
+
+     if(await exited(employeeId)){
+       return exitAlreadyMarked;
+     }
+     return  markExit(employeeId);
+
+   }
+   else{
+
+     markEntry(employeeId);
+     return entryMarkedSuccessfully;
+   }
+     }
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
     String date=utils.formatDateTime(dateTime);
+    log.d('The date:$date');
+    log.d('Employee id:$employeeId');
     QuerySnapshot querySnapshot = await _presence
         .where('date', isEqualTo: date)
         .where('employee_id', isEqualTo: employeeId)
@@ -49,6 +96,7 @@ class PresenceDB {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
+      log.d('Is not empty');
       return querySnapshot.docs.first.id;
     }
     return null;
@@ -86,6 +134,26 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
   await batch.commit();
 
 }
+
+  Future<void> remove() async {
+
+
+    final querySnapshot = await _presence
+        .where('date', isEqualTo: '2023-06-03')
+        .get();
+
+    final documentsToDelete = querySnapshot.docs;
+
+    final batch = FirebaseFirestore.instance.batch();
+
+    for (final doc in documentsToDelete) {
+      batch.delete(doc.reference);
+      // DateTime.now().
+    }
+
+    await batch.commit();
+
+  }
 
 Future<List<String>> getPresenceIds(String employeeId) async {
   QuerySnapshot querySnapshot = await _presence
@@ -170,28 +238,102 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     _presence.doc(id).update({'status':utils.str(status)});
   }
+  Future<bool> markEntry(String employeeId) async {
+    log.d('Marking entry');
+    DateTime now=DateTime.now();
+
+
+  Employee employee=await EmployeeDB().getEmployeeById(employeeId);
+
+
+  log.d('Continue');
+
+  EStatus status=employee.isLate(now)?EStatus.late:EStatus.present;
+  log.i('employee id*:$employeeId');
+
+  String? presenceId= await getEmployeePresenceId(employeeId, now);
+  log.i('Presence id:$presenceId');
+updateEntryTime(presenceId!, now);
+updateStatus(presenceId, status);
+EmployeeDB().updateCurrentStatus(employeeId, status);
+return true;
+
+  }
+
+  Future<int> markExit(String employeeId) async {
+
+
+    log.d('Going');
+    DateTime now=DateTime.now();
+    var employee=await EmployeeDB().getEmployeeById(employeeId);
+    log.d(employee.email);
+    if(employee.desireToExitEarly(now)) {
+      return desireToExitEarly;
+    }
+
+    if(employee.desireToExitBeforeEntryTime(now)) {
+      return desireToExitBeforeEntryTime;
+    }
+
+    String? presenceId= await getEmployeePresenceId(employeeId, now);
+    updateExitTime(presenceId!, now);
+    //updateStatus(presenceId, EStatus.out);
+    EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
+    return exitMarkedSuccessfully;
+
+  }
+
+  Future<String?> getEmployeePresenceId(String employeeId, DateTime date) async {
+
+    QuerySnapshot querySnapshot = await _presence
+        .where('employee_id', isEqualTo: employeeId)
+        .where('date',isEqualTo: utils.formatDateTime(date))
+        .limit(1)
+        .get();
+
+
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
+    }
+    return null;
+
+  }
   Future<void> setAttendance(String employeeId,DateTime date) async {
     EStatus status;
 
-    log.i('attendance setting for $employeeId');
+    log.i('attendance setting for $employeeId the data');
     Employee employee=await EmployeeDB().getEmployeeById(employeeId);
-    log.i('Email of the employee');
 
-    if(employee.startDate.isAfter(date)||(employee.status==EStatus.pending&&
-        !employee.startDate.isAtSameMomentAs(date))){
-      return;
+    if(employee.startDate.isAfter(date)){
+    return;
     }
+
+    if(/*employee.status==EStatus.pending&&*/
+    employee.startDate.isAtSameMomentAs(date)){
+      EmployeeDB().updateCurrentStatus(employeeId, EStatus.absent);
+
+
+    }
+
+    /*if(employee.status==EStatus.pending&&
+    !employee.startDate.isAtSameMomentAs(date)){
+
+
+    }*/
+
+
 
     log.d('******');
 
     if(utils.isWeekend(date)) {
+      log.d('Yeah weekend');
       status=EStatus.inWeekend;
     }
-    /*else if(await HolidayDB().isInHoliday(employeeId, date)) {
+    else if(await HolidayDB().isInHoliday(employeeId, date)) {
       status=EStatus.inHoliday;
     }
 
-*/
+
 
     else{
       status=EStatus.absent;
@@ -204,7 +346,9 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     DateTime now=DateTime.now();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
+
     if(date.isAtSameMomentAs(today)){
+      log.d('OOOOOO');
       EmployeeDB().updateCurrentStatus(employeeId, status);
     }
   }
@@ -311,17 +455,20 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
   Future<void> setAllEmployeesAttendances(DateTime date) async {
     var employees = await EmployeeDB().getAllEmployees();
+
     log.i('${employees.length} employees');
     for (var employee in employees) {
-      log.d('id of the employee: ${employee.id}');
+      employee.id=(await EmployeeDB().getEmployeeIdByEmail(employee.email))!;
       log.d('email of the employee: ${employee.email}');
+      log.d('id of the employee: ${employee.id}');
+
       await setAttendance(employee.id, date);
     }
   }
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {
+
       QuerySnapshot snapshot =await _lastUpdate.limit(1).get();
       DocumentSnapshot documentSnapshot = snapshot.docs[0];
-      log.i(snapshot.size);
       DocumentReference doc = documentSnapshot.reference;
 
       log.d('Progressing***');
@@ -343,10 +490,11 @@ Future<List<String>> getPresenceIds(String employeeId) async {
        if(luDate.isAtSameMomentAs(today)){
          return;
        }
+       log.d('Is not case');
        var date=DateTime(luDate.year,luDate.month,luDate.day+1);
 
 
-       while(!date.isAtSameMomentAs(today)){
+       while(!date.isAfter(today)){
 
          setAllEmployeesAttendances(date);
          log.i('No problem before ++');
@@ -358,7 +506,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
        String lastUpdateId=( await _lastUpdate.limit(1).get()).docs.first.id;
 
-       log.i('last update id: $lastUpdateId');
        _lastUpdate.doc(lastUpdateId).update({'date':utils.formatDateTime(today)});
       log.d('Updated successfully');
     }

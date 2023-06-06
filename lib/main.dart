@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/date_symbol_data_file.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
@@ -27,8 +25,13 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
+//PresenceDB().remove();
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
+
+
+
+
+  log.d('Just after');
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
@@ -45,10 +48,9 @@ void main() async {
 
   //await initializeDateFormatting('en_US', '');
 
-  log.i('fine*****');
 
 
-  //PresenceDB().test();
+
   runApp(
 
       ChangeNotifierProvider.value(

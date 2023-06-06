@@ -3,18 +3,23 @@ import 'package:presence_app/main.dart';
 enum EStatus { present, late, absent, out, inHoliday, inWeekend,pending }
 
 EStatus convertES(String status) {
+
+  //log.d('The status is:')
   if (status == 'inWeekend') return EStatus.inWeekend;
   if (status == 'inHoliday') return EStatus.inHoliday;
   if (status == 'late') return EStatus.late;
   if (status == 'present') return EStatus.present;
   if (status == 'absent') return EStatus.absent;
+  if (status == 'out') return EStatus.out;
   /*if (status == 'pending')*/ return EStatus.pending;
 
 }
 
 
 class Employee {
-  late String id, firstname, lastname, email, gender, fingerprintId;
+  late String id, firstname, lastname, email, gender;
+  int? fingerprintId;
+  int uniqueCode;
   EStatus status;
   late DateTime startDate;
 
@@ -36,15 +41,26 @@ class Employee {
       required this.startDate,
       required this.entryTime,
       required this.exitTime,
-       this.status=EStatus.pending}){
+       this.status=EStatus.pending,
+      this.uniqueCode=0}){
 
     DateTime now=DateTime.now();
     DateTime today=DateTime(now.year,now.month,now.day);
     if(startDate.isAtSameMomentAs(today)) status=EStatus.absent;
 
   }
+  bool isLate(DateTime currentTime){
+
+    return utils.format(entryTime)!.isBefore(currentTime) ;
+
+  }
+  bool desireToExitEarly(DateTime currentTime){
+    return currentTime.isBefore(utils.format(exitTime)!);
+  }
 
   Map<String, dynamic> toMap() => {
+        'unique_code':uniqueCode,
+        'fingerprint_id':fingerprintId,
         'service':service,
         'status':utils.str(status),
         'firstname': firstname,
@@ -54,7 +70,7 @@ class Employee {
         'entry_time': entryTime,
         'exit_time': exitTime,
         'gender': gender,
-        'start_date': utils.formatDateTime( startDate),
+        'start_date': utils.formatDateTime(startDate),
       };
 
   static Employee fromMap(Map<String, dynamic> map) {
@@ -68,8 +84,18 @@ class Employee {
       serviceId: map['service_id'],
       entryTime: map['entry_time'],
       exitTime: map['exit_time'],
-      startDate: DateTime.parse(map['start_date']),
+      startDate: utils.parseDate(map['start_date']),
       gender: map['gender'],
     );
+  }
+  bool isInRange(DateTime currentTime){
+    print('Range');
+   return  (utils.format(entryTime)!.isBefore(currentTime)||
+        utils.format(entryTime)!.isAtSameMomentAs(currentTime));
+
+  }
+
+  bool desireToExitBeforeEntryTime(DateTime now) {
+    return now.isBefore(utils.format(entryTime)!);
   }
 }

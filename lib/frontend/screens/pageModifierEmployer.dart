@@ -48,22 +48,6 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
     retrieveServices();
   }
 
-  /*@override
-  void initState()
-  {
-    super.initState();
-
-
-
-
-
-    _controller = TextEditingController(text: '2');
-
-    _getValue();
-
-
-  }*/
-
   @override
   Widget build(BuildContext context) {
     retrieveServices();
@@ -145,7 +129,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                     firstname=v!;
                                   },
                                   decoration: InputDecoration(
-                                      label: const Text('Prenom(s):'), hintText: "Ex: John",
+                                      label: const Text('Prénom(s):'), hintText: "Ex: John",
 
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(0.0),

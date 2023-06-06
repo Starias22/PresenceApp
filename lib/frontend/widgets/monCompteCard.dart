@@ -15,19 +15,19 @@ class CompteCard extends StatelessWidget {
 
     return ListView(
       children: [
-        Center(
+        const Center(
           child: Padding(
-            padding: const EdgeInsets.all(15.0),
+            padding: EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Card(
+                  elevation: 10,
                   child: Text("Compte",
                     style: TextStyle(
                         fontSize: 45
                     ),
                   ),
-                  elevation: 10,
                 ),
 
                 SizedBox(height: 5,),
@@ -44,11 +44,11 @@ class CompteCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Column(
             children: [
-              Row(
+              const Row(
                 children: [
                   Icon(Icons.person_pin),
                   Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
+                    padding: EdgeInsets.only(left: 8.0),
                     child: Text("Informations personnelles et de compte",
                       style: TextStyle(
                           fontSize: 15,
@@ -67,7 +67,7 @@ class CompteCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Text(employee.lastname,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 15
                             ),),
                         ),

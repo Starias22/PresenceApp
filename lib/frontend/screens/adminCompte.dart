@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/utils.dart';
 
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/admin.dart';
@@ -22,6 +23,8 @@ late String id;
 late Admin admin;
 Future<void> retrieve() async {
   String? id=await  AdminDB().getAdminIdByEmail(email!);
+
+  log.i('the id: $id');
   admin= await AdminDB().getAdminById(id!);
 }
 
@@ -45,8 +48,10 @@ Future<void> retrieve() async {
             ),),
 
           leading: IconButton(
-              onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => const StatistiquesForServices()))},
+              onPressed: () => {
+                Navigator.pushReplacement(context, MaterialPageRoute(
+                  builder: (context) => const StatistiquesForServices()))
+              },
               icon: const Icon(Icons.arrow_back,)
           ),
         ),

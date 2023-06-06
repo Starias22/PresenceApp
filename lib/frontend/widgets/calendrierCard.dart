@@ -8,20 +8,18 @@ class CalendrierCard extends StatelessWidget {
   Map<DateTime, EStatus> events;
   Function(DateTime) onCalendarChanged;
   DateTime minSelectedDate;
+  Function(DateTime) onDayLongPressed;
 
 
-  CalendrierCard({Key? key, required this.events, required this.onCalendarChanged,required this.minSelectedDate}) : super(key: key);
+  CalendrierCard({Key? key, required this.events, required this.onCalendarChanged,
+    required this.minSelectedDate, required this.onDayLongPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return CalendarCarousel(
+      onDayLongPressed:onDayLongPressed ,
 
-      onCalendarChanged: onCalendarChanged
-        /* (DateTime newMonth) {
-
-        log.d('Calendar changed');
-        log.i('new month:$newMonth');
-      },*/,
+      onCalendarChanged: onCalendarChanged,
       maxSelectedDate: DateTime.now(),
       minSelectedDate: minSelectedDate,
 

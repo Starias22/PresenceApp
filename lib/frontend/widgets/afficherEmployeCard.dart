@@ -18,7 +18,7 @@ class AfficherEmployeCard extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        log.d("tapppp");
+
         Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) {

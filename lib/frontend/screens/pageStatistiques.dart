@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/firebase/firestore/data_service.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
@@ -9,6 +10,7 @@ import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
+import 'package:provider/provider.dart';
 import '../widgets/StatistiquesCard.dart';
 import '../widgets/cardTabbar.dart';
 import 'adminCompte.dart';
@@ -56,6 +58,7 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
 
   @override
   Widget build(BuildContext context) {
+    var appSettings = Provider.of<AppSettings>(context);
     return DefaultTabController(
       length: tabBars.length,
       child: Scaffold(
@@ -97,8 +100,16 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                     value: 5,
                     child: Text('Mon compte'),
                   ),
-                  const PopupMenuItem(
+                   PopupMenuItem(
                     value: 6,
+                    child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
+                  ),
+                  const PopupMenuItem(
+                    value: 7,
+                    child: Text('Langue'),
+                  ),
+                  const PopupMenuItem(
+                    value: 8,
                     child: Text('Déconnexion'),
                   ),
                 ],
@@ -142,11 +153,17 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                             builder: (context) =>
                             const AdminCompte()));
                   } else if (value == 6) {
+                    await Provider.of<AppSettings>(context, listen: false).setDarkMode(
+                        !Provider.of<AppSettings>(context, listen: false).isDarkMode, );
 
-                     await Login().signOut();
+                  }
+                  else if (value == 7) {
+
+                  }
+                  else if (value == 8) {
+
+                    await Login().signOut();
                     ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
-
-
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(

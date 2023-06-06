@@ -89,14 +89,19 @@ class HolidayDB {
     _holiday.doc(id).update({'end_date':endDate});
   }
   Future<bool> isInHoliday(String employeeId,DateTime dateTime) async {
+    if(await isHoliday(dateTime) ){
+      return true;
+    }
     String date=utils.formatDateTime(dateTime);
     QuerySnapshot querySnapshot = await _holiday
-        .where('employee_id', whereIn: [null,employeeId])
+        .where('employee_id', isEqualTo: employeeId)
         .where('start_date', isLessThanOrEqualTo: date)
-        .where('end_date', isGreaterThanOrEqualTo: date)
-        .limit(1)
         .get();
-    return querySnapshot.docs.isNotEmpty;
+    QuerySnapshot queryEnd = await _holiday
+        .where('employee_id', isEqualTo: employeeId)
+        .where('end_date', isGreaterThanOrEqualTo: date)
+        .get();
+    return querySnapshot.docs.isNotEmpty&&queryEnd.docs.isNotEmpty;
   }
 
   Future<bool> isHoliday(DateTime dateTime) async {
