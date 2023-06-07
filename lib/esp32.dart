@@ -3,8 +3,10 @@ import 'package:http/http.dart' as http;
 import 'package:presence_app/utils.dart';
 class ESP32{
 
-//final String ipAddress='172.16.65.1';
-  final String ipAddress='172.18.0.59';
+final String ipAddress='172.16.65.1';//wireless cpp
+  //final String ipAddress='172.18.0.59';
+  //final String ipAddress='192.168.1.172';//jem
+
 
 
 
@@ -25,23 +27,17 @@ class ESP32{
         //return 0;
         return int.parse(responseData);
       }
-
-
     }
     catch(e){
       log.d('An error occured: $e');
 
     }
-
     return espConnectionFailed;
   }
 
   Future<bool> sendData(String data) async {
     var url = Uri.parse('http://$ipAddress/');
     try {
-      log.i('Starting');
-      log.i(data);
-
       var body = {'data':data};
 
       var response = await http.post(url, body: body);

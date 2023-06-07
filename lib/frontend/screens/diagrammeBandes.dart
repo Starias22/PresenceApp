@@ -33,7 +33,7 @@ late String email;
   Future<void> retrieve() async {
    email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
 
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     thisMonth=DateTime(now.year,now.month);
     date=thisMonth;
     id = await EmployeeDB().getEmployeeIdByEmail(email);

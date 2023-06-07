@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 import 'package:presence_app/utils.dart' as u;
@@ -12,26 +13,24 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 
 
-final utils = u.Utils();
+//final utils = u.Utils();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Configure Firebase options
 
-  u.log.d('Start point of the app');
+  log.d('Start point of the app');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+ var x=utils.x(const Duration(hours: 1,minutes: 2));
 //PresenceDB().remove();
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
-
-
-
-
-  log.d('Just after');
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
@@ -76,6 +75,7 @@ class MyApp extends StatelessWidget {
             title: 'PresenceApp ',
             debugShowCheckedModeBanner: false,
             theme: appSettings.isDarkMode ? ThemeData.dark() : ThemeData(
+              textTheme: GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
               primarySwatch: Colors.blue,
               // useMaterial3: true,
             ),

@@ -21,16 +21,19 @@ class MesStatistiques extends StatefulWidget {
   String? email;
    MesStatistiques({Key? key,this.email}) : super(key: key);
 
+
   @override
   State<MesStatistiques> createState() => _MesStatistiquesState();
 }
 
 class _MesStatistiquesState extends State<MesStatistiques> {
-
+late Presence presenceDoc;
   late DateTime startDate;
   String? employeeId;
   late String email;
   bool isLoading = true;
+  late DateTime now,today;
+  late DateTime nEntryTime,nExitTime;
   Future<void> onCalendarChanged(DateTime newMonth) async {
     setState(() {
       isLoading = true;
@@ -44,6 +47,8 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
   }
 
+
+
   bool isDarkMode = false;
   Map<DateTime, EStatus> _events = {};
 
@@ -54,15 +59,18 @@ class _MesStatistiquesState extends State<MesStatistiques> {
     employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
     log.d('Id de lemp: $employeeId');
     var employee=await EmployeeDB().getEmployeeById(employeeId!);
+    nEntryTime=utils.format(employee.entryTime)!;
+    nExitTime=utils.format(employee.exitTime)!;
     if(employee.status==EStatus.pending){
     x[employee.startDate]=EStatus.pending;
     ToastUtils.showToast(context, 'Employé en attente', 5);
     }
-    //log.d('/////');
+   now=await utils.localTime();
+    today=DateTime(now.year,now.month,now.day);
     var y=(employee).startDate;
     if(x.isEmpty) {
 
-      x = await PresenceDB().getMonthReport(employeeId!, DateTime.now());
+      x = await PresenceDB().getMonthReport(employeeId!, today);
     }
 
 
@@ -74,6 +82,8 @@ class _MesStatistiquesState extends State<MesStatistiques> {
 
     });
   }
+
+
 
   @override
   void didChangeDependencies() {
@@ -200,21 +210,32 @@ class _MesStatistiquesState extends State<MesStatistiques> {
     ));
   }
 
-  onDayLongPressed(DateTime date) {
-    Presence myPresence = Presence(
-      date: date,
-      entryTime: date,
-      exitTime: date,
-      status: EStatus.present, employeeId: employeeId!
-    );
+  onDayLongPressed(DateTime date) async {
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (BuildContext context) => PresenceDetails(presence: myPresence),
-      ),
-    );
+    if(utils.isWeekend(date)){
+      ToastUtils.showToast(context, 'Weekend', 3);
+    }
 
-    ToastUtils.showToast(context, date.toString(),3);
+    if((!utils.isWeekend(date))&&(date.isBefore(today)||date.isAtSameMomentAs(today))) {
+      String? presenceId = await PresenceDB().getPresenceId(date, employeeId!);
+
+      Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
+
+
+
+      if(myPresence.status==EStatus.absent) {
+        ToastUtils.showToast(context, 'Absent', 3);
+      }
+else {
+  Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) =>
+              PresenceDetails(presence: myPresence, nEntryTime: nEntryTime,
+                nExitTime: nExitTime,),
+        ),
+      );
+}
+    }
   }
 }

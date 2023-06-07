@@ -1,4 +1,5 @@
 import 'package:presence_app/main.dart';
+import 'package:presence_app/utils.dart';
 
 enum EStatus { present, late, absent, out, inHoliday, inWeekend,pending }
 
@@ -28,6 +29,7 @@ class Employee {
   late String service;
 
   late String entryTime, exitTime;
+  late final localTime;
 
 
   Employee(
@@ -43,8 +45,9 @@ class Employee {
       required this.exitTime,
        this.status=EStatus.pending,
       this.uniqueCode=0}){
+    retrieveLocalTime();
 
-    DateTime now=DateTime.now();
+    DateTime now=localTime;
     DateTime today=DateTime(now.year,now.month,now.day);
     if(startDate.isAtSameMomentAs(today)) status=EStatus.absent;
 
@@ -97,5 +100,8 @@ class Employee {
 
   bool desireToExitBeforeEntryTime(DateTime now) {
     return now.isBefore(utils.format(entryTime)!);
+  }
+  void retrieveLocalTime() async {
+    localTime=await utils.localTime();
   }
 }

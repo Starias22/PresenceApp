@@ -51,6 +51,9 @@ class CalendrierCard extends StatelessWidget {
         } else if (event == EStatus.absent) {
           color = Colors.red;
         }
+        else if (event == EStatus.inHoliday) {
+          color = Colors.blue;
+        }
 
         else {
           color = Colors.white;
@@ -74,7 +77,6 @@ class CalendrierCard extends StatelessWidget {
         );
       },
       daysHaveCircularBorder: false,
-      //selectedDateTime: DateTime.now(),
       onDayPressed: (DateTime date, List<dynamic> events) {
         // print(date);
       },

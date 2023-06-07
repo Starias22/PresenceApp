@@ -394,7 +394,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                         return;
                                       }
 
-                                      DateTime now=DateTime.now();
+                                      DateTime now=await utils.localTime();
                                       DateTime today=DateTime(now.year,now.month,now.day);
                                       DateTime start=DateTime(now.year,now.month,now.day+1);
 

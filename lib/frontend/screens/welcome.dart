@@ -245,16 +245,14 @@ class _WelcomeState extends State<Welcome> {
                   log.d('Just***');
 
                   bool v = await ESP32().sendData('On');
-
-                  log.d('v:$v');
                     if(!v) {
                       ToastUtils.showToast(context,connectionError, 3);
-                      log.d('Connnection failed***');
+
                     }
 
 
                     else{
-                      log.d('Connnection successful');
+
                      int data=await ESP32().receiveData();
                      if(data==espConnectionFailed){
                        ToastUtils.showToast(context, connectionError, 3);
@@ -266,9 +264,6 @@ class _WelcomeState extends State<Welcome> {
                          ToastUtils.showToast(context,'Placez votre doigt sur le capteur', 3);
                          data=await ESP32().receiveData();
                          log.d('Data: $data');
-                        /* if(data==espConnectionFailed){
-                           ToastUtils.showToast(context, connectionError, 3);
-                         }*/
 
                        }
 
@@ -305,7 +300,8 @@ class _WelcomeState extends State<Welcome> {
                         int code=await  PresenceDB().handleEmployeeAction(data);
                          var employee=await EmployeeDB().getEmployeeById(employeeId);
                          String civ=employee.gender=='M'?'Monsieur':'Madame';
-                         ToastUtils.showToast(context, '$civ ${employee.firstname} ${employee.lastname}:${getMessage(code)}', 3);
+                         ToastUtils.showToast(context, '$civ ${employee.firstname}'
+                             ' ${employee.lastname}: ${getMessage(code)}', 3);
 
 
 

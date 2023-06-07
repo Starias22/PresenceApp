@@ -1,11 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
-import 'package:firebase_database/firebase_database.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
-
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:logger/logger.dart';
 import 'package:presence_app/backend/models/employee.dart';
 
@@ -36,11 +33,10 @@ void main() async {
 }
 
 
-int x = 0;
 final utils = Utils();
 bool darkMode=false;
 const success = 0,
-    invalidFname = 1,
+    invalidFirstname = 1,
     invalidLname = 2,
     invalidEmail = 3,
     invalidPassword = 4,
@@ -95,28 +91,6 @@ inHoliday=46,
     desireToExitEarly=52,
     desireToExitBeforeEntryTime=53;
 
-Map<String, String> clientIds = {
-  'web':
-      '201787268026-gr0krbt221kpjdgu890hv7o9dveej867.apps.googleusercontent.com',
-  'android':
-      '201787268026-e3cmed14poitbpg97ikif660rlsvoquh.apps.googleusercontent.com'
-};
-
-const FirebaseOptions firebaseOptions = FirebaseOptions(
-    appId: "1:201787268026:web:ce244d361d2fbc0fb25b83",
-    apiKey: "AIzaSyAJfZJtZ43KALdAIGKJJ7bTPnL9wQsrq5w",
-    projectId: "myapp-fd370",
-    messagingSenderId: "201787268026",
-    authDomain: "myapp-fd370.firebaseapp.com",
-    databaseURL: "https://myapp-fd370-default-rtdb.firebaseio.com",
-    storageBucket: "myapp-fd370.appspot.com",
-    measurementId: "G-X2X7BS1GMD");
-
-//enum EStatus { present, late, absent, out, inHoliday, inWeekend }
-//enum EStatus { present, late, absent, inHoliday, inWeekend }
-
-enum DStatus { weekend, holiday, workday }
-
 final log = Logger();
 
 class Utils {
@@ -128,9 +102,24 @@ class Utils {
       return false;
     }
   }
+  String x(Duration duration){
+    log.i('///');
+    String formattedTime = '${(duration.inHours).toString().
+    padLeft(2, '0')}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}';
+    log.i('///');
+    print(formattedTime);
+    return formattedTime;
+
+  }
+  String abs(DateTime first , DateTime second){
+    var duration=first.difference(second).abs();
+    return x(duration);
+
+  }
+
 
   bool isWeekEnd(int weekday) {
-    return /*weekday == DateTime.saturday ||*/ weekday == DateTime.sunday;
+    return weekday == DateTime.saturday || weekday == DateTime.sunday;
   }
 
   Future<DateTime> localTime() async {
@@ -163,15 +152,9 @@ class Utils {
     String formattedDate = '${dateTime.year}-'
         '${formatTwoDigits(dateTime.month)}-${formatTwoDigits(dateTime.day)}';
 
-    log.i('***$formattedDate');
    return formattedDate;
   }
 
-  DStatus convert(String status) {
-    if (status == 'weekend') return DStatus.weekend;
-    if (status == 'workday') return DStatus.workday;
-    /* if (status == 'holiday')*/ return DStatus.holiday;
-  }
 
   EStatus convertES(String status) {
     if (status == 'inWeekend') return EStatus.inWeekend;
@@ -236,7 +219,7 @@ class Utils {
   }
 
   bool isWeekend(DateTime date){
-    return /*date.weekday == DateTime.saturday||*/date.weekday==DateTime.sunday;
+    return date.weekday == DateTime.saturday||date.weekday==DateTime.sunday;
 
   }
 
@@ -245,8 +228,8 @@ class Utils {
     List<String> timeParts = timeString.split(':');
     int hours = int.parse(timeParts[0]);
     int minutes = int.parse(timeParts[1]);
-    DateTime now=DateTime.now();
-    DateTime dateTime = DateTime(now.year, now.month, now.day, hours, minutes);
+    DateTime dTime=DateTime(2000,1,1);
+    DateTime dateTime = DateTime(dTime.year, dTime.month,dTime.day, hours, minutes);
 
     return dateTime;
   }

@@ -6,6 +6,8 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/listeEmployes.dart';
+import 'package:presence_app/frontend/screens/pageConges.dart';
+import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -90,26 +92,34 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                   ),
                   const PopupMenuItem(
                     value: 3,
+                    child: Text('Services'),
+                  ),const PopupMenuItem(
+                    value: 4,
+                    child: Text('Congés'),
+                  ),
+
+                  const PopupMenuItem(
+                    value: 5,
                     child: Text('Créer un compte employé'),
                   ),
                   const PopupMenuItem(
-                    value: 4,
+                    value: 6,
                     child: Text('Créer un compte admin'),
                   ),
                   const PopupMenuItem(
-                    value: 5,
+                    value: 7,
                     child: Text('Mon compte'),
                   ),
                    PopupMenuItem(
-                    value: 6,
+                    value: 8,
                     child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
                   ),
                   const PopupMenuItem(
-                    value: 7,
+                    value: 9,
                     child: Text('Langue'),
                   ),
                   const PopupMenuItem(
-                    value: 8,
+                    value: 10,
                     child: Text('Déconnexion'),
                   ),
                 ],
@@ -131,7 +141,27 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const AfficherAdmins()));
-                  } else if (value == 3) {
+
+                  }
+                  else if (value == 3) {
+                    // action pour l'option 2
+
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LesServices()));
+
+                  }
+                  else if (value == 4) {
+                    // action pour l'option 2
+
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const PageConges()));
+
+                  }
+                  else if (value == 5) {
                     if ((await ServiceDB().getAllServices()).isEmpty) {
                       log.e('Aucun service enregistré');
                       ToastUtils.showToast(context, 'Aucun service enregistré', 3);
@@ -141,26 +171,26 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                         context,
                         MaterialPageRoute(
                             builder: (context) => const RegisterEmployee()));
-                  } else if (value == 4) {
+                  } else if (value == 6) {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) => const RegisterAdmin()));
-                  } else if (value == 5) {
+                  } else if (value == 7) {
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
                             const AdminCompte()));
-                  } else if (value == 6) {
+                  } else if (value == 8) {
                     await Provider.of<AppSettings>(context, listen: false).setDarkMode(
                         !Provider.of<AppSettings>(context, listen: false).isDarkMode, );
 
                   }
-                  else if (value == 7) {
+                  else if (value == 9) {
 
                   }
-                  else if (value == 8) {
+                  else if (value == 10) {
 
                     await Login().signOut();
                     ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);

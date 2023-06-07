@@ -5,6 +5,7 @@ import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/presence.dart';
+import 'package:presence_app/backend/models/service.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -19,7 +20,7 @@ class EmployeeDB{
 
     if (await exists(employee.email)) return false;
     employee.serviceId=(await ServiceDB().getServiceIdByName(employee.service))!;
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     int uniqueCode;
     do{
@@ -159,6 +160,14 @@ class EmployeeDB{
    employee.serviceId=(await  ServiceDB().getServiceIdByName
      (employee.service))!;
     _employee.doc(employee.id).update(employee.toMap());
+  }
+  Future<void> updateService(Employee employee, Service service) async {
+    employee.serviceId=(await  ServiceDB().getServiceIdByName
+      (service.name))!;
+    employee.id=(await getEmployeeIdByEmail(employee.email))!;
+
+    log.d('****** ${employee.serviceId}');
+    _employee.doc(employee.id).update({'service':service.name,'service_id':employee.serviceId});
   }
 
 

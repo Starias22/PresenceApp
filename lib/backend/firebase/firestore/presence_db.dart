@@ -16,9 +16,9 @@ class PresenceDB {
 
 
 
-  void begin(){
+  Future<void> begin() async {
 
-    _lastUpdate.add({'date':utils.formatDateTime(DateTime.now())});
+    _lastUpdate.add({'date':utils.formatDateTime(await utils.localTime())});
 
 
   }
@@ -41,21 +41,18 @@ class PresenceDB {
   }
 
 Future<bool> entered(String employeeId) async {
-  log.d('before');
-    String? presenceId=await getPresenceId(DateTime.now(), employeeId);
+    String? presenceId=await getPresenceId(await utils.localTime(), employeeId);
 
-    log.d('After');
-    log.i('document id:$presenceId');
 
     return (await getPresenceById(presenceId!)).entryTime!=null;
 }
   Future<bool> exited(String employeeId) async {
-    String? presenceId=await getPresenceId(DateTime.now(), employeeId);
+    String? presenceId=await getPresenceId(await utils.localTime(), employeeId);
     return (await getPresenceById(presenceId!)).exitTime!=null;
   }
   Future<int> handleEmployeeAction( int fingerprintId) async {
 
-    DateTime dateTime=DateTime.now();
+    DateTime dateTime=await utils.localTime();
     if(utils.isWeekend(dateTime)) {
       return isWeekend;
     }
@@ -68,13 +65,14 @@ Future<bool> entered(String employeeId) async {
    if(await HolidayDB().isInHoliday(employeeId!, dateTime)) {
      return inHoliday;
    }
-    log.i('We will handle');
 
    if(await entered(employeeId)) {
 
      if(await exited(employeeId)){
        return exitAlreadyMarked;
      }
+
+     log.d('/////*');
      return  markExit(employeeId);
 
    }
@@ -127,8 +125,7 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
   final batch = FirebaseFirestore.instance.batch();
 
   for (final doc in documentsToDelete) {
-    batch.delete(doc.reference);
-   // DateTime.now().
+
   }
 
   await batch.commit();
@@ -148,7 +145,7 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
 
     for (final doc in documentsToDelete) {
       batch.delete(doc.reference);
-      // DateTime.now().
+
     }
 
     await batch.commit();
@@ -170,12 +167,12 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 }
 
   Future<List<Presence>> getMonthPresenceRecords(String employeeId,DateTime date) async {
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
 
     if(!date.isAtSameMomentAs(today)) {
-      //log.d('Not this month');
+
       date=DateTime(date.year,date.month,utils.lengthOfMonth(date));
     }
     String start=utils.formatDateTime(DateTime(date.year,date.month,1));
@@ -197,7 +194,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   }
 
   Future<List<Presence>> getAllMonthPresenceRecords(DateTime date) async {
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
     if(!date.isAtSameMomentAs(today)) {
@@ -239,14 +236,11 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     _presence.doc(id).update({'status':utils.str(status)});
   }
   Future<bool> markEntry(String employeeId) async {
-    log.d('Marking entry');
-    DateTime now=DateTime.now();
 
+    DateTime now=await utils.localTime();
 
   Employee employee=await EmployeeDB().getEmployeeById(employeeId);
 
-
-  log.d('Continue');
 
   EStatus status=employee.isLate(now)?EStatus.late:EStatus.present;
   log.i('employee id*:$employeeId');
@@ -263,11 +257,14 @@ return true;
   Future<int> markExit(String employeeId) async {
 
 
-    log.d('Going');
-    DateTime now=DateTime.now();
+
+    DateTime now=await utils.localTime();
+    String? presenceId= await getEmployeePresenceId(employeeId, now);
     var employee=await EmployeeDB().getEmployeeById(employeeId);
     log.d(employee.email);
     if(employee.desireToExitEarly(now)) {
+      updateExitTime(presenceId!, now);
+      EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
       return desireToExitEarly;
     }
 
@@ -275,9 +272,7 @@ return true;
       return desireToExitBeforeEntryTime;
     }
 
-    String? presenceId= await getEmployeePresenceId(employeeId, now);
     updateExitTime(presenceId!, now);
-    //updateStatus(presenceId, EStatus.out);
     EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
     return exitMarkedSuccessfully;
 
@@ -343,18 +338,18 @@ return true;
 
     await create(presence);
 
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
 
     if(date.isAtSameMomentAs(today)){
-      log.d('OOOOOO');
+
       EmployeeDB().updateCurrentStatus(employeeId, status);
     }
   }
 
   Future<List<double>> getCount(String employeeId,DateTime date) async {
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
     if(!date.isAtSameMomentAs(today)) {
@@ -391,13 +386,12 @@ return true;
 
 
   Future<List<double>> getServiceReport(String service) async {
-    DateTime now=DateTime.now();
+    DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
-    log.i('//////');
+
     String end=utils.formatDateTime(DateTime(today.year,today.month,today.day));
     String start=utils.formatDateTime(DateTime(today.year,today.month));
-    log.i('start:$start');
-        log.i('end: $end');
+
     QuerySnapshot querySnapshot = await _presence
         .where('date', isGreaterThanOrEqualTo:start )
         .where('date',isLessThanOrEqualTo: end)
@@ -412,26 +406,19 @@ return true;
 
     List<Presence> filteredPresences=[];
     for (var doc in presences) {
-      log.d('employee id in doc: ${doc.employeeId}');
-      //String email=await EmployeeDB().getEmployeeIdByEmail(doc.)
-      //String employeeId=EmployeeDB().getEmployeeIdByEmail()
+
       Employee employee = await EmployeeDB().getEmployeeById(doc.employeeId);
 
-      log.d('**********');
-    /*  log.i('Employee ID: ${doc.employeeId},'
-          ' Employee Service: ${employee.service},'
-          ' Filter Service: $service');*/
       if (employee.service == service) {
-       // log.d('Of course');
+
         filteredPresences.add(doc);
       }
     }
 
-    log.d('filter: ${filteredPresences.length}');
-    log.d('presences.length: ${presences.length}');
+
     int total=filteredPresences.length;
 
-    log.d('total: $total');
+
 
     int pre= filteredPresences.where((doc) =>doc.status==EStatus.present ).length;
     int late= filteredPresences.where((doc) =>doc.status==EStatus.late ).length;
@@ -446,7 +433,7 @@ return true;
     Map<String,List<double>> report={};
     for(var service in services){
       report[service]= await getServiceReport(service);
-      //log.d('report: ${report[service]}');
+
     }
     return report;
 
@@ -485,7 +472,7 @@ return true;
       log.i('last update:$luDate');
 
 
-       DateTime now=DateTime.now();
+       DateTime now=await utils.localTime();
        DateTime today=DateTime(now.year,now.month,now.day);
        if(luDate.isAtSameMomentAs(today)){
          return;

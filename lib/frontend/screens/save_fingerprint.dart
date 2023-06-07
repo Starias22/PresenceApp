@@ -191,74 +191,65 @@ class _SaveFingerprintState extends State<SaveFingerprint> {
 
                 }
                 else {
-                  message = 'Code correct! Placez à nouveau votre doigt sur le capteur';
+                  message = 'Code correct! Maintenez  votre doigt sur le capteur pour enregistrement';
                   ToastUtils.showToast(context, message, 3);
 
                   log.d('Still');
 
+
                   if(!await ESP32().sendData('correctCode')){
+                    log.d('Connection failed');
                     ToastUtils.showToast(context, connectionError, 3);
                     return;
 
                   }
-                  int code;
 
-                  int code2;
-                  //message de retrait de doigt de l'esp32
+                  ///int data=await  ESP32().receiveData();
 
-                    code=await ESP32().receiveData();
-                    if(code==espConnectionFailed) {
-                      ToastUtils.showToast(context, connectionError, 3);
-                      return;
-                    }
-                    if(code==150) {
-                      ToastUtils.showToast(
-                          context, 'Retirez votre doigt du capteur', 3);
-
-                      if (!await ESP32().sendData("retraitAsked")) {
-                        ToastUtils.showToast(context, connectionError, 3);
-                        return;
-                      }
-
-                      code2 = await ESP32().receiveData();
-                      if (code2 == espConnectionFailed) {
-                        ToastUtils.showToast(context, connectionError, 3);
-                        return;
-                      }
-                      if (code2 == 151) {
-                        ToastUtils.showToast(
-                            context, 'Replacez le même doigt sur le capteur',
-                            3);
-                        if (!await ESP32().sendData("retraitOK")) {
-                          ToastUtils.showToast(context, connectionError, 3);
-                          return;
-                        }
                         int fingerprintId = await ESP32()
                             .receiveData();
+
                         if (fingerprintId == espConnectionFailed) {
                           ToastUtils.showToast(context, connectionError, 3);
                           return;
                         }
-                        if (fingerprintId == 152) {
-                          ToastUtils.showToast(context,
-                              'Empreintes non correspondantes! Reprenez le processus',
-                              3);
-                          return;
-                        }
-                        EmployeeDB().updateFingerprintId(employeeId,
-                            fingerprintId);
-                        message = "Empreinte enregistrée avec succès";
-                        ToastUtils.showToast(context, message, 3);
+                        if (1<=fingerprintId&&fingerprintId<=115) {
+                          // ToastUtils.showToast(context,
+                          //     "Empreinte capturée. Replacez le même doigt pour valider l'enregistrement",
+                          //     3);
+                          if(!await ESP32().sendData('On'))
+                            {
+                              ToastUtils.showToast(context, connectionError, 3);
+                              return;
+                            }
+                          int fingerprintId2=await ESP32().receiveData();
+                          if (fingerprintId2 == espConnectionFailed) {
+                            ToastUtils.showToast(context, connectionError, 3);
+                            return;
+                          }
+                          if(fingerprintId2==fingerprintId){
+                            EmployeeDB().updateFingerprintId(employeeId,
+                                fingerprintId);
+                            message = "Empreinte enregistrée avec succès";
 
-                        if (!await ESP32().sendData('idSaved')) {
-                          ToastUtils.showToast(context, connectionError, 3);
-                          return;
+                            ToastUtils.showToast(context, message, 3);
+                            //Navigator.pop(context);
+                            Future.delayed(const Duration(seconds: 3),
+                                    () {
+                                  Navigator.pop(context);
+                                });
+                          }
+                          else{
+                            message = "Echec de l'enregistrement. Veuillez reprendre le processus";
+                            ToastUtils.showToast(context, message, 3);
+
+                          }
+
                         }
                       }
-                    }
 
                 }
-              },
+              ,
               child: const Text("Valider"),
             ),
           ],

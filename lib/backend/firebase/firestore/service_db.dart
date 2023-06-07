@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/service.dart';
+import 'package:presence_app/utils.dart';
 
 
 class ServiceDB {
@@ -44,13 +46,13 @@ class ServiceDB {
       service.id = snapshot.id;
       return service;
     } else {
-      throw Exception('Admin not found');
+      throw Exception('Service not found');
     }
   }
 
 
   Future<List<Service>> getAllServices() async {
-    QuerySnapshot querySnapshot = await _service.get();
+    QuerySnapshot querySnapshot = await _service.orderBy('name').get();
 
     List<Service> services = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Service.fromMap(doc.data() as Map<String,dynamic>);
@@ -76,8 +78,23 @@ class ServiceDB {
   }
 
 
-  void update(Service service) {
+  Future<bool> update(Service old,Service service) async {
+    if(await exists(service.name)) return false;
+    service.id=(await getServiceIdByName(old.name))!;
     _service.doc(service.id).update(service.toMap());
+ if(!await ServiceDB().hasEmployee(service.id)) {
+   return true;
+ }
+    log.d('////////////////');
+    List<Employee> employees=
+    (await EmployeeDB().getAllEmployees()).
+    where((employee) => employee.serviceId==service.id).toList();
+    log.d('////////////////');
+    for(var employee in employees){
+      log.d('fname : ${employee.firstname}');
+     await EmployeeDB().updateService(employee,service);
+    }
+    return true;
   }
 
 }
