@@ -12,6 +12,8 @@ class ServiceDB {
   Future<bool> create(Service service) async {
     if (await exists(service.name)) return false;
     _service.add(service.toMap());
+   service.id=(await getServiceIdByName(service.name))!;
+    _service.doc(service.id).update({'id':service.id});
     return true;
   }
 
@@ -89,9 +91,9 @@ class ServiceDB {
     List<Employee> employees=
     (await EmployeeDB().getAllEmployees()).
     where((employee) => employee.serviceId==service.id).toList();
-    log.d('////////////////');
+
     for(var employee in employees){
-      log.d('fname : ${employee.firstname}');
+
      await EmployeeDB().updateService(employee,service);
     }
     return true;

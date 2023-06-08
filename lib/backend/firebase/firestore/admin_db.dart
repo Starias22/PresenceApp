@@ -12,6 +12,9 @@ class AdminDB {
   Future<bool> create(Admin admin) async {
     if (await exists(admin.email)) return false;
     _admin.add(admin.toMap());
+
+    admin.id=(await getAdminIdByEmail(admin.email))!;
+    _admin.doc(admin.id).update({'id':admin.id});
     return true;
   }
 

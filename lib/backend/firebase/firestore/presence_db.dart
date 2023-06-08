@@ -94,7 +94,6 @@ Future<bool> entered(String employeeId) async {
         .get();
 
     if (querySnapshot.docs.isNotEmpty) {
-      log.d('Is not empty');
       return querySnapshot.docs.first.id;
     }
     return null;
@@ -125,7 +124,7 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
   final batch = FirebaseFirestore.instance.batch();
 
   for (final doc in documentsToDelete) {
-
+    batch.delete(doc.reference);
   }
 
   await batch.commit();
@@ -310,18 +309,7 @@ return true;
 
     }
 
-    /*if(employee.status==EStatus.pending&&
-    !employee.startDate.isAtSameMomentAs(date)){
-
-
-    }*/
-
-
-
-    log.d('******');
-
     if(utils.isWeekend(date)) {
-      log.d('Yeah weekend');
       status=EStatus.inWeekend;
     }
     else if(await HolidayDB().isInHoliday(employeeId, date)) {
@@ -332,11 +320,13 @@ return true;
 
     else{
       status=EStatus.absent;
-      log.i('///////');
+
     }
     Presence presence=Presence(date: date, employeeId: employeeId, status: status);
 
     await create(presence);
+    presence.id=(await getPresenceId(date, employeeId))!;
+    _presence.doc(presence.id).update({'id':presence.id});
 
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
@@ -452,6 +442,19 @@ return true;
       await setAttendance(employee.id, date);
     }
   }
+
+  Future<void> addIdFieldToPresenceDocuments() async {
+    QuerySnapshot querySnapshot = await _presence.get();
+
+    // Iterate through the documents and update each document with the "id" field
+    for (var doc in querySnapshot.docs) {
+      String documentId = doc.id;
+
+      // Update the document with the "id" field
+      _presence.doc(documentId).update({'id': documentId});
+    }
+  }
+
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {
 
       QuerySnapshot snapshot =await _lastUpdate.limit(1).get();

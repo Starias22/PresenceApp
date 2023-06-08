@@ -36,7 +36,7 @@ class Admin {
   static Admin fromMap(Map<String, dynamic> map) {
     return Admin(
         isSuper: map['is_super'],
-        //id: map['id'],
+        id: map['id'],
         firstname: map['firstname'],
         lastname: map['lastname'],
         email: map['email'],

@@ -1,7 +1,5 @@
 import 'package:presence_app/utils.dart';
 
-import '../../../main.dart';
-
 enum HolidayType{
   permission,
   holiday,//jour férié
@@ -28,6 +26,7 @@ class Holiday {
 
   static Holiday  fromMap(Map<String, dynamic> map) {
     return Holiday(
+      id:map['id'],
       description:map['description'],
       type: map['type'],
       startDate: map['start_date'],

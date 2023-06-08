@@ -24,12 +24,14 @@ class Presence {
       };
 
   static Presence fromMap(Map<String, dynamic> map) {
-    return Presence(date: DateTime.parse(map['date']),
+    return Presence(
+        id: map['id'],
+        date: DateTime.parse(map['date']),
         status: utils.convertES(map['status']),
         employeeId: map['employee_id'],
     entryTime:map['entry_time']==null?null: utils.format(map['entry_time']),
         exitTime:map['exit_time']==null?null: utils.format(map['exit_time'],
-            //id: map['id']
+
         ));
   }
 }

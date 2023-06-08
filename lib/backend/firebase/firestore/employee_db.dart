@@ -31,6 +31,9 @@ class EmployeeDB{
        await _employee.add(employee.toMap());
     employee.id=(await getEmployeeIdByEmail(employee.email))!;
 
+    _employee.doc(employee.id).update({'id':employee.id});
+
+    if(employee.startDate.isAtSameMomentAs(today)) employee.status=EStatus.absent;
     if(employee.status==EStatus.absent) {
 
       PresenceDB().create(Presence(date: today, employeeId: employee.id, status: EStatus.absent));
@@ -146,6 +149,7 @@ class EmployeeDB{
     await PresenceDB().removeAllPresenceDocuments(id);
     await HolidayDB().removeAllHolidayDocuments(id);
     _employee.doc(id).delete();
+
   }
   void updateCurrentStatus(String id,EStatus status){
     _employee.doc(id).update({'status':utils.str(status)});

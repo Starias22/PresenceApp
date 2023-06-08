@@ -36,7 +36,6 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
   Future<void> _getValue() async {
     await Future.delayed(const Duration(seconds: 3), () {
       setState(() {
-        //_initialValue = 'circleValue';
         _controller?.text = 'circleValue';
       });
     });
@@ -350,12 +349,18 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                         String? id=await EmployeeDB().getEmployeeIdByEmail(widget.employee.email);
                                       log.d('id of the employee:$id');
                                        Employee employee=
-                                       Employee( service: service, id: id!, firstname: firstname,
+                                       Employee(
+                                           status: widget.employee.status,
+                                           service:
+                                       service, id: id!, firstname:
+                                       firstname,
                                            gender:
                                        gender, lastname: lastname, email:
-                                       email, startDate: DateTime(2023,5,1),
+                                       email, startDate: widget.employee.startDate,
                                            entryTime:
-                                       startTime, exitTime: endTime);
+                                       startTime, exitTime: endTime,
+                                           fingerprintId: widget.employee.fingerprintId,
+                                       uniqueCode: widget.employee.uniqueCode);
                                       log.i('wE ARE gona update');
 
                                        await EmployeeDB().update(employee);

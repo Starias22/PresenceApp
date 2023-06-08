@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/listeEmployes.dart';
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
 import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -15,6 +17,7 @@ class AfficherEmployeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const connectionError="Erreur de connexion! Veillez reessayer";
 
     return InkWell(
       onTap: () {
@@ -120,9 +123,38 @@ class AfficherEmployeCard extends StatelessWidget {
                                           ElevatedButton(
                                               onPressed: () async {
 
-                                            String? id= await EmployeeDB().getEmployeeIdByEmail(employee.email);
+
+                                            String? id= await EmployeeDB().getEmployeeIdByEmail
+                                              (employee.email);
+                                          log.d(employee.lastname);
+                                            int ?fingerprintId=
+                                              ( employee).fingerprintId;
+
+
+
+                                          if(fingerprintId!=null){
+                                            log.d('Fingerprint id:$fingerprintId');
+                                           if(!await ESP32().
+                                           sendData(fingerprintId.toString()))
+                                           {
+                                               ToastUtils.showToast(context, connectionError, 3);
+                                               return;
+                                           }
+                                           int data=await ESP32().receiveData();
+                                           if(data==espConnectionFailed)
+                                           {
+                                             ToastUtils.showToast(context, connectionError, 3);
+                                             return;
+                                           }
+                                           if(data!=1000) {
+                                             ToastUtils.showToast(context, 'Echec de suppression', 3);
+                                             return;
+                                           }
+                                          }
                                             EmployeeDB().delete(id!);
+
                                         Navigator.of(context).pop();
+                                        //Navigator.of(context).pop();
                                             Navigator.pushReplacement(
                                                 context,
                                                 MaterialPageRoute(

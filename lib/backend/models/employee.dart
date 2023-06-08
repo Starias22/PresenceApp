@@ -1,11 +1,10 @@
-import 'package:presence_app/main.dart';
-import 'package:presence_app/utils.dart';
 
+import 'package:presence_app/utils.dart';
+//final t= DateTime.now();
 enum EStatus { present, late, absent, out, inHoliday, inWeekend,pending }
 
 EStatus convertES(String status) {
 
-  //log.d('The status is:')
   if (status == 'inWeekend') return EStatus.inWeekend;
   if (status == 'inHoliday') return EStatus.inHoliday;
   if (status == 'late') return EStatus.late;
@@ -29,7 +28,8 @@ class Employee {
   late String service;
 
   late String entryTime, exitTime;
-  late final localTime;
+   DateTime? today;
+
 
 
   Employee(
@@ -44,14 +44,7 @@ class Employee {
       required this.entryTime,
       required this.exitTime,
        this.status=EStatus.pending,
-      this.uniqueCode=0}){
-    retrieveLocalTime();
-
-    DateTime now=localTime;
-    DateTime today=DateTime(now.year,now.month,now.day);
-    if(startDate.isAtSameMomentAs(today)) status=EStatus.absent;
-
-  }
+      this.uniqueCode=0,this.fingerprintId});
   bool isLate(DateTime currentTime){
 
     return utils.format(entryTime)!.isBefore(currentTime) ;
@@ -59,6 +52,9 @@ class Employee {
   }
   bool desireToExitEarly(DateTime currentTime){
     return currentTime.isBefore(utils.format(exitTime)!);
+  }
+  static x(){
+
   }
 
   Map<String, dynamic> toMap() => {
@@ -78,7 +74,8 @@ class Employee {
 
   static Employee fromMap(Map<String, dynamic> map) {
     return Employee(
-      //id: map['id'],
+      fingerprintId: map['fingerprint_id'],
+      id: map['id'],
       status: convertES(map['status']),
       firstname: map['firstname'],
       lastname: map['lastname'],
@@ -101,7 +98,5 @@ class Employee {
   bool desireToExitBeforeEntryTime(DateTime now) {
     return now.isBefore(utils.format(entryTime)!);
   }
-  void retrieveLocalTime() async {
-    localTime=await utils.localTime();
-  }
+
 }

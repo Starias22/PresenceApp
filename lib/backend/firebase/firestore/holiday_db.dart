@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/models/holiday.dart';
-
-import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -12,6 +10,8 @@ class HolidayDB {
   Future<bool> create(Holiday holiday) async {
     if (await exists(holiday)) return false;
     _holiday.add(holiday.toMap());
+  holiday.id=(await getHolidayId(holiday))!;
+    _holiday.doc(holiday.id).update({'id':holiday.id});
     return true;
   }
 

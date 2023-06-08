@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/holiday.dart';
+import 'package:presence_app/utils.dart';
 
 class PageConges extends StatefulWidget {
   const PageConges({super.key});
@@ -10,15 +12,14 @@ class PageConges extends StatefulWidget {
 }
 
 class _PageCongesState extends State<PageConges> {
-  List<Employee> employes = [];
-
-  List<String> names = [
-    'John',
-    'Jane',
-    'Alice',
-    'Bob',
-    'Eve',
-  ];
+  List<Employee> employees = [];
+  List<String> names = [];
+Future<void> retrieve() async {
+  employees=await EmployeeDB().getAllEmployees();
+  log.d('Length of the list***: ${employees.length}');
+  names=employees.map((employee) =>
+  '${employee.firstname} ${employee.lastname}').toList();
+}
 
   List<bool> checkedList = List<bool>.generate(5, (index) => false);
   bool selectAll = false;
@@ -42,6 +43,8 @@ class _PageCongesState extends State<PageConges> {
   @override
   void initState() {
     super.initState();
+    retrieve();
+
     selectedDate = DateTime.now();
     selectedDay = selectedDate.day;
     selectedMonth = selectedDate.month;
@@ -78,9 +81,9 @@ class _PageCongesState extends State<PageConges> {
       print("Avant la boucle for la liste est vide");
     }
 
-    for (int i = 0; i < employes.length; i++) {
+    for (int i = 0; i < employees.length; i++) {
       if (checkedList[i]) {
-        employesEnConge[j].id = employes[i].id;
+        employesEnConge[j].id = employees[i].id;
         employesEnConge[j].startDate = dateDC;
         employesEnConge[j].endDate = dateFC;
         j++;
@@ -223,11 +226,6 @@ class _PageCongesState extends State<PageConges> {
             ),
           ),
 
-          /*const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: _handleDateSelection,
-            child: const Text('Enregistrer'),
-          ),*/
 
           Padding(
             padding: const EdgeInsets.all(8.0),

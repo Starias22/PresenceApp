@@ -13,11 +13,6 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'firebase_options.dart';
-import 'package:google_fonts/google_fonts.dart';
-
-
-
-//final utils = u.Utils();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,8 +23,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
- var x=utils.x(const Duration(hours: 1,minutes: 2));
-//PresenceDB().remove();
+log.i('update ***');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -37,7 +31,6 @@ void main() async {
 
   AppSettings appSettings = AppSettings();
 
-  //await appSettings.loadSettings();
 
   if (isDarkModeValue != null) {
 
@@ -45,7 +38,6 @@ void main() async {
     log.i('******${appSettings.isDarkMode}');
   }
 
-  //await initializeDateFormatting('en_US', '');
 
 
 

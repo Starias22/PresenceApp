@@ -147,6 +147,7 @@ class Utils {
   String str(dynamic enm) {
     return enm.toString().split('.')[1];
   }
+
   String formatDateTime(DateTime dateTime){
 
     String formattedDate = '${dateTime.year}-'

@@ -9,7 +9,7 @@ class Service {
 
   static Service fromMap(Map<String, dynamic> map) {
     return Service(name: map['name'],
-      //id: map['id']
+      id: map['id']
       );
   }
 }
