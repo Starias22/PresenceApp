@@ -18,11 +18,26 @@ import 'package:presence_app/utils.dart';
 class Welcome extends StatefulWidget {
   const Welcome({Key? key}) : super(key: key);
 
+
   @override
   State<Welcome> createState() => _WelcomeState();
 }
 
 class _WelcomeState extends State<Welcome> {
+
+  @override
+  void initState() {
+    super.initState();
+    startDataFetching();
+  }
+
+  Future<void> startDataFetching() async {
+    //while (true) {
+      await getData();
+      await Future.delayed(const Duration(seconds: 1)); // Attendre 1 seconde avant d'appeler getData() à nouveau
+    //}
+  }
+
   /*may be:
   both esp32 and the device are not connected to the same network
   wrong ip address provided in the code for the esp32
@@ -31,6 +46,42 @@ class _WelcomeState extends State<Welcome> {
   bool isSignedInWithEmail = false;
   String? email;
 
+  Future<void> getData()
+  async {
+    int data;
+    String message;
+   // while(true){
+      data=await ESP32().receiveData();
+
+      log.d('Data*****: $data');
+      if(data==espConnectionFailed) {
+        message = "Connexion non reussie avec le micrôtrolleur!";
+        ToastUtils.showToast(context, message, 3);
+      }
+
+     else if(1<=data&&data<=127){
+        var employeeId = await EmployeeDB()
+            .getEmployeeIdByFingerprintId(data);
+        if (employeeId == null) {
+          ToastUtils.showToast(context, 'Vous êtes un intru', 3);
+          return;
+        }
+
+        int code=await  PresenceDB().handleEmployeeAction(data);
+        var employee=await EmployeeDB().getEmployeeById(employeeId);
+        String civ=employee.gender=='M'?'Monsieur':'Madame';
+        ToastUtils.showToast(context, '$civ ${employee.firstname}'
+            ' ${employee.lastname}: ${getMessage(code)}', 3);
+      }
+
+      else if(data==150){
+        message =
+        "Employé non reconnue! Veuillez reessayer!";
+        ToastUtils.showToast(context, message, 3);
+      }
+
+   // }
+  }
   String getMessage(int code){
     if(code==isWeekend){
       return "Aujourdh'ui est un weekend";
@@ -203,7 +254,6 @@ class _WelcomeState extends State<Welcome> {
               onSelected: (value) async {
                 if (value == 1) {
 
-
                   if(Login().isSignedInWithPassword()) {
                     Navigator.push(context,
                         MaterialPageRoute(builder: (BuildContext context) {
@@ -239,91 +289,6 @@ class _WelcomeState extends State<Welcome> {
                   });
                   ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
                 }
-                else if(value==4){
-                  log.d('Just***');
-                  ToastUtils.showToast(context,'Placez votre doigt sur le capteur', 3);
-                  log.d('Just***');
-
-                  bool v = await ESP32().sendData('On');
-                    if(!v) {
-                      ToastUtils.showToast(context,connectionError, 3);
-
-                    }
-
-
-                    else{
-
-                     int data=await ESP32().receiveData();
-                     if(data==espConnectionFailed){
-                       ToastUtils.showToast(context, connectionError, 3);
-                     }
-                     else{
-                       log.d('Data: $data');
-
-                       while(data==153){
-                         ToastUtils.showToast(context,'Placez votre doigt sur le capteur', 3);
-                         data=await ESP32().receiveData();
-                         log.d('Data: $data');
-
-                       }
-
-                       String message;
-
-
-
-                       if(data==espConnectionFailed) {
-                         message = "Connexion non reussie avec le micrôtrolleur!";
-                         ToastUtils.showToast(context, message, 3);
-                       }
-                       else if(data==-1) {
-                         message =
-                         "Employé non reconnue! Veuillez reessayer!";
-                         ToastUtils.showToast(context, message, 3);
-
-                       }
-
-                       else {
-                         bool send;
-
-                         do {
-                           send=await  ESP32().sendData(
-                               'idSaved');
-                         } while (!send);
-
-                         var employeeId = await EmployeeDB()
-                             .getEmployeeIdByFingerprintId(data);
-                         if (employeeId == null) {
-                           ToastUtils.showToast(context, 'Vous êtes un intru', 3);
-                           return;
-                         }
-
-                        int code=await  PresenceDB().handleEmployeeAction(data);
-                         var employee=await EmployeeDB().getEmployeeById(employeeId);
-                         String civ=employee.gender=='M'?'Monsieur':'Madame';
-                         ToastUtils.showToast(context, '$civ ${employee.firstname}'
-                             ' ${employee.lastname}: ${getMessage(code)}', 3);
-
-
-
-
-
-                       }
-                    }
-
-
-
-
-
-
-
-
-
-
-
-                }
-
-
-                }
                 else if (value == 5) {
 
                   Navigator.push(context,
@@ -356,8 +321,7 @@ class _WelcomeState extends State<Welcome> {
                       "You're welcome",
                       style: TextStyle(
                         color: Colors.indigo,
-                        fontStyle: FontStyle.italic,
-                        fontSize: 40,
+                        //fontSize: 40,
                       ),
                     ),
                   ),
