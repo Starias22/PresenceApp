@@ -95,12 +95,24 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 3),
-                child: SearchBar(onChanged: (value) {
+                child: SearchBar(
+                  hintText: 'Rechercher par nom, prénom ou service',
+                    onChanged: (value) {
                   setState(() {
                     employeesAff = employees
-                        .where((employee) => (employee.firstname)
+                        .where(
+                            (employee) =>
+                        (employee.firstname)
                             .toLowerCase()
-                            .contains(value.toLowerCase()))
+                            .contains(value.toLowerCase())||
+                            (employee.service)
+                                .toLowerCase()
+                                .contains(value.toLowerCase())||
+                            (employee.lastname)
+                                .toLowerCase()
+                                .contains(value.toLowerCase())
+
+                    )
                         .toList();
                   });
                 }),

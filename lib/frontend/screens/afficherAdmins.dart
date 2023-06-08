@@ -64,13 +64,16 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.only(top: 3),
-              child: SearchBar(onChanged: (value) {
+              child: SearchBar(
+                hintText: 'Rechercher par nom ou prénom',
+
+                  onChanged: (value) {
                 setState(() {
                  adminsAff = admins
     .where((admin) =>
-        admin.firstname.toLowerCase().contains(value.toLowerCase())||
+        admin.firstname.toLowerCase().contains(value.toLowerCase())
+            ||
         admin.lastname.toLowerCase().contains(value.toLowerCase())
-        //admin.getEmail().toLowerCase().contains(value.toLowerCase())
         ).toList();
 
 

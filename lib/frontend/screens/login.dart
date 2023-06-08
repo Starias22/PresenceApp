@@ -191,6 +191,7 @@ class _AuthentificationState extends State<Authentification> {
                                             'Aucun admin avec une telle adresse email';
                                         break;
                                       case emailNotVerified:
+                                        //loginCode==success;
                                         message =
                                             'Adresse email non vérifiée! Accédez à votre boite Gmail pour vérifier';
                                         break;

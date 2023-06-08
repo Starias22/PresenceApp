@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
+import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/firebase/firestore/data_service.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
@@ -162,8 +164,15 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
 
                   }
                   else if (value == 5) {
+                    String email=FirebaseAuth.instance.currentUser!.email!;
+                   String adminId= (await AdminDB().getAdminIdByEmail(email))!;
+                  if(!(await AdminDB().getAdminById(adminId)).isSuper){
+                    ToastUtils.showToast(context, 'Seul le super admin peut créer des employés', 3);
+                    return;
+
+                  }
                     if ((await ServiceDB().getAllServices()).isEmpty) {
-                      log.e('Aucun service enregistré');
+
                       ToastUtils.showToast(context, 'Aucun service enregistré', 3);
                       return;
                     }

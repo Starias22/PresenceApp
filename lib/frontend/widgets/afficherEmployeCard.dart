@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/esp32.dart';
@@ -88,7 +90,7 @@ class AfficherEmployeCard extends StatelessWidget {
                         ),
                         DropdownButtonHideUnderline(
                             child: DropdownButton(
-                          onChanged: (String? v) {
+                          onChanged: (String? v) async {
                             if (v == "modifier") {
 
                               Navigator.push(
@@ -100,6 +102,13 @@ class AfficherEmployeCard extends StatelessWidget {
                               );
 
                             } else if (v == "supprimer") {
+                              String email=FirebaseAuth.instance.currentUser!.email!;
+                              String adminId= (await AdminDB().getAdminIdByEmail(email))!;
+                            if(!(await AdminDB().getAdminById(adminId)).isSuper){
+                            ToastUtils.showToast(context, 'Seul le super admin peut supprimer des employés', 3);
+                            return;
+
+                            }
                               showDialog(
                                   context: context,
                                   builder: (context) => AlertDialog(

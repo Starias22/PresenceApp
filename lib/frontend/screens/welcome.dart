@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +26,7 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
-
+  Timer?  dataFetchTimer;
   @override
   void initState() {
     super.initState();
@@ -32,10 +34,11 @@ class _WelcomeState extends State<Welcome> {
   }
 
   Future<void> startDataFetching() async {
-    //while (true) {
-      await getData();
-      await Future.delayed(const Duration(seconds: 1)); // Attendre 1 seconde avant d'appeler getData() à nouveau
-    //}
+
+    const duration = Duration(seconds: 5);
+     dataFetchTimer = Timer.periodic(duration, (_) {
+      getData();
+    });
   }
 
   /*may be:
@@ -50,13 +53,13 @@ class _WelcomeState extends State<Welcome> {
   async {
     int data;
     String message;
-   // while(true){
+
       data=await ESP32().receiveData();
 
       log.d('Data*****: $data');
       if(data==espConnectionFailed) {
         message = "Connexion non reussie avec le micrôtrolleur!";
-        ToastUtils.showToast(context, message, 3);
+        ToastUtils.showToast(context, message, 5);
       }
 
      else if(1<=data&&data<=127){
@@ -74,13 +77,11 @@ class _WelcomeState extends State<Welcome> {
             ' ${employee.lastname}: ${getMessage(code)}', 3);
       }
 
-      else if(data==150){
+      else if(data==151){
         message =
         "Employé non reconnue! Veuillez reessayer!";
         ToastUtils.showToast(context, message, 3);
       }
-
-   // }
   }
   String getMessage(int code){
     if(code==isWeekend){
