@@ -59,7 +59,7 @@ class _WelcomeState extends State<Welcome> {
       log.d('Data*****: $data');
       if(data==espConnectionFailed) {
         message = "Connexion non reussie avec le micrôtrolleur!";
-        ToastUtils.showToast(context, message, 5);
+        //ToastUtils.showToast(context, message, 5);
       }
 
      else if(1<=data&&data<=127){

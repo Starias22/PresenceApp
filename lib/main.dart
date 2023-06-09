@@ -4,6 +4,7 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:presence_app/frontend/screens/welcome1.dart';
 
 
 import 'package:presence_app/utils.dart' as u;
@@ -71,7 +72,7 @@ class MyApp extends StatelessWidget {
               primarySwatch: Colors.blue,
               // useMaterial3: true,
             ),
-            home: const Welcome(),
+            home: const WelcomeImsp(),
           );
         });
   }
