@@ -216,94 +216,90 @@ class _WelcomeState extends State<Welcome> {
         ),
         centerTitle: true,
         actions: [
-          Positioned(
-            top: 0,
-            right: 0,
-            child: PopupMenuButton(
-              icon: const Icon(
-                Icons.more_vert,
-                // size: 30,
+          PopupMenuButton(
+            icon: const Icon(
+              Icons.more_vert,
+              // size: 30,
+            ),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+
+             if(!Login().isSignedIn()||Login().isSignedInWithPassword())
+               const PopupMenuItem(
+                value: 1,
+                child: Text('Administrateur'),
               ),
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+               if(!Login().isSignedIn()||!Login().isSignedInWithPassword())  PopupMenuItem(
 
-               if(!Login().isSignedIn()||Login().isSignedInWithPassword())
-                 const PopupMenuItem(
-                  value: 1,
-                  child: Text('Administrateur'),
-                ),
-                 if(!Login().isSignedIn()||!Login().isSignedInWithPassword())  PopupMenuItem(
+                value: 2,
 
-                  value: 2,
+                child: Text(text()),
+              ),
+              if(Login().isSignedIn()) const PopupMenuItem(
 
-                  child: Text(text()),
-                ),
-                if(Login().isSignedIn()) const PopupMenuItem(
+                value: 3,
 
-                  value: 3,
+                child: Text('Déconnexion'),
+              ),
+              const PopupMenuItem(
+                value: 4,
+                child: Text("Pointer"),
+              ),
+              const PopupMenuItem(
+                value: 5,
+                child: Text("Enregistrer empreinte"),
+              ),
+            ],
+            onSelected: (value) async {
+              if (value == 1) {
 
-                  child: Text('Déconnexion'),
-                ),
-                const PopupMenuItem(
-                  value: 4,
-                  child: Text("Pointer"),
-                ),
-                const PopupMenuItem(
-                  value: 5,
-                  child: Text("Enregistrer empreinte"),
-                ),
-              ],
-              onSelected: (value) async {
-                if (value == 1) {
-
-                  if(Login().isSignedInWithPassword()) {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) {
-                          return const  StatistiquesForServices();
-                        }));
-                  }
-
-
-                  else {
-                    Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return const Authentification();
-                  }));
-                  }
-                } else if (value == 2) {
-
-              if(Login().isSignedIn()) {
-                String? email = FirebaseAuth.instance.currentUser!.email;
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) {
-                      return  MesStatistiques(email: email!,);
-                    }));
-
-              }
-              else {
-                sign();
-              }
-                }
-                else if (value == 3) {
-                  await  Login().signOut();
-                  setState(() {
-
-                  });
-                  ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
-                }
-                else if (value == 5) {
-
+                if(Login().isSignedInWithPassword()) {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                        return const SaveFingerprint();
+                        return const  StatistiquesForServices();
                       }));
-                              }
+                }
 
+
+                else {
+                  Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                  return const Authentification();
+                }));
+                }
+              } else if (value == 2) {
+
+            if(Login().isSignedIn()) {
+              String? email = FirebaseAuth.instance.currentUser!.email;
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (BuildContext context) {
+                    return  MesStatistiques(email: email!,);
+                  }));
+
+            }
+            else {
+              sign();
+            }
+              }
+              else if (value == 3) {
+                await  Login().signOut();
                 setState(() {
 
                 });
+                ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
+              }
+              else if (value == 5) {
 
-              },
-            ),
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (BuildContext context) {
+                      return const SaveFingerprint();
+                    }));
+                            }
+
+              setState(() {
+
+              });
+
+            },
           )
         ],
       ),
