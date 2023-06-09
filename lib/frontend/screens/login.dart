@@ -43,43 +43,48 @@ class _AuthentificationState extends State<Authentification> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            "Authentification",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-          ),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
+        extendBodyBehindAppBar: true,
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10),
               child: Column(
                 children: [
-                  Card(
-                    color: Colors.blue,
-                    child: SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.3,
-                      width: double.infinity,
-                      child: const Center(
-                        child: Text(
-                          "IMSP",
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 120,
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      alignment: Alignment.center,
+                      margin: const EdgeInsets.only(left: 8),
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0xFFEEF0FF),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.arrow_back,
+                          color: Colors.black,
                         ),
+                        onPressed: () => Navigator.pop(context),
                       ),
                     ),
                   ),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    child: Text("Entrez vos identifiants !",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height/3,
+                    child: Center(
+                      child: Image.asset('assets/images/blob.png', fit: BoxFit.cover,),
+                    ),
+                  ),
+
                   const SizedBox(
                     height: 20,
                   ),
@@ -100,10 +105,16 @@ class _AuthentificationState extends State<Authentification> {
                               },
                               onSaved: (String? v) {},
                               decoration: InputDecoration(
-                                  label: const Text('Login:'),
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 3),
+                                  filled: true,
+                                  fillColor: const Color(0xFFEEF0FF),
+                                  label: const Padding(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Text('Login:'),
+                                  ),
                                   hintText: "Ex: admin@gmail.com",
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(0.0),
+                                    borderRadius: BorderRadius.circular(10.0),
                                     borderSide:
                                         const BorderSide(color: Colors.red),
                                   ),
@@ -130,6 +141,9 @@ class _AuthentificationState extends State<Authentification> {
                               },
                               onSaved: (String? v) {},
                               decoration: InputDecoration(
+                                  contentPadding: const EdgeInsets.symmetric(vertical: 3),
+                                  filled: true,
+                                  fillColor: const Color(0xFFEEF0FF),
                                   suffixIcon: InkWell(
                                     onTap: () => setState(() {
                                       _isSecret = !_isSecret;
@@ -138,10 +152,13 @@ class _AuthentificationState extends State<Authentification> {
                                         ? Icons.visibility
                                         : Icons.visibility_off),
                                   ),
-                                  label: const Text('Password:'),
+                                  label: const Padding(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Text('Password:'),
+                                  ),
                                   hintText: "Ex: ............",
                                   border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(0.0),
+                                    borderRadius: BorderRadius.circular(10.0),
                                     borderSide:
                                         const BorderSide(color: Colors.red),
                                   ),
@@ -157,17 +174,35 @@ class _AuthentificationState extends State<Authentification> {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
                               ElevatedButton(
-                                onPressed: () => {reset()},
+                                style: ButtonStyle(
+                                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                  ),
+                                  backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                                ),
+                                onPressed: () => {
+                                  reset(),
+                                  Navigator.of(context).pop()
+                                },
                                 child: const Text(
                                   'Annuler',
                                   style: TextStyle(
-                                    fontStyle: FontStyle.italic,
                                     fontSize: 20,
                                     color: Colors.white,
                                   ),
                                 ),
                               ),
                               ElevatedButton(
+                                  style: ButtonStyle(
+                                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                    ),
+                                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                                  ),
                                   onPressed: () async {
                                     if (_key.currentState!.validate()) {
                                       _key.currentState!.save();
@@ -246,7 +281,6 @@ class _AuthentificationState extends State<Authentification> {
                                     "Se connecter",
                                     style: TextStyle(
                                         fontSize: 20,
-                                        fontStyle: FontStyle.italic,
                                         color: Colors.white),
                                   )),
                             ],
@@ -255,10 +289,10 @@ class _AuthentificationState extends State<Authentification> {
                             height: 40,
                           ),
                           InkWell(
-                              child: Text(
+                              child: const Text(
                                 'Mot de passe oublié ?',
                                 style: TextStyle(
-                                  color: Colors.blue.shade400,
+                                  color: Colors.blue,
                                   fontSize: 20,
                                 ),
                               ),

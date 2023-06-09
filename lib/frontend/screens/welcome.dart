@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,11 @@ class Welcome extends StatefulWidget {
 }
 
 class _WelcomeState extends State<Welcome> {
+
+  final _key = GlobalKey<FormState>();
+  late String login, password;
+  bool _isSecret = false;
+
   Timer?  dataFetchTimer;
   @override
   void initState() {
@@ -207,7 +213,8 @@ class _WelcomeState extends State<Welcome> {
   Widget build(BuildContext context) {
 
     return Scaffold(
-      appBar: AppBar(
+      extendBodyBehindAppBar: true,
+      /*appBar: AppBar(
         title: const Text(
           "PresenceApp",
           style: TextStyle(
@@ -302,120 +309,196 @@ class _WelcomeState extends State<Welcome> {
             },
           )
         ],
-      ),
-      body: Column(
+      ),*/
+      body: ListView(
         children: [
-          Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Card(
-                  elevation: 10,
-                  color: Colors.blueGrey.shade50,
-                  child: const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      "You're welcome",
-                      style: TextStyle(
-                        color: Colors.indigo,
-                        //fontSize: 40,
-                      ),
-                    ),
+          Column(
+            children: [
+              SizedBox(height: MediaQuery.of(context).size.height/10,),
+
+              const Text("Connectez-vous !",
+                style: TextStyle(
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Container(
+                height: MediaQuery.of(context).size.height/2,
+                child: Center(
+                  child: Image.asset('assets/images/blob.png', fit: BoxFit.cover,),
+                ),
+              ),
+
+              const Padding(
+                padding: EdgeInsets.only(bottom: 10),
+                child: Text("Choisissez votre compte Google",
+                  style: TextStyle(
+                    color: Colors.black,
                   ),
                 ),
-              ],
-            ),
-          ),
-          Expanded(
-              child: ListView(
-            children: [
-              Column(
-                children: [
-                  const SizedBox(
-                    height: 25,
-                  ),
+              ),
 
-                  SizedBox(
-                      height: MediaQuery.of(context).size.height / 7,
-                      width: MediaQuery.of(context).size.width / 3.5,
-                      child: ClipOval(
-                        child: Padding(
-                          padding: const EdgeInsets.only(top: 0),
-                          child: Image.asset(
-                            'assets/images/imsp1.png',
-                            fit: BoxFit.cover,
+              loginInProcess
+                  ? const Center(
+                child: CircularProgressIndicator(),
+              )
+                  : Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child:(!Login().isSignedIn())||(!Login().isSignedInWithPassword()) ?
+                SizedBox(
+                  width: MediaQuery.of(context).size.width*4/5,
+                  child: ElevatedButton(
+                      style: ButtonStyle(
+                        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
                           ),
                         ),
+                        backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                      ),
+                      onPressed: ()  {
+
+                        if(Login().isSignedIn()) {
+                          email=FirebaseAuth.instance.currentUser!.email;
+                          log.d('email of the employee: $email');
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (BuildContext context) {
+                                return MesStatistiques(email: email!,);
+                              }));
+                        }
+                        else {sign();}
+                      },
+                      child:  const Text("Connexion avec Google",
+                        style: TextStyle(
+                            //fontSize: 20
+                        ),
                       )),
+                ):Container(),
+              ),
 
-                  const Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Text(
-                      "Coucou! Bienvenue dans votre application de suivi de présence ...",
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 15,
+              const Padding(
+                padding: EdgeInsets.only(top: 15),
+                child: Text("Cliquez ici si vous êtes administrateur",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                ),
+              ),
+
+              /*Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 30),
+                child: Form(
+                  key: _key,
+                    child: Column(
+                      children: [
+                        TextFormField(
+                            keyboardType: TextInputType.emailAddress,
+                            textInputAction: TextInputAction.next,
+                            validator: (String? v) {
+                              if (v != null && EmailValidator.validate(v)) {
+                                return null;
+                              } else {
+                                return "Login invalide";
+                              }
+                            },
+                            onSaved: (String? v) {
+                              login = v!;
+                            },
+                            decoration: InputDecoration(
+                                contentPadding: const EdgeInsets.symmetric(vertical: 3),
+                                filled: true,
+                              fillColor: const Color(0xFFEEF0FF),
+                                label: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('Login:'),
+                                ),
+                                hintText: "Ex: admin@gmail.com",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide:
+                                  const BorderSide(color: Colors.red),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide:
+                                  const BorderSide(color: Colors.green),
+                                ))),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        TextFormField(
+                            keyboardType: TextInputType.visiblePassword,
+                            textInputAction: TextInputAction.next,
+                            onChanged: (value) => setState(() {}),
+                            obscureText: _isSecret,
+                            validator: (String? v) {
+                              if (v != null && v.length >= 6) {
+                                return null;
+                              } else {
+                                return "Mot de passe invalide";
+                              }
+                            },
+                            onSaved: (String? v) {
+                              password = v!;
+                            },
+                            decoration: InputDecoration(
+                                filled: true,
+                                fillColor: const Color(0xFFEEF0FF),
+                                contentPadding: const EdgeInsets.symmetric(vertical: 3),
+                                suffixIcon: InkWell(
+                                  onTap: () => setState(() {
+                                    _isSecret = !_isSecret;
+                                  }),
+                                  child: Icon(!_isSecret
+                                      ? Icons.visibility
+                                      : Icons.visibility_off),
+                                ),
+                                label: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Text('Password:'),
+                                ),
+                                hintText: "Ex: ............",
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide:
+                                  const BorderSide(color: Colors.red),
+                                ),
+                                focusedBorder: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  borderSide:
+                                  const BorderSide(color: Colors.green),
+                                ))),
+                      ],
+                    )
+                ),
+              ),*/
+              Padding(
+                padding: const EdgeInsets.only(bottom: 10),
+                child: Container(
+                  width: MediaQuery.of(context).size.width*4/5,
+                  child: ElevatedButton(
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                        RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
                       ),
-                      textAlign: TextAlign.center,
+                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                     ),
+                    onPressed: (){
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return const Authentification();
+                          }));
+                    },
+                    child: const Text("Administrateur"),
                   ),
-
-                  //SizedBox(height: 10,),
-
-                  const Padding(
-                    padding: EdgeInsets.all(15.0),
-                    child: Text(
-                      "Touchez le capteur d'empreintes !",
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 30,
-                        color: Colors.blue,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-
-                  //ArrowAnimation(),
-
-                  Icon(
-                    Icons.arrow_right_alt,
-                    size: 200,
-                    color: Colors.deepPurple.shade800,
-                  ),
-
-                  loginInProcess
-                      ? const Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : Padding(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child:(!Login().isSignedIn())||(!Login().isSignedInWithPassword()) ?
-                            ElevatedButton(
-                              onPressed: ()  {
-
-    if(Login().isSignedIn()) {
-      email=FirebaseAuth.instance.currentUser!.email;
-      log.d('email of the employee: $email');
-    Navigator.push(context,
-    MaterialPageRoute(builder: (BuildContext context) {
-    return MesStatistiques(email: email!,);
-    }));
-
-    }
-    else {
-    sign();
-    }
-
-                              },
-                              child:  Text(text(),
-                                style: const TextStyle(
-                                    fontStyle: FontStyle.italic, fontSize: 20),
-                              )):Container(),
-                        )
-                ],
+                ),
               )
-            ],
-          ))
+        ],
+      )
         ],
       ),
     );
