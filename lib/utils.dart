@@ -79,10 +79,10 @@ const success = 0,
     networkError = 40,
     adminExists = 41,
     employeeExists = 42,
-newEmployee=43,
-espConnectionFailed=400,
-isWeekend=45,
-inHoliday=46,
+    newEmployee=43,
+    espConnectionFailed=400,
+    isWeekend=45,
+    inHoliday=46,
     entryMarkedSuccessfully=47,
     exitMarked=48,
     entryAlreadyMarked=49,
@@ -266,4 +266,3 @@ class Utils {
     return code;
   }
 }
-

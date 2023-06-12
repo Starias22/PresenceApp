@@ -90,9 +90,7 @@ void showServiceDialog(BuildContext context) async {
           ),
         )
       ],
-
     );
-
   });
 }
 
@@ -181,9 +179,7 @@ void showServiceDialogModifier(BuildContext context, Service service) async {
                           Navigator.pushReplacement(context,
                               MaterialPageRoute(builder: (context) =>const LesServices()));
                         }
-
                       }
-
                     },
                     child: const Text("Modifier"),
                   )

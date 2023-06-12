@@ -15,6 +15,7 @@ import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/screens/save_fingerprint.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
+import 'package:presence_app/frontend/widgets/wrapperEmployee.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -339,11 +340,9 @@ class _WelcomeState extends State<Welcome> {
                 ),
               ),
 
-              loginInProcess
-                  ? const Center(
-                child: CircularProgressIndicator(),
-              )
-                  : Padding(
+              /*loginInProcess
+                  ? const Center( child: CircularProgressIndicator(),) :
+              Padding(
                 padding: const EdgeInsets.only(bottom: 20),
                 child:(!Login().isSignedIn())||(!Login().isSignedInWithPassword()) ?
                 SizedBox(
@@ -364,7 +363,7 @@ class _WelcomeState extends State<Welcome> {
                           log.d('email of the employee: $email');
                           Navigator.push(context,
                               MaterialPageRoute(builder: (BuildContext context) {
-                                return MesStatistiques(email: email!,);
+                                return const Wrapper();
                               }));
                         }
                         else {sign();}
@@ -375,6 +374,34 @@ class _WelcomeState extends State<Welcome> {
                         ),
                       )),
                 ):Container(),
+              ),*/
+
+              ElevatedButton(
+                  style: ButtonStyle(
+                    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                    ),
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                  ),
+                  onPressed: ()  {
+
+                    if(Login().isSignedIn()) {
+                      email=FirebaseAuth.instance.currentUser!.email;
+                      /*log.d('email of the employee: $email');
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
+                            return const Wrapper();
+                          }));*/
+                    }
+                    else {sign();}
+                  },
+                  child:  const Text("Connexion avec Google",
+                    style: TextStyle(
+                      //fontSize: 20
+                    ),
+                  )
               ),
 
               const Padding(
@@ -476,7 +503,7 @@ class _WelcomeState extends State<Welcome> {
               ),*/
               Padding(
                 padding: const EdgeInsets.only(bottom: 10),
-                child: Container(
+                child: SizedBox(
                   width: MediaQuery.of(context).size.width*4/5,
                   child: ElevatedButton(
                     style: ButtonStyle(

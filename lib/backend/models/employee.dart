@@ -1,4 +1,3 @@
-
 import 'package:presence_app/utils.dart';
 //final t= DateTime.now();
 enum EStatus { present, late, absent, out, inHoliday, inWeekend,pending }
@@ -28,34 +27,25 @@ class Employee {
   late String service;
 
   late String entryTime, exitTime;
-   DateTime? today;
+  DateTime? today;
 
 
 
   Employee(
-      {this.id='',
-      required this.firstname,
-      required this.gender,
-      required this.lastname,
-      required this.email,
-      this.serviceId='',
+      {
+        this.id='',
+        required this.firstname,
+        required this.gender,
+        required this.lastname,
+        required this.email,
+        this.serviceId='',
         this.service='',
-      required this.startDate,
-      required this.entryTime,
-      required this.exitTime,
-       this.status=EStatus.pending,
-      this.uniqueCode=0,this.fingerprintId});
-  bool isLate(DateTime currentTime){
-
-    return utils.format(entryTime)!.isBefore(currentTime) ;
-
-  }
-  bool desireToExitEarly(DateTime currentTime){
-    return currentTime.isBefore(utils.format(exitTime)!);
-  }
-  static x(){
-
-  }
+        required this.startDate,
+        required this.entryTime,
+        required this.exitTime,
+        this.status=EStatus.pending,
+        this.uniqueCode=0,this.fingerprintId
+      });
 
   Map<String, dynamic> toMap() => {
         'unique_code':uniqueCode,
@@ -88,15 +78,29 @@ class Employee {
       gender: map['gender'],
     );
   }
+
   bool isInRange(DateTime currentTime){
     print('Range');
    return  (utils.format(entryTime)!.isBefore(currentTime)||
         utils.format(entryTime)!.isAtSameMomentAs(currentTime));
-
   }
 
   bool desireToExitBeforeEntryTime(DateTime now) {
     return now.isBefore(utils.format(entryTime)!);
+  }
+
+  bool isLate(DateTime currentTime){
+
+    return utils.format(entryTime)!.isBefore(currentTime) ;
+
+  }
+
+  bool desireToExitEarly(DateTime currentTime){
+    return currentTime.isBefore(utils.format(exitTime)!);
+  }
+
+  static x(){
+
   }
 
 }

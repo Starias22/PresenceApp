@@ -1,30 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/frontend/screens/welcome1.dart';
-
-
+import 'package:presence_app/frontend/widgets/wrapperEmployee.dart';
 import 'package:presence_app/utils.dart' as u;
 import 'package:presence_app/utils.dart';
-
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Configure Firebase options
 
+  // Configure Firebase options
   log.d('Start point of the app');
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-log.i('update ***');
+  log.i('update ***');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -44,24 +43,30 @@ log.i('update ***');
 
 
   runApp(
-
-      ChangeNotifierProvider.value(
-        value: appSettings,
-        //create: (context) => AppSettings(),
-        //create: (_) => AppSettings(),
-        child: const MyApp(),
-      ));
+      MultiProvider(
+        providers: [
+          StreamProvider.value(
+            initialData: null,
+            value: Login().user,
+          ),
+        ],
+        child: ChangeNotifierProvider.value(
+          value: appSettings,
+          //create: (context) => AppSettings(),
+          //create: (_) => AppSettings(),
+          child: const MyApp(),
+        ),
+      )
+  );
 }
 
 class MyApp extends StatelessWidget {
-
 
   const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-
     return Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(
@@ -72,7 +77,7 @@ class MyApp extends StatelessWidget {
               primarySwatch: Colors.blue,
               // useMaterial3: true,
             ),
-            home: const WelcomeImsp(),
+            home: const Wrapper(),
           );
         });
   }

@@ -13,7 +13,7 @@ class Holiday {
   String? employeeId;
   late String id;
   late DateTime startDate, endDate;
-  Holiday({this.id='',this.employeeId, required this.startDate,
+  Holiday({this.id='',required this.employeeId, required this.startDate,
     required this.endDate,required this.type,this.description});
 
   Map<String, dynamic> toMap() => {
@@ -34,5 +34,4 @@ class Holiday {
       employeeId: map['employee_id'],
     );
   }
-  
 }

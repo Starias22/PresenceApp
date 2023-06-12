@@ -1,13 +1,10 @@
-
 import 'package:http/http.dart' as http;
 import 'package:presence_app/utils.dart';
-class ESP32{
-
-final String ipAddress='172.16.65.1';//wireless cpp
-  //final String ipAddress='172.18.0.59';
-  //final String ipAddress='192.168.1.172';//jem
-
-
+class ESP32
+{
+  final String ipAddress='172.16.65.1';//wireless cpp
+    //final String ipAddress='172.18.0.59';
+    //final String ipAddress='192.168.1.172';//jem
 
 
 
@@ -54,9 +51,6 @@ final String ipAddress='172.16.65.1';//wireless cpp
       print('An error occurred: $e');
 
     }
-
     return false;
   }
-
-
-  }
+}

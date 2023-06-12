@@ -8,7 +8,6 @@ import 'package:presence_app/utils.dart';
 class Login {
   Future<bool> signUp(String email, String password) async {
 
-
     try {
       var credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -129,9 +128,6 @@ class Login {
       }
       return failure;
     }
-
-
-
   }
 
   // Function to handle Google Sign-Out
@@ -248,7 +244,8 @@ class Login {
       } catch (e) {
         log.e(e);
       }
-    } else {
+    }
+    else {
       final GoogleSignIn googleSignIn = GoogleSignIn();
 
       final GoogleSignInAccount? googleSignInAccount =
@@ -279,8 +276,13 @@ class Login {
         }
       }
     }
-
     return user;
+  }
+
+  //L'état de l'utilisateur en temps réel
+  Stream<User?> get user {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    return auth.authStateChanges();
   }
 
   Future<UserCredential?> withWeb() async {

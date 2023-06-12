@@ -1,5 +1,6 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
@@ -58,31 +59,18 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     return SafeArea(
         child: Scaffold(
-            appBar: AppBar(
-              centerTitle: true,
-              title: const Text(
-                "Création de compte employé",
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-              leading: IconButton(
-                  onPressed: () => {
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const StatistiquesForServices()))
-                      },
-                  icon: const Icon(
-                    Icons.arrow_back,
-                  )),
-            ),
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
                 const SizedBox(
                   height: 25,
+                ),
+                const Padding(
+                  padding: EdgeInsets.all(10.0),
+                  child: Text("Veuillez renseigner les informations neccesaires "
+                      "pour la creation du compte employé...",
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 Center(
                   child: Column(
@@ -371,7 +359,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceAround,
+                                MainAxisAlignment.spaceAround,
                                 children: [
                                   ElevatedButton(
                                     onPressed: () => Navigator.pushReplacement(
@@ -379,11 +367,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const RegisterEmployee())),
-                                    /* Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const StatistiquesForServices())),*/
                                     child: const Text("Annuler"),
                                   ),
                                   ElevatedButton(
@@ -396,7 +379,8 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                       DateTime now=await utils.localTime();
                                       DateTime today=DateTime(now.year,now.month,now.day);
-                                      DateTime start=DateTime(now.year,now.month,now.day+1);
+                                      DateTime start=
+                                      DateTime(now.year,now.month,now.day+1);
 
 
                                       Employee employee=Employee

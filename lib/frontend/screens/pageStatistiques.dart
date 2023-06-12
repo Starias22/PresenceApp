@@ -67,6 +67,7 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
       length: tabBars.length,
       child: Scaffold(
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             "Statistiques",
             style: TextStyle(
@@ -75,141 +76,137 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
           ),
           centerTitle: true,
           actions: [
-            Positioned(
-              top: 0,
-              right: 0,
-              child: PopupMenuButton(
-                icon: const Icon(
-                  Icons.more_vert,
-                  // size: 30,
-                ),
-                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                  const PopupMenuItem(
-                    value: 1,
-                    child: Text('Employés'),
-                  ),
-                  const PopupMenuItem(
-                    value: 2,
-                    child: Text('Admins'),
-                  ),
-                  const PopupMenuItem(
-                    value: 3,
-                    child: Text('Services'),
-                  ),const PopupMenuItem(
-                    value: 4,
-                    child: Text('Congés'),
-                  ),
-
-                  const PopupMenuItem(
-                    value: 5,
-                    child: Text('Créer un compte employé'),
-                  ),
-                  const PopupMenuItem(
-                    value: 6,
-                    child: Text('Créer un compte admin'),
-                  ),
-                  const PopupMenuItem(
-                    value: 7,
-                    child: Text('Mon compte'),
-                  ),
-                   PopupMenuItem(
-                    value: 8,
-                    child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
-                  ),
-                  const PopupMenuItem(
-                    value: 9,
-                    child: Text('Langue'),
-                  ),
-                  const PopupMenuItem(
-                    value: 10,
-                    child: Text('Déconnexion'),
-                  ),
-                ],
-                onSelected: (value) async {
-                  if (value == 1) {
-                    if ((await EmployeeDB().getAllEmployees()).isEmpty) {
-                      ToastUtils.showToast(
-                          context, 'Aucun employé enregistré', 3);
-                      return;
-                    }
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AfficherEmployes()));
-                  } else if (value == 2) {
-                    // action pour l'option 2
-
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const AfficherAdmins()));
-
-                  }
-                  else if (value == 3) {
-                    // action pour l'option 2
-
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LesServices()));
-
-                  }
-                  else if (value == 4) {
-                    // action pour l'option 2
-
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PageConges()));
-
-                  }
-                  else if (value == 5) {
-                    String email=FirebaseAuth.instance.currentUser!.email!;
-                   String adminId= (await AdminDB().getAdminIdByEmail(email))!;
-                  if(!(await AdminDB().getAdminById(adminId)).isSuper){
-                    ToastUtils.showToast(context, 'Seul le super admin peut créer des employés', 3);
-                    return;
-
-                  }
-                    if ((await ServiceDB().getAllServices()).isEmpty) {
-
-                      ToastUtils.showToast(context, 'Aucun service enregistré', 3);
-                      return;
-                    }
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterEmployee()));
-                  } else if (value == 6) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const RegisterAdmin()));
-                  } else if (value == 7) {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                            const AdminCompte()));
-                  } else if (value == 8) {
-                    await Provider.of<AppSettings>(context, listen: false).setDarkMode(
-                        !Provider.of<AppSettings>(context, listen: false).isDarkMode, );
-
-                  }
-                  else if (value == 9) {
-
-                  }
-                  else if (value == 10) {
-
-                    await Login().signOut();
-                    ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const Welcome()));
-                  }
-                },
+            PopupMenuButton(
+              icon: const Icon(
+                Icons.more_vert,
+                // size: 30,
               ),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                const PopupMenuItem(
+                  value: 1,
+                  child: Text('Employés'),
+                ),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text('Admins'),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Text('Services'),
+                ),const PopupMenuItem(
+                  value: 4,
+                  child: Text('Congés'),
+                ),
+
+                const PopupMenuItem(
+                  value: 5,
+                  child: Text('Créer un compte employé'),
+                ),
+                const PopupMenuItem(
+                  value: 6,
+                  child: Text('Créer un compte admin'),
+                ),
+                const PopupMenuItem(
+                  value: 7,
+                  child: Text('Mon compte'),
+                ),
+                 PopupMenuItem(
+                  value: 8,
+                  child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
+                ),
+                const PopupMenuItem(
+                  value: 9,
+                  child: Text('Langue'),
+                ),
+                const PopupMenuItem(
+                  value: 10,
+                  child: Text('Déconnexion'),
+                ),
+              ],
+              onSelected: (value) async {
+                if (value == 1) {
+                  if ((await EmployeeDB().getAllEmployees()).isEmpty) {
+                    ToastUtils.showToast(
+                        context, 'Aucun employé enregistré', 3);
+                    return;
+                  }
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AfficherEmployes()));
+                } else if (value == 2) {
+                  // action pour l'option 2
+
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const AfficherAdmins()));
+
+                }
+                else if (value == 3) {
+                  // action pour l'option 2
+
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LesServices()));
+
+                }
+                else if (value == 4) {
+                  // action pour l'option 2
+
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PageConges()));
+
+                }
+                else if (value == 5) {
+                  String email=FirebaseAuth.instance.currentUser!.email!;
+                 String adminId= (await AdminDB().getAdminIdByEmail(email))!;
+                if(!(await AdminDB().getAdminById(adminId)).isSuper){
+                  ToastUtils.showToast(context, 'Seul le super admin peut créer des employés', 3);
+                  return;
+
+                }
+                  if ((await ServiceDB().getAllServices()).isEmpty) {
+
+                    ToastUtils.showToast(context, 'Aucun service enregistré', 3);
+                    return;
+                  }
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterEmployee()));
+                } else if (value == 6) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const RegisterAdmin()));
+                } else if (value == 7) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const AdminCompte()));
+                } else if (value == 8) {
+                  await Provider.of<AppSettings>(context, listen: false).setDarkMode(
+                      !Provider.of<AppSettings>(context, listen: false).isDarkMode, );
+
+                }
+                else if (value == 9) {
+
+                }
+                else if (value == 10) {
+
+                  await Login().signOut();
+                  ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const Welcome()));
+                }
+              },
             )
           ],
         ),

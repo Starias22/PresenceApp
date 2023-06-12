@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 
 class WelcomeImsp extends StatefulWidget {
@@ -43,58 +44,65 @@ class _WelcomeImspState extends State<WelcomeImsp> {
               //mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 SizedBox(height: MediaQuery.of(context).size.height/20,),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text("Bienvenue à l'Institut de Mathématiques et de Sciences Physiques...",
-                    style: TextStyle(
-                      color: Colors.black,
-                      //fontSize: 14,
-                    ),
-                    textAlign: TextAlign.center,
+                Text("Bienvenue",
+                  style: GoogleFonts.pinyonScript(
+                    color: Colors.black,
+                    fontSize: 34,
                   ),
+                  textAlign: TextAlign.center,
                 ),
-                const Row(
+                Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text("IMSP",
-                      style: TextStyle(
-                        color: Color(0xFF0020FF),
+                      style: GoogleFonts.tangerine(
+                        color: const Color(0xFF0020FF),
                         fontSize: 30,
+                        fontWeight: FontWeight.w900
                       ),
                     ),
 
                     Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text("Dangbo",
-                        style: TextStyle(
-                          fontSize: 20,
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(" Dangbo",
+                        style: GoogleFonts.smokum(
+                          fontSize: 30,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 10),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
                   child: Text("PresenceApp",
-                    style: TextStyle(
-                      color: Color(0xFF0020FF),
-                      fontSize: 20,
+                    style: GoogleFonts.alexBrush(
+                      color: const Color(0xFF0020FF),
+                      fontSize: 35,
+                      //fontWeight: FontWeight.bold
                     ),
                   ),
                 ),
-                const Text("Votre application qui vous permet de marquer et de suivre les presences...",
-                  textAlign: TextAlign.center,
-                ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 30),
-                  child: Center(
-                    child: Image.asset('assets/images/time.png', fit: BoxFit.cover,),
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: Text("Votre application qui vous permet de marquer et de suivre les presences...",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.tangerine(
+                      fontSize: 25
+                    ),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 15),
-                  child: Container(
+                  padding: const EdgeInsets.only(top: 35),
+                  child: Center(
+                    child: Image.asset('assets/images/people.jpg', fit: BoxFit.cover,
+                      //width: MediaQuery.of(context).size.width*0.75,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 25),
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width*4/5,
                     child: ElevatedButton(
                       style: ButtonStyle(

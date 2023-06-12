@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
@@ -16,7 +17,7 @@ class Authentification extends StatefulWidget {
 }
 
 class _AuthentificationState extends State<Authentification> {
-  bool loginInProcess = false;
+  bool inLoginProcess = false;
   final _key = GlobalKey<FormState>();
   bool _isSecret = true;
 
@@ -170,6 +171,7 @@ class _AuthentificationState extends State<Authentification> {
                           const SizedBox(
                             height: 20,
                           ),
+                          inLoginProcess ? const Center(child: CircularProgressIndicator(),) :
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
@@ -189,7 +191,6 @@ class _AuthentificationState extends State<Authentification> {
                                 child: const Text(
                                   'Annuler',
                                   style: TextStyle(
-                                    fontSize: 20,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -211,77 +212,15 @@ class _AuthentificationState extends State<Authentification> {
                                     }
 
                                     retrieveTexts();
-                                    String message;
                                     log.d(email);
-                                    var loginCode= await Login().signIn(email!, password!);
-                                    //loginCode=success;
-                                    switch (loginCode) {
-                                      case networkRequestFailed:
-                                        message =
-                                            "La requête a échoué. Vous n'êtes peut être pas connecté à internet";
-                                        break;
 
-                                      case emailNotExists:
-                                        message =
-                                            'Aucun admin avec une telle adresse email';
-                                        break;
-                                      case emailNotVerified:
-                                        //loginCode==success;
-                                        message =
-                                            'Adresse email non vérifiée! Accédez à votre boite Gmail pour vérifier';
-                                        break;
-
-                                      case wrongPassword:
-                                        message = 'Mot de passe incorrect';
-                                        break;
-
-                                      case tooManyRequests:
-                                        Login().resetPassword(email!);
-                                        message =
-                                            "L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez immédiatement le restaurez en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. Un email de reinitialisation est envoyé à cette adresse";
-                                        break;
-
-                                      case success:
-                                        log.d(email);
-                                        if(await AdminDB().exists(email!)) {
-                                          message = 'Vous êtes connecté!';
-
-                                          reset();
-                                        }
-                                        else{
-                                          message="Votre compte admin vient d'être supprimé car vous n'êtes plus admin";
-                                        loginCode=accountDeleted;
-                                        }
-
-                                        break;
-
-                                      default:
-                                        log.d('****loginCode:$loginCode');
-                                        message = '****Erreur inconnue';
-                                        break;
-                                    }
-
-                                    log.d(message);
-
-                                    showToast(message);
-
-                                    if (loginCode == success) {
-                                      //showToast(message);
-                                      Future.delayed(const Duration(seconds: 3),
-                                          () {
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder:
-                                                (BuildContext context) {
-                                          return const StatistiquesForServices();
-                                        }));
-                                      });
-                                    }
+                                    singIn(context);
                                   },
                                   child: const Text(
                                     "Se connecter",
                                     style: TextStyle(
-                                        fontSize: 20,
-                                        color: Colors.white),
+                                        color: Colors.white,
+                                    ),
                                   )),
                             ],
                           ),
@@ -311,7 +250,6 @@ class _AuthentificationState extends State<Authentification> {
                                  message="Aucun admin avec une telle adresse email";
                                }
 
-
                                 log.d(message);
                                 ToastUtils.showToast(context, message, 3);
                               })
@@ -324,5 +262,95 @@ class _AuthentificationState extends State<Authentification> {
         ),
       ),
     );
+  }
+
+  Future<void> singIn(BuildContext context) async{
+
+    var loginCode= await Login().signIn(email!, password!);
+
+    try {
+      final result = await (Connectivity().checkConnectivity());
+      if (result != ConnectivityResult.none) {
+        setState(() {
+          inLoginProcess = true;
+        });
+
+        //await AuthService().signInWithGoogle();
+
+        String message;
+        switch (loginCode) {
+          case networkRequestFailed:
+            inLoginProcess = false;
+            message =
+            "La requête a échoué. Vous n'êtes peut être pas connecté à internet";
+            break;
+
+          case emailNotExists:
+            inLoginProcess = false;
+            message =
+            'Aucun admin avec une telle adresse email';
+            break;
+          case emailNotVerified:
+          //loginCode==success;
+            message =
+            'Adresse email non vérifiée! Accédez à votre boite Gmail pour vérifier';
+            break;
+
+          case wrongPassword:
+            inLoginProcess = false;
+            message = 'Mot de passe incorrect';
+            break;
+
+          case tooManyRequests:
+            inLoginProcess = false;
+            Login().resetPassword(email!);
+            message =
+            "L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez immédiatement le restaurez en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. Un email de reinitialisation est envoyé à cette adresse";
+            break;
+
+          case success:
+            log.d(email);
+            if(await AdminDB().exists(email!)) {
+              message = 'Connexion réussie !';
+
+              reset();
+            }
+            else{
+              message="Votre compte admin vient d'être supprimé car vous n'êtes plus admin";
+              loginCode=accountDeleted;
+            }
+            inLoginProcess = false;
+
+            break;
+
+          default:
+            inLoginProcess = false;
+            log.d('****loginCode:$loginCode');
+            message = '****Erreur inconnue';
+            break;
+        }
+
+        log.d(message);
+
+        showToast(message);
+
+        /*if (loginCode == success) {
+          //showToast(message);
+          Future.delayed(const Duration(seconds: 3),
+                  () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder:
+                        (BuildContext context) {
+                      return const StatistiquesForServices();
+                    }));
+              });
+        }*/
+
+      } else {
+        showToast("Aucune connexion internet");
+      }
+    } catch (_) {
+      showToast("Une erreur s'est produite lors de la connexion");
+    }
   }
 }
