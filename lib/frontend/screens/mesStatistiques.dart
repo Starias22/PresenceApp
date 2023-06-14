@@ -27,6 +27,8 @@ class MesStatistiques extends StatefulWidget {
 }
 
 class _MesStatistiquesState extends State<MesStatistiques> {
+  final _key = GlobalKey<FormState>();
+  late String _valueChanged;
 late Presence presenceDoc;
   late DateTime startDate;
   String? employeeId;
@@ -107,79 +109,75 @@ late Presence presenceDoc;
           ),
         ),
         actions: [
-          Positioned(
-            top: 0,
-            right: 0,
-            child: PopupMenuButton(
-              icon: const Icon(
-                Icons.more_vert,
-                // size: 30,
-              ),
-              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                const PopupMenuItem(
-                  value: 1,
-                  child: Text('Diagramme en bandes'),
-                ),
-                if(!Login().isSignedInWithPassword()) const PopupMenuItem(
-                  value: 2,
-                  child: Text('Mon compte'),
-                ),
-                if(!Login().isSignedInWithPassword()) const PopupMenuItem(
-                  value: 3,
-                  child: Text('Langue'),
-                ),
-                if(!Login().isSignedInWithPassword())  PopupMenuItem(
-                  value: 4,
-                  child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
-                ),
-                if(!Login().isSignedInWithPassword())  const PopupMenuItem(
-                  value: 5,
-                  child: Text('Signaler un problème'),
-                ),
-                if(!Login().isSignedInWithPassword())  const PopupMenuItem(
-                  value: 6,
-                  child: Text('Déconnexion'),
-                ),
-              ],
-              onSelected: (value) async {
-                if (value == 1) {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>  DiagrammeBar(email: widget.email,)));
-                } else if (value == 2) {
-                  Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => MonCompte()));
-                } else if (value == 3) {
-                } else if (value == 4) {
-
-                  await Provider.of<AppSettings>(context, listen: false).setDarkMode(
-                    !Provider.of<AppSettings>(context, listen: false).isDarkMode,
-                  );
-
-
-                  // Exit the app to trigger the restart
-                //SystemNavigator.pop();
-                } else if (value == 5) {
-                  // action pour l'option 5
-                } else if (value == 6) {
-                  // action pour l'option 6
-
-                  Login().googleSingOut();
-                  ToastUtils.showToast(
-                      context, 'Vous êtes déconnecté', 3);
-
-                  Future.delayed(const Duration(seconds: 3),
-                          () {
-                        Navigator.push(context, MaterialPageRoute(
-                            builder: (BuildContext context) {
-                              return const Welcome();
-                            }));
-                      });
-
-                }
-              },
+          PopupMenuButton(
+            icon: const Icon(
+              Icons.more_vert,
+              // size: 30,
             ),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+              const PopupMenuItem(
+                value: 1,
+                child: Text('Diagramme en bandes'),
+              ),
+              if(!Login().isSignedInWithPassword()) const PopupMenuItem(
+                value: 2,
+                child: Text('Mon compte'),
+              ),
+              if(!Login().isSignedInWithPassword()) const PopupMenuItem(
+                value: 3,
+                child: Text('Langue'),
+              ),
+              if(!Login().isSignedInWithPassword())  PopupMenuItem(
+                value: 4,
+                child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
+              ),
+              if(!Login().isSignedInWithPassword())  const PopupMenuItem(
+                value: 5,
+                child: Text('Signaler un problème'),
+              ),
+              if(!Login().isSignedInWithPassword())  const PopupMenuItem(
+                value: 6,
+                child: Text('Déconnexion'),
+              ),
+            ],
+            onSelected: (value) async {
+              if (value == 1) {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>  DiagrammeBar(email: widget.email,)));
+              } else if (value == 2) {
+                Navigator.pushReplacement(context,
+                    MaterialPageRoute(builder: (context) => MonCompte()));
+              } else if (value == 3) {
+              } else if (value == 4) {
+
+                await Provider.of<AppSettings>(context, listen: false).setDarkMode(
+                  !Provider.of<AppSettings>(context, listen: false).isDarkMode,
+                );
+
+
+                // Exit the app to trigger the restart
+              //SystemNavigator.pop();
+              } else if (value == 5) {
+                // action pour l'option 5
+              } else if (value == 6) {
+                // action pour l'option 6
+
+                Login().googleSingOut();
+                ToastUtils.showToast(
+                    context, 'Vous êtes déconnecté', 3);
+
+                Future.delayed(const Duration(seconds: 3),
+                        () {
+                      Navigator.push(context, MaterialPageRoute(
+                          builder: (BuildContext context) {
+                            return const Welcome();
+                          }));
+                    });
+
+              }
+            },
           )
         ],
         leading: IconButton(
@@ -193,19 +191,20 @@ late Presence presenceDoc;
             )),
       ),
       body: Stack(
+
           children: [
-          if (_events.isEmpty)
-        const Center(
-        child: CircularProgressIndicator(),
-    )
-    else
-    CalendrierCard(
-    events: _events,
-    onDayLongPressed: onDayLongPressed,
-    onCalendarChanged: onCalendarChanged,
-    minSelectedDate: startDate,
-    ),
-    ],
+            if (_events.isEmpty)
+                const Center(
+                  child: CircularProgressIndicator(),
+                )
+            else
+              CalendrierCard(
+                events: _events,
+                onDayLongPressed: onDayLongPressed,
+                onCalendarChanged: onCalendarChanged,
+                minSelectedDate: startDate,
+              ),
+          ]
       ),
     ));
   }

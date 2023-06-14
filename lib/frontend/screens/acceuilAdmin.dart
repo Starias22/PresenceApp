@@ -169,7 +169,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                   Text("PresenceApp",
                     style: GoogleFonts.arizonia(
                       color: Colors.white,
-                      fontSize: 30
+                      fontSize: 25
                     ),
                   ),
 
@@ -180,7 +180,8 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                           MaterialPageRoute(builder:
                               (BuildContext context) {
                             return const StatistiquesForServices();
-                          }));
+                          })
+                      );
                     },
                     child: const CircleAvatar(
                       backgroundImage: AssetImage("assets/images/profile.png"),
@@ -196,7 +197,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                 children: [
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text("Bienvenue",
+                    child: Text("Bienvenue !",
                       style: GoogleFonts.pinyonScript(
                         fontSize: 35,
                       ),
@@ -209,10 +210,10 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: Text("Avec PresenceApp, surveillez de près la présence de vos employés...",
+                    child: Text("Avec PresenceApp, surveillez de près les présences de vos employés...",
                       textAlign: TextAlign.center,
-                      style: GoogleFonts.tangerine(
-                        fontSize: 30,
+                      style: GoogleFonts.vollkorn(
+                        fontSize: 25,
                       ),
                     ),
                   ),

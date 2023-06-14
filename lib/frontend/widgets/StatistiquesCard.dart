@@ -16,9 +16,8 @@ class StatistiquesCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: SizedBox(
-        height: MediaQuery.of(context).size.height*3/4,
+        //height: MediaQuery.of(context).size.height*3/4,
         child: SfCircularChart(
-
 
           legend: Legend(isVisible: true, position: LegendPosition.bottom,
               overflowMode: LegendItemOverflowMode.wrap),

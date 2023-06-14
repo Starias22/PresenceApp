@@ -20,6 +20,15 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
 
+  List<int> days = List<int>.generate(31, (index) => index + 1);
+  List<int> months = List<int>.generate(12, (index) => index + 1);
+  List<int> years = List<int>.generate(100, (index) => DateTime.now().year + index);
+
+  late DateTime selectedDate = DateTime.now();
+  late int selectedDay = selectedDate.day;
+  late int selectedMonth = selectedDate.month;
+  late int selectedYear = selectedDate.year;
+
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -59,18 +68,21 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     return SafeArea(
         child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: const Color(0xFF0020FF),
+              centerTitle: true,
+              title: Text(
+                "PresenceApp",
+                style: GoogleFonts.arizonia(
+                  fontSize: 25,
+                ),
+              ),
+            ),
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
                 const SizedBox(
                   height: 25,
-                ),
-                const Padding(
-                  padding: EdgeInsets.all(10.0),
-                  child: Text("Veuillez renseigner les informations neccesaires "
-                      "pour la creation du compte employé...",
-                    textAlign: TextAlign.center,
-                  ),
                 ),
                 Center(
                   child: Column(
@@ -247,6 +259,71 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               const SizedBox(
                                 height: 12,
                               ),
+
+                              Container(
+                                height: 60,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 0.5,
+                                  ),
+                                  //borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      //const Text("Date débuit service : "),
+                                      DropdownButton<int>(
+                                        value: selectedDay,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            selectedDay = newValue!;
+                                          });
+                                        },
+                                        items: days.map<DropdownMenuItem<int>>((int value) {
+                                          return DropdownMenuItem<int>(
+                                            value: value,
+                                            child: Text(value.toString()),
+                                          );
+                                        }).toList(),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      DropdownButton<int>(
+                                        value: selectedMonth,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            selectedMonth = newValue!;
+                                          });
+                                        },
+                                        items: months.map<DropdownMenuItem<int>>((int value) {
+                                          return DropdownMenuItem<int>(
+                                            value: value,
+                                            child: Text(value.toString()),
+                                          );
+                                        }).toList(),
+                                      ),
+                                      const SizedBox(width: 2),
+                                      DropdownButton<int>(
+                                        value: selectedYear,
+                                        onChanged: (newValue) {
+                                          setState(() {
+                                            selectedYear = newValue!;
+                                          });
+                                        },
+                                        items: years.map<DropdownMenuItem<int>>((int value) {
+                                          return DropdownMenuItem<int>(
+                                            value: value,
+                                            child: Text(value.toString()),
+                                          );
+                                        }).toList(),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 12,),
                               DropdownButtonFormField(
                                 items:  const [
                                   DropdownMenuItem(
@@ -359,17 +436,38 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               ),
                               Row(
                                 mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   ElevatedButton(
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                                    ),
                                     onPressed: () => Navigator.pushReplacement(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const RegisterEmployee())),
+                                    /* Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const StatistiquesForServices())),*/
                                     child: const Text("Annuler"),
                                   ),
                                   ElevatedButton(
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                                        RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                      ),
+                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                                    ),
                                     onPressed: () async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
@@ -379,8 +477,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                       DateTime now=await utils.localTime();
                                       DateTime today=DateTime(now.year,now.month,now.day);
-                                      DateTime start=
-                                      DateTime(now.year,now.month,now.day+1);
+                                      DateTime start=DateTime(now.year,now.month,now.day+1);
 
 
                                       Employee employee=Employee
