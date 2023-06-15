@@ -7,8 +7,9 @@ class ToastUtils{
 
 
      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+
       content: Text(message),
-      duration: const Duration(seconds: 3),
+      duration:Duration(seconds: duration),
     ));
 
   }

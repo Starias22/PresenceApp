@@ -1,52 +1,35 @@
 import 'dart:async';
-
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/esp32.dart';
-
-
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-import 'package:presence_app/frontend/screens/save_fingerprint.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/login.dart';
-import 'package:presence_app/frontend/widgets/wrapperEmployee.dart';
 import 'package:presence_app/utils.dart';
 
 
-class Welcome extends StatefulWidget {
-  const Welcome({Key? key}) : super(key: key);
+class AdminLogin extends StatefulWidget {
+  const AdminLogin({Key? key}) : super(key: key);
 
 
   @override
-  State<Welcome> createState() => _WelcomeState();
+  State<AdminLogin> createState() => _AdminLoginState();
 }
 
-class _WelcomeState extends State<Welcome> {
+class _AdminLoginState extends State<AdminLogin> {
 
   final _key = GlobalKey<FormState>();
   late String login, password;
   bool _isSecret = false;
 
-  Timer?  dataFetchTimer;
+  // Timer?  dataFetchTimer;
   @override
   void initState() {
     super.initState();
-    startDataFetching();
   }
 
-  Future<void> startDataFetching() async {
 
-    const duration = Duration(seconds: 5);
-     dataFetchTimer = Timer.periodic(duration, (_) {
-      getData();
-    });
-  }
 
   /*may be:
   both esp32 and the device are not connected to the same network
@@ -55,68 +38,6 @@ class _WelcomeState extends State<Welcome> {
   final connectionError="Erreur de connexion! Veillez reessayer";
   bool isSignedInWithEmail = false;
   String? email;
-
-  Future<void> getData()
-  async {
-    int data;
-    String message;
-
-      data=await ESP32().receiveData();
-
-      log.d('Data*****: $data');
-      if(data==espConnectionFailed) {
-        message = "Connexion non reussie avec le micrôtrolleur!";
-        //ToastUtils.showToast(context, message, 5);
-      }
-
-     else if(1<=data&&data<=127){
-        var employeeId = await EmployeeDB()
-            .getEmployeeIdByFingerprintId(data);
-        if (employeeId == null) {
-          ToastUtils.showToast(context, 'Vous êtes un intru', 3);
-          return;
-        }
-
-        int code=await  PresenceDB().handleEmployeeAction(data);
-        var employee=await EmployeeDB().getEmployeeById(employeeId);
-        String civ=employee.gender=='M'?'Monsieur':'Madame';
-        ToastUtils.showToast(context, '$civ ${employee.firstname}'
-            ' ${employee.lastname}: ${getMessage(code)}', 3);
-      }
-
-      else if(data==151){
-        message =
-        "Employé non reconnue! Veuillez reessayer!";
-        ToastUtils.showToast(context, message, 3);
-      }
-  }
-  String getMessage(int code){
-    if(code==isWeekend){
-      return "Aujourdh'ui est un weekend";
-
-    }
-    if(code==inHoliday){
-      return "Congé, permission ou jour férié auparavent activé";
-    }
-    if(code==exitAlreadyMarked){
-      return "Sortie déjà marquée";
-    }
-    if(code==exitMarkedSuccessfully){
-      return "Sortie marquée avec succès";
-    }
-    if(code==entryMarkedSuccessfully){
-      return "Entrée marqué avec succès";
-    }
-
-    if(code==desireToExitBeforeEntryTime){
-      return "Sortie marquée avant heure d'entrée' officiel";
-    }
-    if(code==desireToExitEarly){
-      return "Sortie marquée avant heure de sortie officiel";
-    }
-    return 'Inconnu';
-
-  }
 
   @override
   void didChangeDependencies() {
@@ -212,6 +133,10 @@ class _WelcomeState extends State<Welcome> {
 
   @override
   Widget build(BuildContext context) {
+
+    //log.d(context);
+    //log.e('===${ModalRoute.of(context)?.settings.name}');
+    ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -515,6 +440,7 @@ class _WelcomeState extends State<Welcome> {
                       backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                     ),
                     onPressed: (){
+                      log.i('Pressed');
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                             return const Authentification();

@@ -27,7 +27,7 @@ class EmployeeDB{
       uniqueCode=utils.generateRandomCode();
     }while(await uniqueCodeExists(uniqueCode) );
 
-    employee.uniqueCode=uniqueCode;
+    //employee.uniqueCode=uniqueCode;
        await _employee.add(employee.toMap());
     employee.id=(await getEmployeeIdByEmail(employee.email))!;
 

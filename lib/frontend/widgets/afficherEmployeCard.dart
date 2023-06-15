@@ -79,9 +79,7 @@ class AfficherEmployeCard extends StatelessWidget {
                               Text(
                                 utils.str(employee.status),
                                 style: const TextStyle(
-                                  //color: color()
-                                  //if(employe.EtatPresence.present)
-                                  //color: Colors.green,
+
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),

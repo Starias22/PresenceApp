@@ -172,7 +172,7 @@ late Presence presenceDoc;
                         () {
                       Navigator.push(context, MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return const Welcome();
+                            return const AdminLogin();
                           }));
                     });
 

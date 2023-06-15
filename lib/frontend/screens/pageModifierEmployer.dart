@@ -360,7 +360,8 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                            entryTime:
                                        startTime, exitTime: endTime,
                                            fingerprintId: widget.employee.fingerprintId,
-                                       uniqueCode: widget.employee.uniqueCode);
+                                       //uniqueCode: widget.employee.uniqueCode
+                                       );
                                       log.i('wE ARE gona update');
 
                                        await EmployeeDB().update(employee);

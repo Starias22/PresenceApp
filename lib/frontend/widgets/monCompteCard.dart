@@ -88,12 +88,21 @@ class CompteCard extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.all(20.0),
                 child: InkWell(
-                  child: Row(
+                  child: const Row(
                     children: [
+
                       Icon(Icons.perm_identity),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
+                        padding: EdgeInsets.all(8.0),
                         child: Text("Modifier le nom",
+                          style: TextStyle(
+                              fontSize: 20,
+                              color: Colors.blue
+                          ),),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Ajouter une photo",
                           style: TextStyle(
                               fontSize: 20,
                               color: Colors.blue

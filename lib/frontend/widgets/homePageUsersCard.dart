@@ -17,9 +17,7 @@ class HomePageCard extends StatelessWidget {
           padding: const EdgeInsets.only(right: 8.0),
           child: GestureDetector(
             onTap: (){
-              /*Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return Profile();
-              }));*/
+
             },
             child: Hero(
               tag: user!.photoURL!,

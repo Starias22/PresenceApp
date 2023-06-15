@@ -18,7 +18,7 @@ EStatus convertES(String status) {
 class Employee {
   late String id, firstname, lastname, email, gender;
   int? fingerprintId;
-  int uniqueCode;
+  //int uniqueCode;
   EStatus status;
   late DateTime startDate;
 
@@ -44,11 +44,12 @@ class Employee {
         required this.entryTime,
         required this.exitTime,
         this.status=EStatus.pending,
-        this.uniqueCode=0,this.fingerprintId
+        //this.uniqueCode=0,
+        this.fingerprintId
       });
 
   Map<String, dynamic> toMap() => {
-        'unique_code':uniqueCode,
+        //'unique_code':uniqueCode,
         'fingerprint_id':fingerprintId,
         'service':service,
         'status':utils.str(status),

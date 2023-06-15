@@ -1,7 +1,6 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
@@ -42,6 +41,8 @@ class _AuthentificationState extends State<Authentification> {
 
   @override
   Widget build(BuildContext context) {
+    //log.d(context);
+    //log.i('===${ModalRoute.of(context)?.settings.name}');
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -214,7 +215,7 @@ class _AuthentificationState extends State<Authentification> {
                                     retrieveTexts();
                                     log.d(email);
 
-                                    singIn(context);
+                                    singIn();
                                   },
                                   child: const Text(
                                     "Se connecter",
@@ -264,7 +265,7 @@ class _AuthentificationState extends State<Authentification> {
     );
   }
 
-  Future<void> singIn(BuildContext context) async{
+  Future<void> singIn() async{
 
     var loginCode= await Login().signIn(email!, password!);
 

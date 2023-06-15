@@ -8,18 +8,24 @@ class ESP32
 
 
 
-
+//http://172.16.65.1/?cmd=a
   Future<int> receiveData() async {
+    //log.i('Receive data');
     var url = Uri.parse('http://$ipAddress/?cmd=a');
+    log.i('Receive data');
 
     try {
+      log.i('Receive data****');
       // Replace with the actual IP address and command
       var response = await http.get(url);
+      //log.i('receive. $response');
+
+      //log.i('Receive data///');
 
       if (response.statusCode == 200) {
         var responseData = response.body;
         // Process the received data
-        log.i('response status code:${response.statusCode}');
+        //log.i('response status code:${response.statusCode}');
 
         //return 0;
         return int.parse(responseData);
