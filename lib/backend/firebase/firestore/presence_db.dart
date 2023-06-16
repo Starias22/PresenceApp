@@ -41,14 +41,14 @@ class PresenceDB {
   }
 
 Future<bool> entered(String employeeId) async {
-    String? presenceId=await getPresenceId(await utils.localTime(), employeeId);
 
 
-    return (await getPresenceById(presenceId!)).entryTime!=null;
+    return (await getPresenceById(
+        (await getPresenceId(await utils.localTime(), employeeId))!)).entryTime!=null;
 }
   Future<bool> exited(String employeeId) async {
-    String? presenceId=await getPresenceId(await utils.localTime(), employeeId);
-    return (await getPresenceById(presenceId!)).exitTime!=null;
+    return (await getPresenceById
+      ((await getPresenceId(await utils.localTime(), employeeId))!)).exitTime!=null;
   }
   Future<int> handleEmployeeAction( int fingerprintId) async {
 
@@ -59,9 +59,6 @@ Future<bool> entered(String employeeId) async {
 
     String? employeeId=await  EmployeeDB().getEmployeeIdByFingerprintId(fingerprintId);
 
-    log.i('Still working');
-    log.i('employee id: $employeeId');
-
    if(await HolidayDB().isInHoliday(employeeId!, dateTime)) {
      return inHoliday;
    }
@@ -71,22 +68,19 @@ Future<bool> entered(String employeeId) async {
      if(await exited(employeeId)){
        return exitAlreadyMarked;
      }
-
-     log.d('/////*');
      return  markExit(employeeId);
 
    }
-   else{
 
      markEntry(employeeId);
      return entryMarkedSuccessfully;
-   }
+
      }
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
     String date=utils.formatDateTime(dateTime);
-    log.d('The date:$date');
-    log.d('Employee id:$employeeId');
+    //log.d('The date:$date');
+    //log.d('Employee id:$employeeId');
     QuerySnapshot querySnapshot = await _presence
         .where('date', isEqualTo: date)
         .where('employee_id', isEqualTo: employeeId)
@@ -234,22 +228,18 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     _presence.doc(id).update({'status':utils.str(status)});
   }
-  Future<bool> markEntry(String employeeId) async {
+  void markEntry(String employeeId) async {
 
     DateTime now=await utils.localTime();
 
-  Employee employee=await EmployeeDB().getEmployeeById(employeeId);
 
-
-  EStatus status=employee.isLate(now)?EStatus.late:EStatus.present;
-  log.i('employee id*:$employeeId');
+  EStatus status=(await EmployeeDB().getEmployeeById(employeeId))
+      .isLate(now)?EStatus.late:EStatus.present;
 
   String? presenceId= await getEmployeePresenceId(employeeId, now);
-  log.i('Presence id:$presenceId');
 updateEntryTime(presenceId!, now);
 updateStatus(presenceId, status);
 EmployeeDB().updateCurrentStatus(employeeId, status);
-return true;
 
   }
 
@@ -259,9 +249,10 @@ return true;
 
     DateTime now=await utils.localTime();
     String? presenceId= await getEmployeePresenceId(employeeId, now);
+
     var employee=await EmployeeDB().getEmployeeById(employeeId);
-    log.d(employee.email);
     if(employee.desireToExitEarly(now)) {
+
       updateExitTime(presenceId!, now);
       EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
       return desireToExitEarly;
@@ -295,7 +286,7 @@ return true;
   Future<void> setAttendance(String employeeId,DateTime date) async {
     EStatus status;
 
-    log.i('attendance setting for $employeeId the data');
+    //log.i('attendance setting for $employeeId the data');
     Employee employee=await EmployeeDB().getEmployeeById(employeeId);
 
     if(employee.startDate.isAfter(date)){
@@ -343,7 +334,7 @@ return true;
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
     if(!date.isAtSameMomentAs(today)) {
-      log.d('Not this month');
+      //log.d('Not this month');
       date=DateTime(date.year,date.month,utils.lengthOfMonth(date));
     }
     String start=utils.formatDateTime(DateTime(date.year,date.month,1));
@@ -433,11 +424,11 @@ return true;
   Future<void> setAllEmployeesAttendances(DateTime date) async {
     var employees = await EmployeeDB().getAllEmployees();
 
-    log.i('${employees.length} employees');
+    //log.i('${employees.length} employees');
     for (var employee in employees) {
       employee.id=(await EmployeeDB().getEmployeeIdByEmail(employee.email))!;
-      log.d('email of the employee: ${employee.email}');
-      log.d('id of the employee: ${employee.id}');
+      //log.d('email of the employee: ${employee.email}');
+      //log.d('id of the employee: ${employee.id}');
 
       await setAttendance(employee.id, date);
     }
@@ -461,18 +452,18 @@ return true;
       DocumentSnapshot documentSnapshot = snapshot.docs[0];
       DocumentReference doc = documentSnapshot.reference;
 
-      log.d('Progressing***');
+      //log.d('Progressing***');
 
 
       Map<String,dynamic> map=(await doc.get()).data()
       as  Map<String,dynamic>;
-      log.i('map:$map');
+      //log.i('map:$map');
      String upd = map ['date']  ;
 
-     log.i('upd:$upd');
+     //log.i('upd:$upd');
 
       var luDate=DateTime.parse(upd);
-      log.i('last update:$luDate');
+      //log.i('last update:$luDate');
 
 
        DateTime now=await utils.localTime();
@@ -480,24 +471,24 @@ return true;
        if(luDate.isAtSameMomentAs(today)){
          return;
        }
-       log.d('Is not case');
+       //log.d('Is not case');
        var date=DateTime(luDate.year,luDate.month,luDate.day+1);
 
 
        while(!date.isAfter(today)){
 
          setAllEmployeesAttendances(date);
-         log.i('No problem before ++');
+         //log.i('No problem before ++');
          date=date.add(const Duration(days: 1));
-         log.d('//////');
+         //log.d('//////');
        }
 
-       log.d('End of the while loop');
+       //log.d('End of the while loop');
 
        String lastUpdateId=( await _lastUpdate.limit(1).get()).docs.first.id;
 
        _lastUpdate.doc(lastUpdateId).update({'date':utils.formatDateTime(today)});
-      log.d('Updated successfully');
+      //log.d('Updated successfully');
     }
 
 

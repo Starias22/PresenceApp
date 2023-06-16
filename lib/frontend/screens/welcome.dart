@@ -133,9 +133,6 @@ class _AdminLoginState extends State<AdminLogin> {
 
   @override
   Widget build(BuildContext context) {
-
-    //log.d(context);
-    //log.e('===${ModalRoute.of(context)?.settings.name}');
     ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
     return Scaffold(

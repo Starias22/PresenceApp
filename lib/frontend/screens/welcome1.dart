@@ -26,28 +26,25 @@ class _WelcomeImspState extends State<WelcomeImsp> {
   */
   final connectionError="Erreur de connexion! Veillez reessayer";
   bool isSignedInWithEmail = false;
-  bool initialized=false;
+  //bool initialized=false;
   bool connected=false;
   bool connectionStatusOff=false;
   int data=espConnectionFailed;
+  bool taskCompleted=true;
   String? email;
 
   Timer?  dataFetchTimer;
   @override
   void initState() {
     super.initState();
+    //connectionStatusOff=false;
 
 
     //log.d(context.widget.toString());
     //log.d(context.widget.toString().compareTo('WelcomeIMSP'));
     if(context.widget.toString().compareTo('WelcomeIMSP')==1) {
 
-      /*setState(() {
-        log.e('www');
-        initialized=false;
-        connected=false;
 
-      });*/
       log.d('aaaaaac');
       startDataFetching();
     }
@@ -64,11 +61,14 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     // Perform cleanup tasks here
     super.dispose();
   }
-  Future<void> startDataFetching() async {
+  void startDataFetching() {
 
-    const duration = Duration(seconds: 5);
-    dataFetchTimer = Timer.periodic(duration, (_) {
-      getData();
+    const duration = Duration(seconds: 3);
+    dataFetchTimer = Timer.periodic(duration, (_)  async {
+      if(taskCompleted) {
+        taskCompleted=false;
+        await getData();
+      }
     });
   }
 
@@ -82,16 +82,51 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     log.d('Data*****: $data');
     log.d('connectionStatusOff*****: $connectionStatusOff');
 
-    if(data==espConnectionFailed&&!connectionStatusOff) {
+    if(data==espConnectionFailed&&connectionStatusOff==false) {
       connected=false;
       message = "Connexion non reussie avec le micrôtrolleur!";
       ToastUtils.showToast(context, message,24*3600 );
       connectionStatusOff=true;
+      taskCompleted=true;
+      return;
 
     }
 
+     if (1 <= data && data <= 127) {
+      log.d('qqqqqq');
+      var employeeId = await EmployeeDB()
+          .getEmployeeIdByFingerprintId(data);
+      log.d('after');
+      if (employeeId == null) {
+        log.d('is null');
+        ToastUtils.showToast(context, 'Vous êtes un intru', 3);
+        taskCompleted=true;
+        return;
+      }
+      log.d('after--');
+      //log.d('after111');
+      var before=DateTime.now();
+      int code = await PresenceDB().handleEmployeeAction(data);
+      var after=DateTime.now();
+      var duration=after.difference(before);
+      //duration=duration.inSeconds;
+      log.d('duration: $duration');
+      //log.d('after111');
 
-    else {
+      var employee = await EmployeeDB().getEmployeeById(employeeId);
+
+      log.d('after===');
+      String civ = employee.gender == 'M' ? 'Monsieur' : 'Madame';
+      ToastUtils.showToast(context, '$civ ${employee.firstname}'
+          ' ${employee.lastname}: ${getMessage(code)}', 3);
+      taskCompleted=true;
+      return;
+
+    }
+    //log.d('connectionStatusOff****.: $connectionStatusOff');
+
+    else if(data==150)  {
+      log.d('data... $data');
       //if not already connected
       if (!connected) {
         connectionStatusOff = false;
@@ -102,32 +137,21 @@ class _WelcomeImspState extends State<WelcomeImsp> {
       }
 
 
-      else if (1 <= data && data <= 127) {
-        var employeeId = await EmployeeDB()
-            .getEmployeeIdByFingerprintId(data);
-        if (employeeId == null) {
-          ToastUtils.showToast(context, 'Vous êtes un intru', 3);
-          return;
-        }
 
-        int code = await PresenceDB().handleEmployeeAction(data);
-        var employee = await EmployeeDB().getEmployeeById(employeeId);
-        String civ = employee.gender == 'M' ? 'Monsieur' : 'Madame';
-        ToastUtils.showToast(context, '$civ ${employee.firstname}'
-            ' ${employee.lastname}: ${getMessage(code)}', 3);
-      }
 
-      else if (data == 151) {
-        message =
-        "Employé non reconnue! Veuillez reessayer!";
-        ToastUtils.showToast(context, message, 3);
-      }
+
       /*else if (data == 150) {
         message =
         "Aucun doigt!";
         ToastUtils.showToast(context, message, 3);
       }*/
     }
+    else if (data == 151) {
+      message =
+      "Employé non reconnue! Veuillez reessayer!";
+      ToastUtils.showToast(context, message, 3);
+    }
+    taskCompleted=true;
   }
   String getMessage(int code){
     if(code==isWeekend){

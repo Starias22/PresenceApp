@@ -25,9 +25,7 @@ class _AuthentificationState extends State<Authentification> {
 
   String? email, password;
 
-  void showToast(String message) {
-    ToastUtils.showToast(context, message, 3);
-  }
+
 
   void retrieveTexts() {
     email = emailC.text;
@@ -41,8 +39,7 @@ class _AuthentificationState extends State<Authentification> {
 
   @override
   Widget build(BuildContext context) {
-    //log.d(context);
-    //log.i('===${ModalRoute.of(context)?.settings.name}');
+
     return SafeArea(
       child: Scaffold(
         extendBodyBehindAppBar: true,
@@ -211,7 +208,7 @@ class _AuthentificationState extends State<Authentification> {
                                     } else {
                                       return;
                                     }
-
+                                    log.d('ooof');
                                     retrieveTexts();
                                     log.d(email);
 
@@ -268,6 +265,7 @@ class _AuthentificationState extends State<Authentification> {
   Future<void> singIn() async{
 
     var loginCode= await Login().signIn(email!, password!);
+    log.i('fff: $loginCode');
 
     try {
       final result = await (Connectivity().checkConnectivity());
@@ -320,6 +318,7 @@ class _AuthentificationState extends State<Authentification> {
               message="Votre compte admin vient d'être supprimé car vous n'êtes plus admin";
               loginCode=accountDeleted;
             }
+            log.d('message: $message');
             inLoginProcess = false;
 
             break;
@@ -333,7 +332,7 @@ class _AuthentificationState extends State<Authentification> {
 
         log.d(message);
 
-        showToast(message);
+        ToastUtils.showToast(context,message,3);
 
         /*if (loginCode == success) {
           //showToast(message);
@@ -348,10 +347,12 @@ class _AuthentificationState extends State<Authentification> {
         }*/
 
       } else {
-        showToast("Aucune connexion internet");
+        ToastUtils.showToast(context,"Aucune connexion internet",3);
+
       }
     } catch (_) {
-      showToast("Une erreur s'est produite lors de la connexion");
+      ToastUtils.showToast(context,"Une erreur s'est produite lors de la connexion",3);
+
     }
   }
 }
