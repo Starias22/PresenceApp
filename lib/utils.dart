@@ -102,6 +102,27 @@ class Utils {
       return false;
     }
   }
+  DateTime getNextWorkDate(DateTime date) {
+    int day;
+
+    if (date.weekday == DateTime.friday) {
+      // Friday
+      day = date.day + 3;
+    } else if (date.weekday == DateTime.saturday) {
+      // Saturday
+      day = date.day + 2;
+    } else {
+      // Other days
+      day = date.day + 1;
+    }
+log.d(DateTime(date.year, date.month, day));
+    return DateTime(date.year, date.month, day);
+  }
+
+  DateTime add30Days(DateTime date) {
+    return date.add(const Duration(days: 30));
+  }
+
   String x(Duration duration){
     log.i('///');
     String formattedTime = '${(duration.inHours).toString().

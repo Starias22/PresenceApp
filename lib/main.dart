@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
@@ -69,6 +70,14 @@ class MyApp extends StatelessWidget {
     return Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+            ],
+              supportedLocales: const [
+                Locale('en'), // Add your desired locales here, e.g., 'fr'
+                Locale('fr'),
+              ],
             navigatorObservers: [routeObserver],
             title: 'PresenceApp ',
             debugShowCheckedModeBanner: false,

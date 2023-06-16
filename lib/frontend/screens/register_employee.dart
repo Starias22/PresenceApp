@@ -16,18 +16,111 @@ class RegisterEmployee extends StatefulWidget {
 }
 
 class _RegisterEmployeeState extends State<RegisterEmployee> {
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
+  DateTime? selectedDate;
+  late DateTime today;
+  Future<void> selectStartDateAndAchieve(BuildContext context) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Sélection de date"),
+          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Continuer'),
+              onPressed: () async {
+
+                Navigator.of(context).pop();
+                //return;
+
+              },
+            ),
+
+          ],
+        );
+      },
+    );
+
+    DateTime lastDate=utils.add30Days(today);
+    DateTime nextWorkDate=utils.getNextWorkDate(today);
+
+
+    selectedDate = await  showDatePicker(context: context,
+
+      locale: const Locale('fr'),
+      initialDate:nextWorkDate ,
+      firstDate: utils.isWeekend(today)?nextWorkDate:today ,
+      lastDate:lastDate,
+      currentDate: today,
+    );
+
+
+    if(selectedDate==null){
+      ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
+      return;
+    }
+    DateTime start=selectedDate!;
+
+    if(utils.isWeekend(start)){
+      ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
+      return;
+    }
+
+
+    if((await HolidayDB().isHoliday(start))){
+      ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
+      return;
+    }
+
+    if(!fingerprintSaved){
+      ToastUtils.showToast(context, "Empreinte non enregistrée!", 3);
+      return;
+    }
+
+
+
+
+
+    Employee employee=Employee
+
+
+      ( firstname: firstname,
+        gender: gender, lastname: lastname,
+        email: email, service:serviceName,
+        startDate: start, entryTime: entryTime,
+        exitTime: exitTime);
+
+    String message;
+    bool created=false;
+
+
+
+
+
+    if(await EmployeeDB().create(employee)){
+      message='Employé enregistré avec succès';
+      created=true;
+    }
+    else{
+      message=  'Cette adresse email a été déjà attribuée à un employé';
+    }
+    ToastUtils.showToast(context, message, 3);
+
+    if(created) {
+    }
+
+
+
+  }
 
   late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
 
-  List<int> days = List<int>.generate(31, (index) => index + 1);
-  List<int> months = List<int>.generate(12, (index) => index + 1);
-  List<int> years = List<int>.generate(100, (index) => DateTime.now().year + index);
-
-  late DateTime selectedDate = DateTime.now();
-  late int selectedDay = selectedDate.day;
-  late int selectedMonth = selectedDate.month;
-  late int selectedYear = selectedDate.year;
-
+ bool fingerprintSaved=false;
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -51,6 +144,10 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         _controller?.text = 'circleValue';
       });
     });
+  }
+  void saveFingerprint() {
+
+    print('Fingerprint saved!');
   }
 
   @override
@@ -91,8 +188,26 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                     ),
                     child: IconButton(
                       tooltip: "Enregistrer l'empreinte",
-                      onPressed: (){
-                        ToastUtils.showToast(context,"Enregistrer l'empreinte", 3);
+                      onPressed: () async {
+
+                       await  showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text("Enregisterer l'empreinte"),
+                              content: const Text("Continuer pour enregistrer l'empreinte de l'employé"),
+                              actions: <Widget>[
+                                TextButton(
+                                  child: const Text('Continuer'),
+                                  onPressed: () {
+                                    saveFingerprint();
+                                    Navigator.of(context).pop();
+                                  },
+                                ),
+                              ],
+                            );
+                          },
+                        );
                         //showServiceDialog(context);
                       },
                       icon: const Icon(Icons.fingerprint, color: Colors.black, ),
@@ -283,73 +398,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               const SizedBox(
                                 height: 12,
                               ),
-
-                              Container(
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                    color: Colors.black,
-                                    width: 0.5,
-                                  ),
-                                  //borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //const Text("Date débuit service : "),
-                                      DropdownButton<int>(
-                                        value: selectedDay,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedDay = newValue!;
-                                          });
-                                        },
-                                        items: days.map<DropdownMenuItem<int>>((int value) {
-                                          return DropdownMenuItem<int>(
-                                            value: value,
-                                            child: Text(value.toString()),
-                                          );
-                                        }).toList(),
-                                      ),
-                                      const SizedBox(width: 2),
-                                      DropdownButton<int>(
-                                        value: selectedMonth,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedMonth = newValue!;
-                                          });
-                                        },
-                                        items:
-                                        months.map<DropdownMenuItem<int>>((int value)
-                                        {
-                                          return DropdownMenuItem<int>(
-                                            value: value,
-                                            child: Text(value.toString()),
-                                          );
-                                        }).toList(),
-                                      ),
-                                      const SizedBox(width: 2),
-                                      DropdownButton<int>(
-                                        value: selectedYear,
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedYear = newValue!;
-                                          });
-                                        },
-                                        items: years.map<DropdownMenuItem<int>>((int value) {
-                                          return DropdownMenuItem<int>(
-                                            value: value,
-                                            child: Text(value.toString()),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 12,),
                               DropdownButtonFormField(
                                 items:  const [
                                   DropdownMenuItem(
@@ -478,11 +526,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 const RegisterEmployee())),
-                                    /* Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const StatistiquesForServices())),*/
                                     child: const Text("Annuler"),
                                   ),
                                   ElevatedButton(
@@ -500,50 +543,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                       } else {
                                         return;
                                       }
-
                                       DateTime now=await utils.localTime();
-                                      DateTime today=DateTime(now.year,now.month,now.day);
-                                      DateTime start=DateTime(now.year,now.month,now.day+1);
+                                      today=DateTime(now.year,now.month,now.day);
+
+                                      selectStartDateAndAchieve(context);
 
 
-                                      Employee employee=Employee
 
-
-                                        ( firstname: firstname,
-                                          gender: gender, lastname: lastname,
-                                          email: email, service:serviceName,
-                                          startDate: start, entryTime: entryTime, exitTime: exitTime);
-
-                                      String message;
-                                      bool created=false;
-                                      if(start.isBefore(today)){
-                                        message="La date de début doit être au moins aujourd'hui";
-                                      }
-                                      else if(utils.isWeekend(start)){
-                                        message="Cette date de début est un weekend";
-                                      }
-
-                                      else if((await HolidayDB().isHoliday(start))){
-                                        message="Cettte date de début est définie comme un jour férié ou de congés";
-                                      }
-
-
-                                      else if(await EmployeeDB().create(employee)){
-                                        message='Employé enregistré avec succès';
-                                        created=true;
-                                      }
-                                      else{
-                                      message=  'Cette adresse email a été déjà attribuée à un employé';
-                                      }
-                                     ToastUtils.showToast(context, message, 3);
-
-                                       if(created) {
-                                         Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      const RegisterEmployee()));
-                                       }
                                     },
                                     child: const Text('Confirmer'),
                                   ),
