@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/frontend/screens/acceuilAdmin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
@@ -212,7 +213,7 @@ class _AuthentificationState extends State<Authentification> {
                                     retrieveTexts();
                                     log.d(email);
 
-                                    singIn();
+                                    await singIn();
                                   },
                                   child: const Text(
                                     "Se connecter",
@@ -274,7 +275,6 @@ class _AuthentificationState extends State<Authentification> {
           inLoginProcess = true;
         });
 
-        //await AuthService().signInWithGoogle();
 
         String message;
         switch (loginCode) {
@@ -332,19 +332,21 @@ class _AuthentificationState extends State<Authentification> {
 
         log.d(message);
 
-        ToastUtils.showToast(context,message,3);
 
-        /*if (loginCode == success) {
-          //showToast(message);
-          Future.delayed(const Duration(seconds: 3),
+        ToastUtils.showToast(context,message,3);
+        //ToastUtils.showToast(context,message,3);
+        //ToastUtils.showToast(context,message,3);
+        if (loginCode == success) {
+          inLoginProcess = false;
+          Future.delayed(const Duration(seconds: 5),
                   () {
                 Navigator.push(context,
                     MaterialPageRoute(builder:
                         (BuildContext context) {
-                      return const StatistiquesForServices();
+                      return const HomePageOfAdmin();
                     }));
               });
-        }*/
+        }
 
       } else {
         ToastUtils.showToast(context,"Aucune connexion internet",3);

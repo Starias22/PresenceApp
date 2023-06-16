@@ -1,14 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:presence_app/frontend/screens/welcome1.dart';
 import 'package:presence_app/frontend/widgets/wrapperEmployee.dart';
-import 'package:presence_app/utils.dart' as u;
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -58,7 +54,10 @@ void main() async {
         ),
       )
   );
+
 }
+final RouteObserver<ModalRoute> routeObserver = RouteObserver<ModalRoute>();
+
 
 class MyApp extends StatelessWidget {
 
@@ -70,6 +69,7 @@ class MyApp extends StatelessWidget {
     return Consumer<AppSettings>(
         builder: (context, appSettings, _) {
           return MaterialApp(
+            navigatorObservers: [routeObserver],
             title: 'PresenceApp ',
             debugShowCheckedModeBanner: false,
             theme: appSettings.isDarkMode ? ThemeData.dark() : ThemeData(

@@ -1,22 +1,45 @@
 import 'dart:async';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 
 class WelcomeImsp extends StatefulWidget {
+
   const WelcomeImsp({Key? key}) : super(key: key);
+
 
   @override
   State<WelcomeImsp> createState() => _WelcomeImspState();
 }
 
-class _WelcomeImspState extends State<WelcomeImsp> {
+class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
+
+  @override
+  void didPopNext() {
+
+    setState(() {
+
+    nextPage=false;
+      //  connected=false;
+      connectionStatusOff=false;
+      //  //data=espConnectionFailed;
+      taskCompleted=true;
+    noNetworkConnection=false;
+
+
+    });
+    super.didPopNext();
+
+  }
   final GlobalKey<ScaffoldMessengerState>
   _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -25,46 +48,48 @@ class _WelcomeImspState extends State<WelcomeImsp> {
   wrong ip address provided in the code for the esp32
   */
   final connectionError="Erreur de connexion! Veillez reessayer";
-  bool isSignedInWithEmail = false;
-  //bool initialized=false;
+
+  bool nextPage=false;
   bool connected=false;
   bool connectionStatusOff=false;
   int data=espConnectionFailed;
   bool taskCompleted=true;
-  String? email;
+  bool noNetworkConnection=false;
 
   Timer?  dataFetchTimer;
+
+
+
   @override
   void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      routeObserver.subscribe(this, ModalRoute.of(context)!);
+    });
     super.initState();
-    //connectionStatusOff=false;
 
-
-    //log.d(context.widget.toString());
-    //log.d(context.widget.toString().compareTo('WelcomeIMSP'));
-    if(context.widget.toString().compareTo('WelcomeIMSP')==1) {
-
-
-      log.d('aaaaaac');
       startDataFetching();
-    }
+
+
+
+
+
   }
+
 
   @override
   void didChangeDependencies() {
+
     super.didChangeDependencies();
 
   }
 
-  @override
-  void dispose() {
-    // Perform cleanup tasks here
-    super.dispose();
-  }
+
   void startDataFetching() {
+
 
     const duration = Duration(seconds: 3);
     dataFetchTimer = Timer.periodic(duration, (_)  async {
+      if(nextPage) return;
       if(taskCompleted) {
         taskCompleted=false;
         await getData();
@@ -72,20 +97,69 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     });
   }
 
+
   Future<void> getData()
   async {
 
     String message;
+    //there is no internet connection
+    if (await (Connectivity().checkConnectivity())
 
-    data=await ESP32().receiveData();
+        == ConnectivityResult.none) {
+      
+      connectionStatusOff=false;
+      //log.d('There is no internet connection');
+      //if there were no internet connection
+      if(noNetworkConnection) {
+        taskCompleted=true;
+        return ;
+      }
+      //else there were network connection
 
-    log.d('Data*****: $data');
-    log.d('connectionStatusOff*****: $connectionStatusOff');
+
+        message = "Aucune connexion internet";
+
+        if(nextPage) return;
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        ToastUtils.showToast(context, message,24*3600 );
+
+
+        noNetworkConnection=true;
+        taskCompleted=true;
+        return;
+
+    }
+    
+
+    log.d('There is internet connection');
+    //if there were no internet connection
+    if(noNetworkConnection) {
+      message = "Connexion internet rétablie !";
+      noNetworkConnection=false;
+
+      //if(nextPage) return;
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ToastUtils.showToast(context, message, 3 );
+      
+    }
+
+
+      data=await ESP32().receiveData();
+
 
     if(data==espConnectionFailed&&connectionStatusOff==false) {
+
+      log.d('esp failed');
       connected=false;
       message = "Connexion non reussie avec le micrôtrolleur!";
+
+      if(nextPage) return;
+
+
       ToastUtils.showToast(context, message,24*3600 );
+
+
       connectionStatusOff=true;
       taskCompleted=true;
       return;
@@ -93,37 +167,34 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     }
 
      if (1 <= data && data <= 127) {
-      log.d('qqqqqq');
+
       var employeeId = await EmployeeDB()
           .getEmployeeIdByFingerprintId(data);
-      log.d('after');
+
       if (employeeId == null) {
-        log.d('is null');
         ToastUtils.showToast(context, 'Vous êtes un intru', 3);
         taskCompleted=true;
         return;
       }
-      log.d('after--');
-      //log.d('after111');
+
       var before=DateTime.now();
       int code = await PresenceDB().handleEmployeeAction(data);
       var after=DateTime.now();
       var duration=after.difference(before);
-      //duration=duration.inSeconds;
       log.d('duration: $duration');
-      //log.d('after111');
+
 
       var employee = await EmployeeDB().getEmployeeById(employeeId);
 
-      log.d('after===');
-      String civ = employee.gender == 'M' ? 'Monsieur' : 'Madame';
-      ToastUtils.showToast(context, '$civ ${employee.firstname}'
+
+
+      ToastUtils.showToast(context, '${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
+          ' ${employee.firstname}'
           ' ${employee.lastname}: ${getMessage(code)}', 3);
       taskCompleted=true;
       return;
 
     }
-    //log.d('connectionStatusOff****.: $connectionStatusOff');
 
     else if(data==150)  {
       log.d('data... $data');
@@ -132,19 +203,11 @@ class _WelcomeImspState extends State<WelcomeImsp> {
         connectionStatusOff = false;
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         message = "Connexion reussie avec le micrôtrolleur!";
+
         ToastUtils.showToast(context, message, 5);
         connected = true;
       }
 
-
-
-
-
-      /*else if (data == 150) {
-        message =
-        "Aucun doigt!";
-        ToastUtils.showToast(context, message, 3);
-      }*/
     }
     else if (data == 151) {
       message =
@@ -153,6 +216,8 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     }
     taskCompleted=true;
   }
+
+
   String getMessage(int code){
     if(code==isWeekend){
       return "Aujourdh'ui est un weekend";
@@ -180,11 +245,11 @@ class _WelcomeImspState extends State<WelcomeImsp> {
     return 'Inconnu';
 
   }
+
+
   @override
   Widget build(BuildContext context) {
-    //log.d(context.widget);
-    //log.d(context);
-    //log.d('===${ModalRoute.of(context)?.settings.name}');
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: ListView(
@@ -195,6 +260,7 @@ class _WelcomeImspState extends State<WelcomeImsp> {
               alignment: Alignment.topRight,
               child: InkWell(
                 onTap: (){
+                  nextPage=true;
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {return const AdminLogin();}
                   ));
@@ -287,6 +353,7 @@ class _WelcomeImspState extends State<WelcomeImsp> {
                         backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                       ),
                         onPressed: (){
+                        nextPage=true;
                           Navigator.push(context,MaterialPageRoute(
                               builder: (BuildContext context) {return const AdminLogin();}
                           ));

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/frontend/screens/mesStatistiques.dart';
@@ -133,7 +134,10 @@ class _AdminLoginState extends State<AdminLogin> {
 
   @override
   Widget build(BuildContext context) {
-    ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    });
+
 
     return Scaffold(
       extendBodyBehindAppBar: true,
