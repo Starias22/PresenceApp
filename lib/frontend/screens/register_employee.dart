@@ -68,6 +68,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
+
               backgroundColor: const Color(0xFF0020FF),
               centerTitle: true,
               title: Text(
@@ -76,7 +77,31 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                   fontSize: 25,
                 ),
               ),
+              actions: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                    height: 40,
+                    width: 40,
+                    alignment: Alignment.center,
+                    margin: const EdgeInsets.only(left: 8),
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.blueGrey,
+                    ),
+                    child: IconButton(
+                      tooltip: "Enregistrer l'empreinte",
+                      onPressed: (){
+                        ToastUtils.showToast(context,"Enregistrer l'empreinte", 3);
+                        //showServiceDialog(context);
+                      },
+                      icon: const Icon(Icons.fingerprint, color: Colors.black, ),
+                    ),
+                  ),
+                )
+              ],
             ),
+
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
