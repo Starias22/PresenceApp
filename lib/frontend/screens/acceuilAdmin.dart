@@ -184,6 +184,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                       );
                     },
                     child: const CircleAvatar(
+
                       backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
                   )

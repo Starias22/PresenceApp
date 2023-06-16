@@ -5,7 +5,6 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -297,7 +296,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                             selectedMonth = newValue!;
                                           });
                                         },
-                                        items: months.map<DropdownMenuItem<int>>((int value) {
+                                        items:
+                                        months.map<DropdownMenuItem<int>>((int value)
+                                        {
                                           return DropdownMenuItem<int>(
                                             value: value,
                                             child: Text(value.toString()),
