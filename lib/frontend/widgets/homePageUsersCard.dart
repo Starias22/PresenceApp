@@ -2,28 +2,30 @@ import 'package:flutter/material.dart';
 
 class HomePageCard extends StatelessWidget {
   final user;
-  const HomePageCard({Key? key, this.user}) : super(key: key);
+  final String imageDownloadURL;
+
+  const HomePageCard({Key? key, this.user, required this.imageDownloadURL})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return SliverAppBar(
-      title: const Text("My Home Page",),
+      title: const Text(
+        "My Home Page",
+      ),
       elevation: 1,
       floating: true,
       forceElevated: true,
-
       actions: [
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: GestureDetector(
-            onTap: (){
-
-            },
+            onTap: () {},
             child: Hero(
-              tag: user!.photoURL!,
+              tag: imageDownloadURL,
               child: CircleAvatar(
                 backgroundColor: Colors.grey,
-                backgroundImage: NetworkImage(user!.photoURL!),
+                backgroundImage: NetworkImage(imageDownloadURL),
               ),
             ),
           ),
@@ -31,4 +33,5 @@ class HomePageCard extends StatelessWidget {
       ],
     );
   }
+
 }

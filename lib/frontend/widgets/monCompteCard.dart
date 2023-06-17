@@ -87,7 +87,6 @@ class CompteCard extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.all(20.0),
-
                 child: InkWell(
                   child: const Row(
                     children: [
@@ -112,9 +111,35 @@ class CompteCard extends StatelessWidget {
                         return FormulaireModifierEmploye(employee: employee,);
                       }),
                     );
+
                   },
                 ),
-              )
+              ),
+              // Commentaire : Ajouter un InkWell pour "Modifier ma photo"
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: InkWell(
+                  child: const Row(
+                    children: [
+                      Icon(Icons.photo_camera),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          "Modifier ma photo",
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.blue,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    // Commentaire : Gérer le clic sur "Modifier ma photo"
+                  },
+                ),
+              ),
+
             ],
           ),
         ),
@@ -201,7 +226,7 @@ class CompteCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Text("Changer le mot de passe",
-                            style: TextStyle(
+                            style: TfforextStyle(
                                 fontSize: 20,
                                 color: Colors.blue
                             ),),
