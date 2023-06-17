@@ -87,6 +87,7 @@ class CompteCard extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.all(20.0),
+
                 child: InkWell(
                   child: const Row(
                     children: [
@@ -100,16 +101,9 @@ class CompteCard extends StatelessWidget {
                               color: Colors.blue
                           ),),
                       ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text("Ajouter une photo",
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Colors.blue
-                          ),),
-                      )
                     ],
                   ),
+
 
                   onTap: (){
                     Navigator.push(
