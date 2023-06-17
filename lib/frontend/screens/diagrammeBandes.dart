@@ -36,8 +36,7 @@ late String email;
     DateTime now=await utils.localTime();
     thisMonth=DateTime(now.year,now.month);
     date=thisMonth;
-    id = await EmployeeDB().getEmployeeIdByEmail(email);
-    employee = await EmployeeDB().getEmployeeById(id!);
+    employee = await EmployeeDB().getEmployeeByEmail(email);
 
    if( employee.status==EStatus.pending) {
      x=[0,0,0];

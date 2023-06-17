@@ -2,15 +2,15 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/frontend/widgets/homePageUsersCard.dart';
+import 'package:presence_app/frontend/widgets/employee_home_page_card.dart';
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class EmployeeHomePage extends StatefulWidget {
+  const EmployeeHomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<EmployeeHomePage> createState() => _EmployeeHomePageState();
 }
 
 Future<String> getDownloadURL(String fileName) async {
@@ -24,7 +24,7 @@ Future<String> getDownloadURL(String fileName) async {
   }
 }
 
-class _HomePageState extends State<HomePage> {
+class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Future<String>? imageDownloadURL;
   String? email=FirebaseAuth.instance.currentUser!.email;
   String? employeeId;
@@ -38,6 +38,10 @@ class _HomePageState extends State<HomePage> {
       imageDownloadURL = getDownloadURL(filename!);
     });
 
+    // setState(() {
+    //
+    // });
+
     
   }
   
@@ -49,13 +53,13 @@ class _HomePageState extends State<HomePage> {
 
   }
   Future<void> retrieve() async {
-    employeeId=await EmployeeDB().getEmployeeIdByEmail(email!);
+    employeeId=(await EmployeeDB().getEmployeeByEmail(email!)).id;
     await getImageName();
   }
 
   @override
   Widget build(BuildContext context) {
-    final _user = Provider.of<User?>(context);
+    final user = Provider.of<User?>(context);
 
     return Scaffold(
       body: SafeArea(
@@ -72,7 +76,7 @@ class _HomePageState extends State<HomePage> {
               return CustomScrollView(
                 slivers: [
                   HomePageCard(
-                    user: _user,
+                    user: user,
                     imageDownloadURL: snapshot.data!,
                   ),
                 ],

@@ -18,8 +18,8 @@ class _MonCompteState extends State<MonCompte> {
 
   Future<void> retrieve() async {
     email=FirebaseAuth.instance.currentUser!.email;
-    String? id=await EmployeeDB().getEmployeeIdByEmail(email!);
-     employee=await EmployeeDB().getEmployeeById(id!);
+
+     employee=await EmployeeDB().getEmployeeByEmail(email!);
 
   }
   @override

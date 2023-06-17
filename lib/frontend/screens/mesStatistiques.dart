@@ -58,9 +58,7 @@ late Presence presenceDoc;
     Map<DateTime,EStatus>x={};
 
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
-    employeeId= await EmployeeDB().getEmployeeIdByEmail(email);
-    log.d('Id de lemp: $employeeId');
-    var employee=await EmployeeDB().getEmployeeById(employeeId!);
+    var employee=await EmployeeDB().getEmployeeByEmail(email);
     nEntryTime=utils.format(employee.entryTime)!;
     nExitTime=utils.format(employee.exitTime)!;
     if(employee.status==EStatus.pending){

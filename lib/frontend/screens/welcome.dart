@@ -168,10 +168,10 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
      if (1 <= data && data <= 127) {
 
-      var employeeId = await EmployeeDB()
-          .getEmployeeIdByFingerprintId(data);
+      var employee = await EmployeeDB()
+          .getEmployeeByFingerprintId(data);
 
-      if (employeeId == null) {
+      if (employee == null) {
         ToastUtils.showToast(context, 'Vous êtes un intru', 3);
         taskCompleted=true;
         return;
@@ -182,11 +182,6 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
       var after=DateTime.now();
       var duration=after.difference(before);
       log.d('duration: $duration');
-
-
-      var employee = await EmployeeDB().getEmployeeById(employeeId);
-
-
 
       ToastUtils.showToast(context, '${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
           ' ${employee.firstname}'

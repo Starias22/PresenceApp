@@ -102,17 +102,17 @@ class EmployeeDB{
     return null;
   }
 
-
-  Future<String?> getEmployeeIdByUniqueCode(int uniqueCode) async {
-    QuerySnapshot querySnapshot = await _employee
-        .where('unique_code', isEqualTo: uniqueCode)
-        .limit(1)
-        .get();
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first.id;
-    }
-    return null;
-  }
+  //
+  // Future<String?> getEmployeeIdByUniqueCode(int uniqueCode) async {
+  //   QuerySnapshot querySnapshot = await _employee
+  //       .where('unique_code', isEqualTo: uniqueCode)
+  //       .limit(1)
+  //       .get();
+  //   if (querySnapshot.docs.isNotEmpty) {
+  //     return querySnapshot.docs.first.id;
+  //   }
+  //   return null;
+  // }
 
 
 
@@ -126,12 +126,52 @@ class EmployeeDB{
       // Convert the document snapshot into an Admin object
       Employee employee = Employee.fromMap(snapshot.data()!);
       employee.id = snapshot.id;
-      log.i('start date:${employee.startDate}');
       return employee;
     } else {
       throw Exception('Employee not found');
     }
   }
+
+  Future<Employee> getEmployeeByEmail(String email) async {
+
+    QuerySnapshot querySnapshot = await _employee
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+    querySnapshot.docs.first as DocumentSnapshot<Map<String, dynamic>>;
+    if (snapshot.exists) {
+
+      Employee employee = Employee.fromMap(snapshot.data()!);
+      return employee;
+    } else {
+      throw Exception('Employee not found');
+    }
+  }
+
+
+  Future<Employee?> getEmployeeByFingerprintId(int fingerprintId) async {
+
+    QuerySnapshot querySnapshot = await _employee
+        .where('fingerprint_id', isEqualTo: fingerprintId)
+        .limit(1)
+        .get();
+
+
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+    querySnapshot.docs.first as DocumentSnapshot<Map<String, dynamic>>;
+    if (snapshot.exists) {
+
+      Employee employee = Employee.fromMap(snapshot.data()!);
+      return employee;
+    } else {
+      //throw Exception('Employee not found');
+      return null;
+    }
+  }
+
 
   Future<List<Employee>> getAllEmployees() async {
     QuerySnapshot querySnapshot = await _employee.get();

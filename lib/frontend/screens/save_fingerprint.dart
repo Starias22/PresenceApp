@@ -178,8 +178,10 @@ class _SaveFingerprintState extends State<SaveFingerprint> {
                   uniqueCode=1;
                   log.i('error: Unique code: $uniqueCode');
                 }
-                String? employeeId = await EmployeeDB()
-                    .getEmployeeIdByUniqueCode(uniqueCode);
+                String? employeeId = '';
+                // await EmployeeDB()
+                //     .getEmployeeIdByUniqueCode(uniqueCode);
+
                 if (employeeId == null) {
                   message = "Code incorrect";
                   ToastUtils.showToast(context, message, 3);
