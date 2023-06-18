@@ -22,53 +22,16 @@ class HomePageCard extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(right: 8.0),
           child: MouseRegion(
-            onEnter: (event) {
-
-            },
-            onExit: (event) {
-            },
-            child:Listener(
-      onPointerDown: (event) {},
-            child: GestureDetector(
-
+            onEnter: (event) {},
+            onExit: (event) {},
+            child: InkWell(
               onTap: () {
                 log.d('qqqqqqqq');
-
-                final RenderBox? overlay = context.findRenderObject() as RenderBox?;
-                if (overlay != null) {
-                final RelativeRect position = RelativeRect.fromRect(
-                Rect.fromPoints(
-                overlay.localToGlobal(Offset.zero),
-                overlay.localToGlobal(overlay.size.bottomRight(Offset.zero)),
-                ),
-                Offset.zero & overlay.size,
-                );
-
-                showMenu(
-                  context: context,
-                  position: position,
-                  items: [
-                    const PopupMenuItem<String>(
-                      value: 'logout',
-                      child: Text('Déconnexion'),
-                    ),
-                    const PopupMenuItem<String>(
-                      value: 'manageAccount',
-                      child: Text('Gérer mon compte'),
-                    ),
-                  ],
-                ).then((value) {
-                  if (value != null) {
-                    //_handleMenuSelection(value);
-                  }
-                });
-                }
-
               },
               child: Tooltip(
-              message:'Compte employé\n '
-                  '${employee.firstname} ${employee.lastname}\n'
-                  '${employee.email}' ,
+                message: 'Compte employé\n '
+                    '${employee.firstname} ${employee.lastname}\n'
+                    '${employee.email}',
                 preferBelow: false,
                 child: Hero(
                   tag: imageDownloadURL,
@@ -78,11 +41,37 @@ class HomePageCard extends StatelessWidget {
                   ),
                 ),
               ),
-            )),
+            ),
           ),
         )
       ],
+      flexibleSpace: Container(
+        alignment: Alignment.centerRight,
+        margin: const EdgeInsets.only(right: 16),
+        child: DropdownButtonHideUnderline(
+          child: DropdownButton<String>(
+            onChanged: (value) {
+              if (value == "déconnexion") {
+                // Handle déconnexion option
+                log.d('Déconnexion selected');
+              } else if (value == "Gérer mon compte") {
+                // Handle Gérer mon compte option
+                log.d('Gérer mon compte selected');
+              }
+            },
+            items: const [
+              DropdownMenuItem(
+                value: "déconnexion",
+                child: Text("Déconnexion"),
+              ),
+              DropdownMenuItem(
+                value: "Gérer mon compte",
+                child: Text("Gérer mon compte"),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
-
 }

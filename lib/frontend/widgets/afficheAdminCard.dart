@@ -123,7 +123,6 @@ class AfficherAdminCard extends StatelessWidget {
                                               child: const Text("Supprimer")),
                                         ],
                                       )).then((value) {
-                                //setState(() {});
                               });
                             }
                           },
@@ -139,12 +138,7 @@ class AfficherAdminCard extends StatelessWidget {
                                 ],
                               ),
                               onTap: () {
-                               /* log.d('**********');
-                                Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                    return FormulaireModifierAdmin(admin: admin,);
-                  }));*/
-                              },
+                             },
                             ),
                             const DropdownMenuItem(
                               value: 'supprimer',
@@ -166,7 +160,8 @@ class AfficherAdminCard extends StatelessWidget {
                               size: 25,
                             ),
                           ),
-                        ))
+                        )
+                        )
                       ],
                     ),
                   ),
