@@ -4,10 +4,11 @@ class ESP32
 {
   //final String ipAddress='172.16.65.1';//wireless cpp
     //final String ipAddress='172.18.0.59';
-  final String ipAddress='172.18.0.72';
-    //final String ipAddress='192.168.1.172';//jem
+  //final String ipAddress='172.18.0.72';
+    final String ipAddress='192.168.1.172';//jem
 
 
+    //http://192.168.1.172/?cmd=a //jem
 
 //http://172.16.65.1/?cmd=a
   Future<int> receiveData() async {
@@ -19,9 +20,6 @@ class ESP32
       log.i('Receive data****');
       // Replace with the actual IP address and command
       var response = await http.get(url);
-      //log.i('receive. $response');
-
-      //log.i('Receive data///');
 
       if (response.statusCode == 200) {
         var responseData = response.body;

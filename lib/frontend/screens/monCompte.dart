@@ -6,7 +6,7 @@ import '../widgets/monCompteCard.dart';
 import 'mesStatistiques.dart';
 
 class MonCompte extends StatefulWidget {
-   MonCompte({Key? key}) : super(key: key);
+   const MonCompte({Key? key}) : super(key: key);
 
   @override
   State<MonCompte> createState() => _MonCompteState();
@@ -38,7 +38,7 @@ class _MonCompteState extends State<MonCompte> {
 
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Paramètres et confidentialité",
+        title: const Text("Paramètres et confidentialité",
         style: TextStyle(
           fontSize: 18
         ),),
@@ -59,7 +59,7 @@ class _MonCompteState extends State<MonCompte> {
             );
           } else if (snapshot.hasError) {
             return const Center(
-              child: Text('Error retrieving employee data'),
+              child: Text("Une erreur s'est produite"),
             );
           } else {
             return CompteCard(employee: employee);

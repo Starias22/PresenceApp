@@ -8,6 +8,7 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/esp32.dart';
 
 import 'package:presence_app/frontend/screens/login_menu.dart';
+import 'package:presence_app/frontend/upload_file.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
@@ -95,6 +96,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         await getData();
       }
     });
+
   }
 
 
@@ -259,7 +261,8 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
                      return const AdminLogin();
-                    // return const FingerprintPage();
+                     //return ImageUploads();
+
                   }
                   ));
                   },

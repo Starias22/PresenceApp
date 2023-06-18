@@ -81,13 +81,14 @@ class EmployeeDB{
 
   }
 
-  Future<void> deleteUniqueCode(String documentId) async {
-    var documentReference = _employee.
-    doc(documentId);
-    await documentReference.update({
-      'unique_code': FieldValue.delete(),
-    });
-  }
+  // Future<void> deleteUniqueCode(String documentId) async {
+  //   var documentReference = _employee.
+  //   doc(documentId);
+  //   await documentReference.update({
+  //     'unique_code': FieldValue.delete(),
+  //   });
+
+  //}
 
 
   Future<String?> getEmployeeIdByFingerprintId(int fingerprintId) async {

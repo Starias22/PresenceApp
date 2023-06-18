@@ -7,6 +7,16 @@ import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
 class CompteCard extends StatelessWidget {
   Employee employee;
 
+ /* String getFileExtension(String fileName) {
+    final dotIndex = fileName.lastIndexOf('.');
+
+    // Check if a dot exists and it is not the last character
+    if (dotIndex != -1 && dotIndex < fileName.length - 1) {
+      // Extract the substring starting from the dot index + 1
+      return fileName.substring(dotIndex + 1);
+    }
+
+  }*/
 
    CompteCard({Key? key, required this.employee}) : super(key: key);
 
@@ -74,7 +84,7 @@ class CompteCard extends StatelessWidget {
                         Padding(
                           padding: const EdgeInsets.only(left: 10.0),
                           child: Text(employee.firstname,
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 15
                             ),
                           ),
