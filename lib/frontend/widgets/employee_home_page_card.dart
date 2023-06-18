@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/utils.dart';
 
-class HomePageCard extends StatelessWidget {
+class HomePageCard extends StatefulWidget {
   final Employee employee;
   final String imageDownloadURL;
 
@@ -10,8 +10,14 @@ class HomePageCard extends StatelessWidget {
       : super(key: key);
 
   @override
+  _HomePageCardState createState() => _HomePageCardState();
+}
+
+class _HomePageCardState extends State<HomePageCard> {
+  bool showMenu = false;
+
+  @override
   Widget build(BuildContext context) {
-    bool showMenu=true;
     return SliverAppBar(
       title: const Text(
         "My Home Page",
@@ -27,31 +33,29 @@ class HomePageCard extends StatelessWidget {
             onExit: (event) {},
             child: InkWell(
               onTap: () {
-                log.d('qqqqqqqq');
+                setState(() {
+                  showMenu = !showMenu;
+                });
               },
               child: Tooltip(
                 message: 'Compte employé\n '
-                    '${employee.firstname} ${employee.lastname}\n'
-                    '${employee.email}',
+                    '${widget.employee.firstname} ${widget.employee.lastname}\n'
+                    '${widget.employee.email}',
                 preferBelow: false,
                 child: Hero(
-                  tag: imageDownloadURL,
+                  tag: widget.imageDownloadURL,
                   child: CircleAvatar(
                     backgroundColor: Colors.grey,
-                    backgroundImage: NetworkImage(imageDownloadURL),
+                    backgroundImage: NetworkImage(widget.imageDownloadURL),
                   ),
                 ),
               ),
             ),
           ),
-        )
-      ],
-      flexibleSpace: Container(
-        alignment: Alignment.centerRight,
-        margin: const EdgeInsets.only(right: 16),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<String>(
-            onChanged: (value) {
+        ),
+        if (showMenu)
+          PopupMenuButton<String>(
+            onSelected: (value) {
               if (value == "déconnexion") {
                 // Handle déconnexion option
                 log.d('Déconnexion selected');
@@ -60,19 +64,18 @@ class HomePageCard extends StatelessWidget {
                 log.d('Gérer mon compte selected');
               }
             },
-            items: const [
-              DropdownMenuItem(
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
                 value: "déconnexion",
                 child: Text("Déconnexion"),
               ),
-              DropdownMenuItem(
+              const PopupMenuItem<String>(
                 value: "Gérer mon compte",
                 child: Text("Gérer mon compte"),
               ),
             ],
           ),
-        ),
-      ),
+      ],
     );
   }
 }
