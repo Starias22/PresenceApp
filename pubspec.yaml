@@ -61,6 +61,7 @@ dependencies:
   flutter_datetime_picker: ^1.5.1
   provider: ^5.0.0
   file_picker: ^4.1.0
+  syncfusion_flutter_pdf: ^21.2.10
 
 
 
