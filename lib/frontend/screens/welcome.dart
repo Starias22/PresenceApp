@@ -96,7 +96,6 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         await getData();
       }
     });
-
   }
 
 
@@ -260,8 +259,8 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
                   nextPage=true;
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
-                     return const AdminLogin();
-                     //return ImageUploads();
+                    return const AdminLogin();
+                      //return ImageUploads();
 
                   }
                   ));

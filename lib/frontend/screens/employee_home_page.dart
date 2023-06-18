@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/frontend/widgets/employee_home_page_card.dart';
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
@@ -29,6 +30,8 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   String? email=FirebaseAuth.instance.currentUser!.email;
   String? employeeId;
   String? filename;
+  late Employee employee;
+
 
   @override
   void initState() {
@@ -37,10 +40,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
       imageDownloadURL = getDownloadURL(filename!);
     });
-
-    // setState(() {
-    //
-    // });
 
     
   }
@@ -53,7 +52,10 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   }
   Future<void> retrieve() async {
-    employeeId=(await EmployeeDB().getEmployeeByEmail(email!)).id;
+
+    employee= await EmployeeDB().getEmployeeByEmail(email!);
+    employeeId=employee.id;
+
     await getImageName();
   }
 
@@ -76,7 +78,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
               return CustomScrollView(
                 slivers: [
                   HomePageCard(
-                    user: user,
+                    employee:employee ,
                     imageDownloadURL: snapshot.data!,
                   ),
                 ],

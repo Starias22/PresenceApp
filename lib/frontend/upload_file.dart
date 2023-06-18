@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path/path.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/utils.dart';
 
 class ImageUploads extends StatefulWidget {
   ImageUploads({Key? key}) : super(key: key);
@@ -23,27 +25,67 @@ class _ImageUploadsState extends State<ImageUploads> {
 
   Future imgFromGallery() async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    uploadFiles(pickedFile!, 'fic.png');
+  int x= await  uploadPicture(pickedFile!);
+  if(x==unsupportedFileExtension){
+    ToastUtils.showToast(this.context, "Type d'image non pris en charge", 3);
+  }
+
+ else if(x==failure){
+    ToastUtils.showToast(this.context, "Une erreur s'est produite", 3);
+  }
+ else//download file
+ {
+    ToastUtils.showToast(this.context, "Image mise à jour", 3);
 
   }
 
-  Future<void> uploadFiles(
+
+  }
+
+  Future<int> uploadPicture(
       XFile pickedFile,
-      String fileName,
       ) async {
     var bytes=await pickedFile.readAsBytes();
     var contentType=pickedFile.mimeType;
+
+    log.d('Content type: $contentType');
+    var ext=getImageExtensionFromMimeType(contentType!);
+    var fileName ='jfif.$ext';
+
+    if(ext==null) return unsupportedFileExtension;
     try {
       await FirebaseStorage.instance.ref().child(fileName).putData(bytes,
           firebase_storage.SettableMetadata(
         contentType: contentType
       ));
-
+      return success;
     } catch (e) {
       print(e);
+      return failure;
     }
   }
 
+  String? getImageExtensionFromMimeType(String mimeType) {
+    final extensions = {
+      'image/jpeg': 'jpg',
+      'image/png': 'png',
+      'image/svg+xml': 'svg',
+    };
+    try {
+     return  extensions.entries
+          .firstWhere(
+            (entry) => entry.key == mimeType,
+      )
+          .value;
+    }
+    catch(e ){
+      if (e is StateError) {
+        return null;
+      }
+      return null;
+
+    }
+  }
 
   Future uploadFile() async {
     if (_photo == null) return;

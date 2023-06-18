@@ -89,7 +89,8 @@ const success = 0,
     exitAlreadyMarked=50,
     exitMarkedSuccessfully=51,
     desireToExitEarly=52,
-    desireToExitBeforeEntryTime=53;
+    desireToExitBeforeEntryTime=53,
+    unsupportedFileExtension=54;
 
 final log = Logger();
 
