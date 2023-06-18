@@ -11,6 +11,7 @@ class HomePageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    bool showMenu=true;
     return SliverAppBar(
       title: const Text(
         "My Home Page",
