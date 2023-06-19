@@ -35,6 +35,33 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
   }
+  Future<int> assureDataChanged(int fingerprintId ) async {
+    int data = fingerprintId ;
+    int cpt = 0;
+
+    Future<int> fetchData() async {
+      data = await ESP32().receiveData();
+
+      if (cpt == 10) {
+
+        return 152;
+      }
+
+
+      if (data ==-1) {
+        log.d('Data changed');
+        return data;
+      }
+      else {
+        cpt++;
+        await Future.delayed(const Duration(seconds: 1));
+        return await fetchData();
+      }
+    }
+
+    return await fetchData();
+  }
+
 
   Future<int> getData(int val) async {
     int data = val;
@@ -42,7 +69,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     Future<int> fetchData() async {
       data = await ESP32().receiveData();
-      log.d('sss. $data');
       if (cpt == 10 ||( data != val && data!=-1)) {
         log.d('Condition satisfied');
         return data;
@@ -55,6 +81,26 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     return await fetchData();
   }
+
+  Future<int> g() async {
+    int data = -1;
+    int cpt = 0;
+
+    Future<int> fetchData() async {
+      data = await ESP32().receiveData();
+      if (cpt == 10 ||(  data!=-1)) {
+        log.d('Condition satisfied');
+        return data;
+      } else {
+        cpt++;
+        await Future.delayed(const Duration(seconds: 1));
+        return await fetchData();
+      }
+    }
+
+    return await fetchData();
+  }
+
 
 
 
@@ -88,8 +134,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
 
+
     int  data=await getData(150);
-    log.d('data: ');
+
     log.d(data);
 
     if(data==150) {
@@ -117,6 +164,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     }
 
+
     if(data==noMatchingFingerprint)//save
         {
 
@@ -126,43 +174,75 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
           "Maintenez votre doigt sur le capteur", 3);
 
 
-      //data=await getData(151);
-      data=await ESP32().receiveData();
+      data=await getData(151);
+
 
 
       log.d('Data:hhh $data ');
 
       if(1<=data&&data<=127)//saved
           {
-        ToastUtils.showToast(context, "Empreinte enregistrée! Replacez"
+        ToastUtils.showToast(context, "Empreinte enregistrée! Replacez ou maintenez"
             " votre doigt pour vérification", 3);
-        if(await ESP32().sendData('enroll')){
 
-          int x=await getData(151);
+        if(await ESP32().sendData('update')){
+          int y=await assureDataChanged(data);
+          log.d('merveil bandit: $y');
 
-          if(x==data){
-            ToastUtils.showToast(context, "Empreinte vérifiée", 3);
-
-          }
-          else if(x== noFingerDetected){
-            ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+          if(y==152){
+            ToastUtils.showToast(context, "Valeur non mise à jour", 3);
+            return;
 
           }
-          
-          
-          else{
-            ESP32().sendData(data.toString());
-            ToastUtils.showToast(context, "Echec de l'enregistrement", 3);
+          //value updated start verification
 
+          if(await ESP32().sendData('enroll')){
+
+
+
+            int x=await g();
+
+            log.d('Nouvel id lu: $x');
+
+            if(x==data){
+              ToastUtils.showToast(context, "Empreinte vérifiée", 3);
+
+            }
+            else if(x== noFingerDetected){
+              ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+
+            }
+            else if(x==espConnectionFailed){
+              ToastUtils.showToast(context, espConnectionError, 3);
+              return;
+            }
+
+
+            else{
+              //send the previous saved fingerprint id for delete
+
+              ESP32().sendData(data.toString());
+              ToastUtils.showToast(context, "Echec de l'enregistrement! Empreintes non correspndantes", 3);
+
+
+            }
 
           }
 
         }
 
 
-          }
 
-      if(data==espConnectionFailed){
+
+          }
+      else if(data== noFingerDetected){
+        ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+        return;
+
+      }
+
+
+       if(data==espConnectionFailed){
         ToastUtils.showToast(context, espConnectionError, 3);
         return;
       }
@@ -171,13 +251,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
     
-     if(data==150)//no  finger detected
-      {
-
-    }
-    //i hope Merveil handles the case the fingerprint id already exists
-    //else if(data==200)
-
+    //  if(data==150)//no  finger detected
+    //   {
+    //
+    // }
+    // //i hope Merveil handles the case the fingerprint id already exists
+    // //else if(data==200)
+    //
 
     }
   Future<void> selectStartDateAndAchieve(BuildContext context) async {
