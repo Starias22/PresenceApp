@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -5,6 +7,8 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/presence.dart';
+import 'package:presence_app/frontend/screens/presence_details.dart';
+import 'package:presence_app/frontend/widgets/calendrierCard.dart';
 import 'package:presence_app/frontend/widgets/employee_home_page_card.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
@@ -31,13 +35,11 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   Future<String>? imageDownloadURL;
   String? email=FirebaseAuth.instance.currentUser!.email;
-  //String? employeeId;
   String? filename;
   late Employee employee;
 
   late Presence presenceDoc;
   late DateTime startDate;
-  String? employeeId;
   bool isLoading = true;
   late DateTime now,today;
   late DateTime nEntryTime,nExitTime;
@@ -45,7 +47,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     setState(() {
       isLoading = true;
     });
-    var newEventsData = await PresenceDB().getMonthReport(employeeId!, newMonth);
+    var newEventsData = await PresenceDB().getMonthReport(employee.id, newMonth);
     log.i('new events: $newEventsData');
     setState(() {
       _events = newEventsData;
@@ -61,7 +63,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   Future<void> retrieveReport() async {
     Map<DateTime,EStatus>x={};
-    var employee=await EmployeeDB().getEmployeeByEmail(email!);
     nEntryTime=utils.format(employee.entryTime)!;
     nExitTime=utils.format(employee.exitTime)!;
     if(employee.status==EStatus.pending){
@@ -73,7 +74,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     var y=(employee).startDate;
     if(x.isEmpty) {
 
-      x = await PresenceDB().getMonthReport(employeeId!, today);
+      x = await PresenceDB().getMonthReport(employee.id, today);
     }
 
 
@@ -88,25 +89,23 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
 
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    retrieveReport();
-  }
 
 
 
   @override
   void initState() {
     super.initState();
+    retrieveReport();
     retrieve().then((_) {
 
       imageDownloadURL = getDownloadURL(filename!);
+      retrieveReport();
     });
 
-    
+
+
   }
-  
+
   Future<void> getImageName() async {
 
     final items =
@@ -114,13 +113,39 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
     filename= items.where((item) => item.name.
     startsWith(RegExp('^${employee.id}'))).toList()[0].name;
-    log.d('filename... $filename');
 
+  }
+  onDayLongPressed(DateTime date) async {
+
+    if(utils.isWeekend(date)){
+      ToastUtils.showToast(context, 'Weekend', 3);
+    }
+
+    if((!utils.isWeekend(date))&&(date.isBefore(today)||date.isAtSameMomentAs(today))) {
+      String? presenceId = await PresenceDB().getPresenceId(date, employee.id);
+
+      Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
+
+
+
+      if(myPresence.status==EStatus.absent) {
+        ToastUtils.showToast(context, 'Absent', 3);
+      }
+      else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) =>
+                PresenceDetails(presence: myPresence, nEntryTime: nEntryTime,
+                  nExitTime: nExitTime,),
+          ),
+        );
+      }
+    }
   }
   Future<void> retrieve() async {
 
     employee= await EmployeeDB().getEmployeeByEmail(email!);
-
 
     await getImageName();
     setState(() {
@@ -130,24 +155,24 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    Map<DateTime, EStatus> _events = {
-      DateTime.now(): EStatus.absent,
-    };
-
 
     return Scaffold(
       body: SafeArea(
         child: FutureBuilder<String>(
           future: imageDownloadURL,
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting || snapshot.data == null) {
+
+            if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasError) {
               return Text('Error: ${snapshot.error}');
             } else {
-              
+            isLoading = false; // Set isLoading to false when data is available
+            // Rest of your code
+
+
               return CustomScrollView(
                 slivers: [
 
@@ -157,7 +182,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                   ),
                    SliverToBoxAdapter(
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Column(
                         children: [
                           const Text(
@@ -174,12 +199,12 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          // CalendrierCard(
-                          //   events: _events,
-                          //   onDayLongPressed: onDayLongPressed,
-                          //   onCalendarChanged: onCalendarChanged,
-                          //   minSelectedDate: DateTime.now(),
-                          // ),
+                          CalendrierCard(
+                            events: _events,
+                            onDayLongPressed: onDayLongPressed,
+                            onCalendarChanged: onCalendarChanged,
+                            minSelectedDate: DateTime.now(),
+                          ),
 
 
                         ],
