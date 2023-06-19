@@ -95,11 +95,11 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   @override
   void initState() {
     super.initState();
-    retrieveReport();
+
     retrieve().then((_) {
 
       imageDownloadURL = getDownloadURL(filename!);
-      retrieveReport();
+
     });
 
 
@@ -147,10 +147,13 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
     employee= await EmployeeDB().getEmployeeByEmail(email!);
 
+    log.d('aaaaa ${employee.id}');
+
     await getImageName();
     setState(() {
       imageDownloadURL = getDownloadURL(filename!);
     });
+    await retrieveReport();
   }
 
   @override
@@ -162,7 +165,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
           future: imageDownloadURL,
           builder: (context, snapshot) {
 
-            if (snapshot.connectionState == ConnectionState.waiting) {
+            if (snapshot.connectionState == ConnectionState.waiting||isLoading) {
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -192,19 +195,12 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          const Text(
-                            'Un autre',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          CalendrierCard(
-                            events: _events,
-                            onDayLongPressed: onDayLongPressed,
-                            onCalendarChanged: onCalendarChanged,
-                            minSelectedDate: DateTime.now(),
-                          ),
+                          // CalendrierCard(
+                          //   events: _events,
+                          //   onDayLongPressed: onDayLongPressed,
+                          //   onCalendarChanged: onCalendarChanged,
+                          //   minSelectedDate: DateTime.now(),
+                          // ),
 
 
                         ],
