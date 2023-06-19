@@ -57,6 +57,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         await Future.delayed(const Duration(seconds: 1));
         return await fetchData();
       }
+
     }
 
     return await fetchData();
@@ -183,12 +184,14 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
       if(1<=data&&data<=127)//saved
           {
-        ToastUtils.showToast(context, "Empreinte enregistrée! Enlevez votre doigt et replacez-le "
-            "à nouveau pour vérification", 3);
+        ToastUtils.showToast(context, "Empreinte enregistrée!"
+            " Enlevez votre doigt du capteur", 3);
 
         if(await ESP32().sendData('update')){
+
           
           int y=await assureDataChanged(data);
+
           log.d('merveil bandit: $y');
 
           if(y==152){
@@ -196,6 +199,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
             return;
 
           }
+          if(y==-1){
+            ToastUtils.showToast(context, "Placez votre doigt à nouveau pour vérification!", 3);
+
+
+          }
+
           //value updated start verification
 
           if(await ESP32().sendData('enroll')){
@@ -214,16 +223,18 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
             }
 
+            if(x== noFingerDetected){
+              ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+              return;
+
+            }
             //send the previous saved fingerprint id for delete
 
             ESP32().sendData(data.toString());
             ToastUtils.showToast(context, "Echec de l'enregistrement! Empreintes non correspndantes", 3);
 
-             if(x== noFingerDetected){
-              ToastUtils.showToast(context, "Aucun doigt détecté", 3);
 
-            }
-            else if(x==espConnectionFailed){
+             if(x==espConnectionFailed){
               ToastUtils.showToast(context, espConnectionError, 3);
             }
 
@@ -258,85 +269,86 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
   Future<void> selectStartDateAndAchieve(BuildContext context) async {
 
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sélection de date"),
-          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Continuer'),
-              onPressed: () async {
-
-                Navigator.of(context).pop();
-
-
-              },
-            ),
-
-          ],
-        );
-      },
-    );
-
-    DateTime lastDate=utils.add30Days(today);
-    DateTime nextWorkDate=utils.getNextWorkDate(today);
-
-
-    selectedDate = await  showDatePicker(context: context,
-
-      locale: const Locale('fr'),
-      initialDate:nextWorkDate ,
-      firstDate: utils.isWeekend(today)?nextWorkDate:today ,
-      lastDate:lastDate,
-      currentDate: today,
-    );
-
-
-    if(selectedDate==null){
-
-
-
-      ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
-      return;
-    }
-    DateTime start=selectedDate!;
-
-    if(utils.isWeekend(start)){
-      disableFingerprintEnrollmentIfPreviouslyEnabled();
-      ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
-      return;
-    }
-
-
-    if((await HolidayDB().isHoliday(start))){
-      disableFingerprintEnrollmentIfPreviouslyEnabled();
-      ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
-      return;
-    }
-
-
-    Employee employee=Employee
-
-
-      ( firstname: firstname,
-        gender: gender, lastname: lastname,
-        email: email, service:serviceName,
-        startDate: start, entryTime: entryTime,
-        exitTime: exitTime);
-
-    String message;
-
-
-
-    if(await EmployeeDB().exists(employee.email)){
-      disableFingerprintEnrollmentIfPreviouslyEnabled();
-      message=  'Cette adresse email a été déjà attribuée à un employé';
-      ToastUtils.showToast(context, message, 3);
-      return;
-
-    }
+    // await showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: const Text("Sélection de date"),
+    //       content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
+    //       actions: <Widget>[
+    //         TextButton(
+    //           child: const Text('Continuer'),
+    //           onPressed: () async {
+    //
+    //             Navigator.of(context).pop();
+    //
+    //
+    //           },
+    //         ),
+    //
+    //       ],
+    //     );
+    //   },
+    // );
+    //
+    // DateTime lastDate=utils.add30Days(today);
+    // DateTime nextWorkDate=utils.getNextWorkDate(today);
+    //
+    //
+    // selectedDate = await  showDatePicker(context: context,
+    //
+    //   locale: const Locale('fr'),
+    //   initialDate:nextWorkDate ,
+    //   firstDate: utils.isWeekend(today)?nextWorkDate:today ,
+    //   lastDate:lastDate,
+    //   currentDate: today,
+    // );
+    //
+    //
+    // if(selectedDate==null){
+    //
+    //
+    //
+    //   ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
+    //   return;
+    // }
+    // DateTime start=selectedDate!;
+    //
+    // if(utils.isWeekend(start)){
+    //   disableFingerprintEnrollmentIfPreviouslyEnabled();
+    //   ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
+    //   return;
+    // }
+    //
+    //
+    // if((await HolidayDB().isHoliday(start))){
+    //   disableFingerprintEnrollmentIfPreviouslyEnabled();
+    //   ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
+    //   return;
+    // }
+    //
+    //
+    // Employee employee=Employee
+    //
+    //
+    //   ( firstname: firstname,
+    //     gender: gender, lastname: lastname,
+    //     email: email, service:serviceName,
+    //     startDate: start, entryTime: entryTime,
+    //     exitTime: exitTime);
+    //
+    // String message;
+    //
+    //
+    //
+    // if(await EmployeeDB().exists(employee.email)){
+    //   disableFingerprintEnrollmentIfPreviouslyEnabled();
+    //   message=  'Cette adresse email a été déjà attribuée à un employé';
+    //   ToastUtils.showToast(context, message, 3);
+    //   return;
+    //
+    // }
+    //
 
     setState(() {
       canEnrollFingerprint=true;
@@ -476,13 +488,16 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               TextFormField(
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
+
                                   validator: (String? v) {
-                                    if (v != null && v.isNotEmpty) {
-                                      lastname = v;
-                                      return null;
-                                    } else {
-                                      return "Entrez le nom de l'employé";
-                                    }
+                                    return null;
+
+                                    // if (v != null && v.isNotEmpty) {
+                                    //   lastname = v;
+                                    //   return null;
+                                    // } else {
+                                    //   return "Entrez le nom de l'employé";
+                                    // }
                                   },
                                   onSaved: (String? v) {
                                   },
@@ -508,11 +523,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
-                                    if (v != null && v.isNotEmpty) {
-                                      firstname = v;
-                                      return null;
-                                    }
-                                    return "Entrez le(s) prenom(s) de l'employé";
+                                    return null;
+
+                                    // if (v != null && v.isNotEmpty) {
+                                    //   firstname = v;
+                                    //   return null;
+                                    // }
+                                    // return "Entrez le(s) prenom(s) de l'employé";
                                   },
                                   onSaved: (String? v) {
                                   },
@@ -538,12 +555,14 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
-                                    if (v != null &&
-                                        EmailValidator.validate(v)) {
-                                      email = v;
-                                      return null;
-                                    }
-                                    return "Email invalide";
+                                    return null;
+
+                                    // if (v != null &&
+                                    //     EmailValidator.validate(v)) {
+                                    //   email = v;
+                                    //   return null;
+                                    // }
+                                    // return "Email invalide";
                                   },
                                   onSaved: (String? v) {
                                   },
@@ -582,11 +601,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   //_service = int.parse(_valueSaved);
                                 }),
                                 validator: (String? v) {
-                                  if (v != null) {
-                                    gender = v;
-                                    return null;
-                                  }
-                                  return "Sélectionnez le sexe";
+                                  return null;
+
+                                  // if (v != null) {
+                                  //   gender = v;
+                                  //   return null;
+                                  // }
+                                  // return "Sélectionnez le sexe";
                                 },
                                 decoration: InputDecoration(
                                     labelText: 'Selectionnez le sexe',
@@ -614,11 +635,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 validator: (String? v) {
-                                  if (v != null) {
-                                    serviceName = v;
-                                    return null;
-                                  }
-                                  return "Sélectionnez le service";
+                                  return null;
+
+                                  // if (v != null) {
+                                  //   serviceName = v;
+                                  //   return null;
+                                  // }
+                                  // return "Sélectionnez le service";
                                 },
                                 onSaved: (val) => setState(() {
                                   // _service = int.parse(_valueSaved);
@@ -661,11 +684,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 validator: (String? v) {
-                                  if (v != null) {
-                                    entryTime = v;
-                                    return null;
-                                  }
-                                  return "Sélectionnez l'heure d'arrivée";
+                                  return null;
+
+                                  // if (v != null) {
+                                  //   entryTime = v;
+                                  //   return null;
+                                  // }
+                                  // return "Sélectionnez l'heure d'arrivée";
                                 },
                                 onSaved: (val) => setState(() {
                                   // _service = int.parse(_valueSaved);
@@ -727,11 +752,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   // _service = int.parse(_valueSaved);
                                 }),
                                 validator: (String? v) {
-                                  if (v != null) {
-                                    exitTime = v;
-                                    return null;
-                                  }
-                                  return "Sélectionnez l'heure de sortie";
+                                  return null;
+
+                                  // if (v != null) {
+                                  //   exitTime = v;
+                                  //   return null;
+                                  // }
+                                  // return "Sélectionnez l'heure de sortie";
                                 },
                                 decoration: InputDecoration(
                                     labelText: "Selectionnez l'heure de sortie",

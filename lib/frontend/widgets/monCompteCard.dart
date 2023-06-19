@@ -18,6 +18,16 @@ class CompteCard extends StatelessWidget {
   // File? _photo;
   final ImagePicker _picker = ImagePicker();
 
+  Future<void> removePictureIfExists() async {
+
+    final pictureName =
+        (await FirebaseStorage.instance.ref().listAll()).items.
+        where((item) => item.name.
+    startsWith(RegExp('^${employee.id}'))).toList()[0].name;
+    await FirebaseStorage.instance.ref(pictureName).delete();
+
+  }
+
   Future imgFromGallery(BuildContext context) async {
     final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     int x= await  uploadPicture(pickedFile!);
@@ -30,7 +40,7 @@ class CompteCard extends StatelessWidget {
     }
     else//download file
         {
-      ToastUtils.showToast(context, "Image mise à jour", 3);
+      ToastUtils.showToast(context, "Photo mise à jour", 3);
 
     }
 
@@ -40,6 +50,7 @@ class CompteCard extends StatelessWidget {
   Future<int> uploadPicture(
       XFile pickedFile,
       ) async {
+    await removePictureIfExists();
     var bytes=await pickedFile.readAsBytes();
     var contentType=pickedFile.mimeType;
 

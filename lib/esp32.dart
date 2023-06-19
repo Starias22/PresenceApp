@@ -2,15 +2,15 @@ import 'package:http/http.dart' as http;
 import 'package:presence_app/utils.dart';
 class ESP32
 {
-  //final String ipAddress='172.16.65.1';//wireless cpp
+  final String ipAddress='172.16.65.1';//wireless cpp
     //final String ipAddress='172.18.0.59';
   //final String ipAddress='172.18.0.72';
-    final String ipAddress='192.168.1.172';//jem
+    //final String ipAddress='192.168.1.172';//jem
 
 
     //http://192.168.1.172/?cmd=a //jem
 
-//http://172.16.65.1/?cmd=a
+//http://172.16.65.1/?cmd=a //wireless ccp
   Future<int> receiveData() async {
     //log.i('Receive data');
     var url = Uri.parse('http://$ipAddress/?cmd=a');

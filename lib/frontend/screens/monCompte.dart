@@ -39,7 +39,7 @@ class _MonCompteState extends State<MonCompte> {
 
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("Paramètres et confidentialité",
+        title: const Text("Mon compte",
         style: TextStyle(
           fontSize: 18
         ),),
