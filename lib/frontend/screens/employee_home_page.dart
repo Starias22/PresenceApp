@@ -57,6 +57,9 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     //employeeId=employee.id;
 
     await getImageName();
+    setState(() {
+      imageDownloadURL = getDownloadURL(filename!);
+    });
   }
 
   @override
@@ -80,6 +83,8 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                     employee:employee ,
                     imageDownloadURL: snapshot.data!,
                   ),
+                  
+                  //Text('Un texte')
                 ],
               );
             }

@@ -29,6 +29,7 @@ class MesStatistiques extends StatefulWidget {
 class _MesStatistiquesState extends State<MesStatistiques> {
   final _key = GlobalKey<FormState>();
   late String _valueChanged;
+
 late Presence presenceDoc;
   late DateTime startDate;
   String? employeeId;
@@ -144,6 +145,7 @@ late Presence presenceDoc;
                     context,
                     MaterialPageRoute(
                         builder: (context) =>  DiagrammeBar(email: widget.email,)));
+
               } else if (value == 2) {
                 Navigator.pushReplacement(context,
                     MaterialPageRoute(builder: (context) => MonCompte()));

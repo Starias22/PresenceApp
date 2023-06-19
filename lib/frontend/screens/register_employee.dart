@@ -88,7 +88,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     Future<int> fetchData() async {
       data = await ESP32().receiveData();
-      if (cpt == 10 ||(  data!=-1)) {
+      if (cpt == 10 ||(  data!=-1&&data!=150)) {
         log.d('Condition satisfied');
         return data;
       } else {
@@ -156,6 +156,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       return;
     }
 
+
     if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists
         {
       ToastUtils.showToast(context, "Une empreinte correspondante a été "
@@ -182,15 +183,16 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
       if(1<=data&&data<=127)//saved
           {
-        ToastUtils.showToast(context, "Empreinte enregistrée! Replacez ou maintenez"
-            " votre doigt pour vérification", 3);
+        ToastUtils.showToast(context, "Empreinte enregistrée! Enlevez votre doigt et replacez-le "
+            "à nouveau pour vérification", 3);
 
         if(await ESP32().sendData('update')){
+          
           int y=await assureDataChanged(data);
           log.d('merveil bandit: $y');
 
           if(y==152){
-            ToastUtils.showToast(context, "Valeur non mise à jour", 3);
+            ToastUtils.showToast(context, "Vous n'avez pas enlevé votre doigt! Essayez à nouveau!", 3);
             return;
 
           }
@@ -206,26 +208,26 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
             if(x==data){
               ToastUtils.showToast(context, "Empreinte vérifiée", 3);
+              //create the employee
+
+              return;
 
             }
-            else if(x== noFingerDetected){
+
+            //send the previous saved fingerprint id for delete
+
+            ESP32().sendData(data.toString());
+            ToastUtils.showToast(context, "Echec de l'enregistrement! Empreintes non correspndantes", 3);
+
+             if(x== noFingerDetected){
               ToastUtils.showToast(context, "Aucun doigt détecté", 3);
 
             }
             else if(x==espConnectionFailed){
               ToastUtils.showToast(context, espConnectionError, 3);
-              return;
             }
 
 
-            else{
-              //send the previous saved fingerprint id for delete
-
-              ESP32().sendData(data.toString());
-              ToastUtils.showToast(context, "Echec de l'enregistrement! Empreintes non correspndantes", 3);
-
-
-            }
 
           }
 
@@ -235,6 +237,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
 
           }
+
       else if(data== noFingerDetected){
         ToastUtils.showToast(context, "Aucun doigt détecté", 3);
         return;
@@ -251,13 +254,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
     
-    //  if(data==150)//no  finger detected
-    //   {
-    //
-    // }
-    // //i hope Merveil handles the case the fingerprint id already exists
-    // //else if(data==200)
-    //
 
     }
   Future<void> selectStartDateAndAchieve(BuildContext context) async {

@@ -9,6 +9,8 @@ import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/frontend/screens/admin_login.dart';
 import 'package:presence_app/utils.dart';
 
+import 'employee_home_page.dart';
+
 
 class AdminLogin extends StatefulWidget {
   const AdminLogin({Key? key}) : super(key: key);
@@ -64,9 +66,6 @@ class _AdminLoginState extends State<AdminLogin> {
     return '';
   }
 
-  late String action;
-  User? user;
-
 
 
   bool loginInProcess = false;
@@ -119,7 +118,7 @@ class _AdminLoginState extends State<AdminLogin> {
 
       Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) {
-        return MesStatistiques(email: email!,);
+        return const EmployeeHomePage();
       }));
     }
 
@@ -141,102 +140,6 @@ class _AdminLoginState extends State<AdminLogin> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      /*appBar: AppBar(
-        title: const Text(
-          "PresenceApp",
-          style: TextStyle(
-            fontSize: 25,
-          ),
-        ),
-        centerTitle: true,
-        actions: [
-          PopupMenuButton(
-            icon: const Icon(
-              Icons.more_vert,
-              // size: 30,
-            ),
-            itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-
-             if(!Login().isSignedIn()||Login().isSignedInWithPassword())
-               const PopupMenuItem(
-                value: 1,
-                child: Text('Administrateur'),
-              ),
-               if(!Login().isSignedIn()||!Login().isSignedInWithPassword())  PopupMenuItem(
-
-                value: 2,
-
-                child: Text(text()),
-              ),
-              if(Login().isSignedIn()) const PopupMenuItem(
-
-                value: 3,
-
-                child: Text('Déconnexion'),
-              ),
-              const PopupMenuItem(
-                value: 4,
-                child: Text("Pointer"),
-              ),
-              const PopupMenuItem(
-                value: 5,
-                child: Text("Enregistrer empreinte"),
-              ),
-            ],
-            onSelected: (value) async {
-              if (value == 1) {
-
-                if(Login().isSignedInWithPassword()) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (BuildContext context) {
-                        return const  StatistiquesForServices();
-                      }));
-                }
-
-
-                else {
-                  Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) {
-                  return const Authentification();
-                }));
-                }
-              } else if (value == 2) {
-
-            if(Login().isSignedIn()) {
-              String? email = FirebaseAuth.instance.currentUser!.email;
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (BuildContext context) {
-                    return  MesStatistiques(email: email!,);
-                  }));
-
-            }
-            else {
-              sign();
-            }
-              }
-              else if (value == 3) {
-                await  Login().signOut();
-                setState(() {
-
-                });
-                ToastUtils.showToast(context, 'Vous êtes déconnecté', 3);
-              }
-              else if (value == 5) {
-
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (BuildContext context) {
-                      return const SaveFingerprint();
-                    }));
-                            }
-
-              setState(() {
-
-              });
-
-            },
-          )
-        ],
-      ),*/
       body: ListView(
         children: [
           Column(
@@ -315,11 +218,7 @@ class _AdminLoginState extends State<AdminLogin> {
 
                     if(Login().isSignedIn()) {
                       email=FirebaseAuth.instance.currentUser!.email;
-                      /*log.d('email of the employee: $email');
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) {
-                            return const Wrapper();
-                          }));*/
+
                     }
                     else {sign();}
                   },

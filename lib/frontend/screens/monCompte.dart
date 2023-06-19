@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/employee_home_page.dart';
 import '../widgets/monCompteCard.dart';
-import 'mesStatistiques.dart';
+
 
 class MonCompte extends StatefulWidget {
    const MonCompte({Key? key}) : super(key: key);
@@ -44,8 +45,12 @@ class _MonCompteState extends State<MonCompte> {
         ),),
 
         leading: IconButton(
-            onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                builder: (context) => MesStatistiques(email: email!,)))},
+            onPressed: () => {
+
+              Navigator.pushReplacement(context, MaterialPageRoute(
+                builder: (context) => const EmployeeHomePage()))
+
+            },
             icon: const Icon(Icons.arrow_back,)
         ),
       ),

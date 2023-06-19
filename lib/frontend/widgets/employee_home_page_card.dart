@@ -1,5 +1,12 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/login_menu.dart';
+import 'package:presence_app/frontend/screens/monCompte.dart';
+import 'package:presence_app/frontend/screens/welcome.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 class HomePageCard extends StatefulWidget {
@@ -55,23 +62,38 @@ class _HomePageCardState extends State<HomePageCard> {
         ),
         if (showMenu)
           PopupMenuButton<String>(
-            onSelected: (value) {
-              if (value == "déconnexion") {
+            onSelected: (value) async {
+              if (value == "logout") {
                 // Handle déconnexion option
+
+                await Login().googleSingOut();
                 log.d('Déconnexion selected');
-              } else if (value == "Gérer mon compte") {
+                ToastUtils.showToast(context, 'Vous êtes déconnecté',3);
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>  const WelcomeImsp()));
+
+
+              }
+              else if (value == "handle") {
                 // Handle Gérer mon compte option
                 log.d('Gérer mon compte selected');
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>  const MonCompte()));
               }
             },
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+
               const PopupMenuItem<String>(
-                value: "déconnexion",
-                child: Text("Déconnexion"),
+                value: "handle",
+                child: Text("Mon compte"),
               ),
               const PopupMenuItem<String>(
-                value: "Gérer mon compte",
-                child: Text("Gérer mon compte"),
+                value: "logout",
+                child: Text("Déconnexion"),
               ),
             ],
           ),
