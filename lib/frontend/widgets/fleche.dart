@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ArrowAnimation extends StatefulWidget {
+  const ArrowAnimation({super.key});
+
   @override
   _ArrowAnimationState createState() => _ArrowAnimationState();
 }
@@ -12,8 +14,8 @@ class _ArrowAnimationState extends State<ArrowAnimation> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(vsync: this, duration: Duration(milliseconds: 800));
-    _offsetAnimation = Tween<Offset>(begin: Offset(-0.5, 0), end: Offset(0.5, 0)).animate(CurvedAnimation(
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 800));
+    _offsetAnimation = Tween<Offset>(begin: const Offset(-0.5, 0), end: const Offset(0.5, 0)).animate(CurvedAnimation(
         parent: _controller,
         curve: Curves.linear,
         reverseCurve: Curves.linear
@@ -37,7 +39,7 @@ class _ArrowAnimationState extends State<ArrowAnimation> with SingleTickerProvid
   Widget build(BuildContext context) {
     return SlideTransition(
       position: _offsetAnimation,
-      child: Icon(Icons.arrow_right_alt,
+      child: const Icon(Icons.arrow_right_alt,
       size: 200,),
     );
   }

@@ -24,7 +24,6 @@ late Admin admin;
 Future<void> retrieve() async {
   String? id=await  AdminDB().getAdminIdByEmail(email!);
 
-  log.i('the id: $id');
   admin= await AdminDB().getAdminById(id!);
 }
 

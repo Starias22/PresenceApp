@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
-import 'package:presence_app/frontend/screens/listeEmployes.dart';
+import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
