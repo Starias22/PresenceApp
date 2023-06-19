@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -34,14 +36,14 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   }
 
-  Future<int> getData() async {
-    int data = -1;
+  Future<int> getData(int val) async {
+    int data = val;
     int cpt = 0;
 
     Future<int> fetchData() async {
       data = await ESP32().receiveData();
       log.d('sss. $data');
-      if (cpt == 10 ||( data != -1 && data!=150)) {
+      if (cpt == 10 ||( data != val && data!=-1)) {
         log.d('Condition satisfied');
         return data;
       } else {
@@ -68,51 +70,65 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   late DateTime today;
 
   Future<void> enrolFingerprint() async {
-    String conectionError= 'Erreur de connexion!Veillez reessayer!';
-    String networkConnnectionError;
-    String espConnectionErrror = "Vérifiez la configuration du microcontrolleur et ressayez";
+    //String connectionError= 'Erreur de connexion!Veillez reessayer!';
+    String networkConnectionError;
+    String espConnectionError = "Vérifiez la configuration du microcontrôleur et ressayez";
     if ( await Connectivity().checkConnectivity() == ConnectivityResult.none) {
 
 
-       networkConnnectionError = "Vérifiez votre connexion internet et reessayez";
-      ToastUtils.showToast(context, networkConnnectionError,3);
+       networkConnectionError = "Vérifiez votre connexion internet et reessayez";
+
+      ToastUtils.showToast(context, networkConnectionError,3);
       return;
     }
-
-
 
     if (!(await ESP32().sendData('enroll'))){
-      ToastUtils.showToast(context, espConnectionErrror, 3);
+      ToastUtils.showToast(context, espConnectionError, 3);
       return;
     }
 
 
-    int  data=await getData();
+    int  data=await getData(150);
+    log.d('data: ');
+    log.d(data);
+
+    if(data==150) {
+
+
+      ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+      return;
+    }
+
+
 
 
     if(data==espConnectionFailed) {
 
 
-      ToastUtils.showToast(context, espConnectionErrror, 3);
+      ToastUtils.showToast(context, espConnectionError, 3);
       return;
     }
 
-    if(1<=data&&data<=127)//alredy exists
+    if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists
         {
-      ToastUtils.showToast(context, "Une empreinte correspndante a été "
-          "déjà enregistré au sein du capteur", 3);
+      ToastUtils.showToast(context, "Une empreinte correspondante a été "
+          "déjà enregistrée au sein du capteur", 3);
       return;
 
     }
 
-    if(data==151)//save
+    if(data==noMatchingFingerprint)//save
         {
+
       await ESP32().sendData('go');
+
       ToastUtils.showToast(context, "Empreinte en cours d'enregistrement! "
           "Maintenez votre doigt sur le capteur", 3);
 
 
-      data=await getData();
+      //data=await getData(151);
+      data=await ESP32().receiveData();
+
 
       log.d('Data:hhh $data ');
 
@@ -122,12 +138,18 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
             " votre doigt pour vérification", 3);
         if(await ESP32().sendData('enroll')){
 
-          int x=await ESP32().receiveData();
+          int x=await getData(151);
 
           if(x==data){
             ToastUtils.showToast(context, "Empreinte vérifiée", 3);
 
           }
+          else if(x== noFingerDetected){
+            ToastUtils.showToast(context, "Aucun doigt détecté", 3);
+
+          }
+          
+          
           else{
             ESP32().sendData(data.toString());
             ToastUtils.showToast(context, "Echec de l'enregistrement", 3);
@@ -141,7 +163,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
           }
 
       if(data==espConnectionFailed){
-        ToastUtils.showToast(context, espConnectionErrror, 3);
+        ToastUtils.showToast(context, espConnectionError, 3);
         return;
       }
 

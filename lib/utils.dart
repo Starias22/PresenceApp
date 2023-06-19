@@ -90,7 +90,16 @@ const success = 0,
     exitMarkedSuccessfully=51,
     desireToExitEarly=52,
     desireToExitBeforeEntryTime=53,
-    unsupportedFileExtension=54;
+    unsupportedFileExtension=54,
+
+    noFingerDetected=150,
+    noMatchingFingerprint=151,
+    minFingerprintId=1,
+    maxFingerprintId=127
+
+
+
+;
 
 final log = Logger();
 

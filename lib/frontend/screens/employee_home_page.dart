@@ -28,7 +28,7 @@ Future<String> getDownloadURL(String fileName) async {
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Future<String>? imageDownloadURL;
   String? email=FirebaseAuth.instance.currentUser!.email;
-  String? employeeId;
+  //String? employeeId;
   String? filename;
   late Employee employee;
 
@@ -47,21 +47,20 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Future<void> getImageName() async {
     final items = (await FirebaseStorage.instance.ref().listAll()).items;
 
-    filename= items.where((item) => item.name.startsWith(RegExp('^$employeeId'))).toList()[0].name;
+    filename= items.where((item) => item.name.startsWith(RegExp('^${employee.id}'))).toList()[0].name;
     log.d('filename... $filename');
 
   }
   Future<void> retrieve() async {
 
     employee= await EmployeeDB().getEmployeeByEmail(email!);
-    employeeId=employee.id;
+    //employeeId=employee.id;
 
     await getImageName();
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User?>(context);
 
     return Scaffold(
       body: SafeArea(
