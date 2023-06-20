@@ -80,8 +80,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                         return const RegisterEmployee();
                                       })
                                   );
-                                } else
-                                if(value == 2){
+                                }
+                                else if(value == 2){
 
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:

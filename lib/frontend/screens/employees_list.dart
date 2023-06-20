@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
 import 'package:presence_app/frontend/widgets/cardTabbar.dart';
@@ -84,7 +85,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                const StatistiquesForServices()))
+                                const AdminHomePage()))
                   },
               icon: const Icon(
                 Icons.arrow_back,
