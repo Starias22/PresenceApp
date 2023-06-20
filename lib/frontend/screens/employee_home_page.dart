@@ -5,13 +5,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/employee.dart';
 import 'package:presence_app/backend/models/presence.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
+import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
-import 'package:presence_app/frontend/widgets/employee_home_page_card.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
+
+import 'monCompte.dart';
 
 class EmployeeHomePage extends StatefulWidget {
   const EmployeeHomePage({Key? key}) : super(key: key);
@@ -33,63 +36,57 @@ Future<String> getDownloadURL(String fileName) async {
 
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
-  Future<String>? imageDownloadURL;
-  String? email=FirebaseAuth.instance.currentUser!.email;
+  late String imageDownloadURL;
+  Future<String>? img;
+  String? email = FirebaseAuth.instance.currentUser!.email;
   String? filename;
   late Employee employee;
 
   late Presence presenceDoc;
   late DateTime startDate;
   bool isLoading = true;
-  late DateTime now,today;
-  late DateTime nEntryTime,nExitTime;
+  late DateTime now, today;
+  late DateTime nEntryTime, nExitTime;
+
   Future<void> onCalendarChanged(DateTime newMonth) async {
     setState(() {
       isLoading = true;
     });
-    var newEventsData = await PresenceDB().getMonthReport(employee.id, newMonth);
+    var newEventsData = await PresenceDB().getMonthReport(
+        employee.id, newMonth);
     log.i('new events: $newEventsData');
     setState(() {
       _events = newEventsData;
       isLoading = false;
     });
-
   }
-
 
 
   bool isDarkMode = false;
   Map<DateTime, EStatus> _events = {};
 
   Future<void> retrieveReport() async {
-    Map<DateTime,EStatus>x={};
-    nEntryTime=utils.format(employee.entryTime)!;
-    nExitTime=utils.format(employee.exitTime)!;
-    if(employee.status==EStatus.pending){
-      x[employee.startDate]=EStatus.pending;
+    Map<DateTime, EStatus>x = {};
+    nEntryTime = utils.format(employee.entryTime)!;
+    nExitTime = utils.format(employee.exitTime)!;
+    if (employee.status == EStatus.pending) {
+      x[employee.startDate] = EStatus.pending;
       ToastUtils.showToast(context, 'Employé en attente', 5);
     }
-    now=await utils.localTime();
-    today=DateTime(now.year,now.month,now.day);
-    var y=(employee).startDate;
-    if(x.isEmpty) {
-
+    now = await utils.localTime();
+    today = DateTime(now.year, now.month, now.day);
+    var y = (employee).startDate;
+    if (x.isEmpty) {
       x = await PresenceDB().getMonthReport(employee.id, today);
     }
 
 
     setState(() {
-
       _events = x;
-      startDate=y;
-      isLoading=false;
-
+      startDate = y;
+      isLoading = false;
     });
   }
-
-
-
-
 
 
   @override
@@ -97,38 +94,37 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     super.initState();
 
     retrieve().then((_) {
-
-      imageDownloadURL = getDownloadURL(filename!);
-
+      img = getDownloadURL(filename!).then((url) {
+        setState(() {
+          imageDownloadURL = url;
+        });
+        return url;
+      });
     });
-
-
-
   }
 
   Future<void> getImageName() async {
-
     final items =
         (await FirebaseStorage.instance.ref().listAll()).items;
 
-    filename= items.where((item) => item.name.
-    startsWith(RegExp('^${employee.id}'))).toList()[0].name;
-
+    filename = items.where((item) =>
+        item.name.
+        startsWith(RegExp('^${employee.id}'))).toList()[0].name;
   }
-  onDayLongPressed(DateTime date) async {
 
-    if(utils.isWeekend(date)){
+  onDayLongPressed(DateTime date) async {
+    if (utils.isWeekend(date)) {
       ToastUtils.showToast(context, 'Weekend', 3);
     }
 
-    if((!utils.isWeekend(date))&&(date.isBefore(today)||date.isAtSameMomentAs(today))) {
+    if ((!utils.isWeekend(date)) &&
+        (date.isBefore(today) || date.isAtSameMomentAs(today))) {
       String? presenceId = await PresenceDB().getPresenceId(date, employee.id);
 
       Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
 
 
-
-      if(myPresence.status==EStatus.absent) {
+      if (myPresence.status == EStatus.absent) {
         ToastUtils.showToast(context, 'Absent', 3);
       }
       else {
@@ -143,77 +139,145 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
       }
     }
   }
-  Future<void> retrieve() async {
 
-    employee= await EmployeeDB().getEmployeeByEmail(email!);
+  Future<void> retrieve() async {
+    employee = await EmployeeDB().getEmployeeByEmail(email!);
 
     log.d('aaaaa ${employee.id}');
 
     await getImageName();
-    setState(() {
-      imageDownloadURL = getDownloadURL(filename!);
-    });
+
+      imageDownloadURL =await  getDownloadURL(filename!);
+
     await retrieveReport();
   }
 
+
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       body: SafeArea(
-        child: FutureBuilder<String>(
-          future: imageDownloadURL,
-          builder: (context, snapshot) {
+        child: Stack(
+          children: [
+            FutureBuilder<String>(
+              future: img,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting
+                    || isLoading||!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.hasError) {
+                  return Text('Error: ${snapshot.error}');
+                } else {
+                  return CustomScrollView(
+                    slivers: [
+                      SliverAppBar(
+                        title: const Text("My Home Page"),
+                        elevation: 1,
+                        floating: true,
+                        forceElevated: true,
+                        actions: [
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: MouseRegion(
+                              onEnter: (event) {},
+                              onExit: (event) {},
+                              child: InkWell(
+                                onTap: () {
+                                  setState(() {
 
-            if (snapshot.connectionState == ConnectionState.waiting||isLoading) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.hasError) {
-              return Text('Error: ${snapshot.error}');
-            } else {
-            isLoading = false; // Set isLoading to false when data is available
-            // Rest of your code
-
-
-              return CustomScrollView(
-                slivers: [
-
-                  HomePageCard(
-                    employee:employee ,
-                    imageDownloadURL: snapshot.data!,
-                  ),
-                   SliverToBoxAdapter(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          const Text(
-                            'Votre texte ici',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                                  });
+                                },
+                                child: Tooltip(
+                                  message: 'Compte employé\n '
+                                      '${employee.firstname} ${employee.lastname}\n'
+                                      '${employee.email}',
+                                  preferBelow: false,
+                                  child: Hero(
+                                    tag: imageDownloadURL,
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.grey,
+                                      backgroundImage: NetworkImage(imageDownloadURL),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ),
                           ),
-                          // CalendrierCard(
-                          //   events: _events,
-                          //   onDayLongPressed: onDayLongPressed,
-                          //   onCalendarChanged: onCalendarChanged,
-                          //   minSelectedDate: DateTime.now(),
-                          // ),
+                          if (true)
+                            PopupMenuButton<String>(
+                              onSelected: (value) async {
+                                if (value == "logout") {
+                                  // Handle déconnexion option
+
+                                  await Login().googleSingOut();
+                                  log.d('Déconnexion selected');
+                                  ToastUtils.showToast(context, 'Vous êtes déconnecté',3);
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>  const WelcomeImsp()));
 
 
+                                }
+                                else if (value == "handle") {
+                                  // Handle Gérer mon compte option
+                                  log.d('Gérer mon compte selected');
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>  const MonCompte()));
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+
+                                const PopupMenuItem<String>(
+                                  value: "handle",
+                                  child: Text("Mon compte"),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: "logout",
+                                  child: Text("Déconnexion"),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
-
-                    ),
-                  ),
-                ],
-              );
-            }
-          },
+                      SliverToBoxAdapter(
+                        child: Container(
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Flexible(
+                                  child: SizedBox(
+                                    height: 500, // Replace 500 with the desired height
+                                    child: CalendrierCard(
+                                      events: _events,
+                                      onDayLongPressed: onDayLongPressed,
+                                      onCalendarChanged: onCalendarChanged,
+                                      minSelectedDate: employee.startDate,
+                                    ),
+                                  ),
+                                ),
+                                // Other content...
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
   }
 }
+
+
