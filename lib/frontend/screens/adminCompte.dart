@@ -8,7 +8,7 @@ import '../widgets/adminCompteCard.dart';
 
 
 class AdminCompte extends StatefulWidget {
-  const AdminCompte({Key? key}) : super(key: key);
+  const AdminCompte({Key? key,himsef=true}) : super(key: key);
 
   @override
   State<AdminCompte> createState() => _AdminCompteState();
@@ -47,6 +47,7 @@ Future<void> retrieve() async {
 
           leading: IconButton(
               onPressed: () => {
+
 
                  Navigator.pushReplacement(context, MaterialPageRoute(
                   builder: (context) => const AdminHomePage()))

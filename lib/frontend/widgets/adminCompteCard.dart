@@ -104,7 +104,7 @@ class CompteCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                        return FormulaireModifierAdmin(admin: admin,himself: false,);
+                        return FormulaireModifierAdmin(admin: admin,himself: true,);
                       }),
                     );
                   },

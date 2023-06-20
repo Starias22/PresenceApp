@@ -221,7 +221,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
                       }
                       else if (value == "handle") {
-                        // Handle Gérer mon compte option
+
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

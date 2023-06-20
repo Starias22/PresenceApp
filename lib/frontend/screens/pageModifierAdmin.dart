@@ -82,6 +82,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
                   }
 
+
                   ,
 
                   icon: const Icon(Icons.arrow_back,)
@@ -205,14 +206,17 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
                                       child: const Text("Annuler"),
 
-                                    onPressed: (){
-                        Navigator.pushReplacement(context, MaterialPageRoute(
-                        builder: (context) => const AfficherAdmins()
-                        )
-                        );
+                                      onPressed: () => {
 
-                        }
+                                        if(widget.himself)
+                                          Navigator.pushReplacement(context, MaterialPageRoute(
+                                              builder: (context) => const AdminCompte()))
 
+                                        else
+                                          Navigator.pushReplacement(context, MaterialPageRoute(
+                                              builder: (context) => const AfficherAdmins()))
+
+                                      }
 
 
                                   ),
