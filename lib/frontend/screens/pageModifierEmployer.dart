@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
@@ -62,7 +64,8 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
 
               leading: IconButton(
                   onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) => const StatistiquesForServices()))},
+                      builder: (context) => const AfficherEmployes()
+                  ))},
                   icon: const Icon(Icons.arrow_back,)
               ),
             ),
@@ -336,7 +339,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                 children: [
                                   ElevatedButton(
                                     onPressed: ()=>  Navigator.pushReplacement(context, MaterialPageRoute(
-                                        builder: (context) => const StatistiquesForServices())),
+                                        builder: (context) => const AfficherEmployes())),
                                     child: const Text("Annuler"),
                                   ),
 
@@ -350,6 +353,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                       log.d('id of the employee:$id');
                                        Employee employee=
                                        Employee(
+                                         pictureDownloadUrl: widget.employee.pictureDownloadUrl,
                                            status: widget.employee.status,
                                            service:
                                        service, id: id!, firstname:

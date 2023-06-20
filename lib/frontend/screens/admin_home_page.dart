@@ -5,7 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/frontend/screens/adminCompte.dart';
-import 'package:presence_app/frontend/screens/afficherAdmins.dart';
+import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';

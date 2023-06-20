@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 
@@ -63,7 +64,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const StatistiquesForServices()))
+                              const AdminHomePage()))
                 },
             icon: const Icon(
               Icons.arrow_back,

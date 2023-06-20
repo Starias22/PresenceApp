@@ -38,7 +38,6 @@ Future<String> getDownloadURL(String fileName) async {
 
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
-  late String imageDownloadURL;
   bool showMenu=false;
   Future<String>? img;
   String? email = FirebaseAuth.instance.currentUser!.email;
@@ -97,7 +96,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     retrieve().then((_) {
       img = getDownloadURL(filename!).then((url) {
         setState(() {
-          imageDownloadURL = url;
+          //imageDownloadURL = url;
         });
         return url;
       });
@@ -147,7 +146,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
     await getImageName();
 
-      imageDownloadURL =await  getDownloadURL(filename!);
+     // imageDownloadURL =await  getDownloadURL(filename!);
 
     await retrieveReport();
   }
@@ -198,10 +197,20 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                                       '${employee.email}',
                                   preferBelow: false,
                                   child: Hero(
-                                    tag: imageDownloadURL,
+                                    tag: '',
                                     child: CircleAvatar(
+
+
                                       backgroundColor: Colors.grey,
-                                      backgroundImage: NetworkImage(imageDownloadURL),
+                      backgroundImage: employee.pictureDownloadUrl == null
+                         ? Image.asset(
+                'assets/images/imsp1.png',
+                fit: BoxFit.fill,
+                ).image
+                    : NetworkImage(employee.pictureDownloadUrl!),
+
+
+
                                     ),
                                   ),
                                 ),

@@ -6,7 +6,7 @@ import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/firebase/firestore/data_service.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/frontend/screens/afficherAdmins.dart';
+import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';

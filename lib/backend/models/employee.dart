@@ -16,13 +16,12 @@ EStatus convertES(String status) {
 
 
 class Employee {
+  String? pictureDownloadUrl;
   late String id, firstname, lastname, email, gender;
   int? fingerprintId;
   //int uniqueCode;
   EStatus status;
   late DateTime startDate;
-
-  late String image;
   late String serviceId;
   late String service;
 
@@ -44,8 +43,8 @@ class Employee {
         required this.entryTime,
         required this.exitTime,
         this.status=EStatus.pending,
-        //this.uniqueCode=0,
-        this.fingerprintId
+        this.fingerprintId,
+        this.pictureDownloadUrl
       });
 
   Map<String, dynamic> toMap() => {
@@ -61,6 +60,7 @@ class Employee {
         'exit_time': exitTime,
         'gender': gender,
         'start_date': utils.formatDateTime(startDate),
+    'picture_download_url':pictureDownloadUrl
       };
 
   static Employee fromMap(Map<String, dynamic> map) {
@@ -77,11 +77,12 @@ class Employee {
       exitTime: map['exit_time'],
       startDate: utils.parseDate(map['start_date']),
       gender: map['gender'],
+      pictureDownloadUrl: map['picture_download_url']
     );
   }
 
   bool isInRange(DateTime currentTime){
-    print('Range');
+
    return  (utils.format(entryTime)!.isBefore(currentTime)||
         utils.format(entryTime)!.isAtSameMomentAs(currentTime));
   }

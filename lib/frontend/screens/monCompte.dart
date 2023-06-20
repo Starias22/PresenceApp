@@ -15,9 +15,10 @@ class MonCompte extends StatefulWidget {
 
 class _MonCompteState extends State<MonCompte> {
   late Employee employee;
-  String? email;
+
 
   Future<void> retrieve() async {
+    String? email;
     email=FirebaseAuth.instance.currentUser!.email;
 
      employee=await EmployeeDB().getEmployeeByEmail(email!);

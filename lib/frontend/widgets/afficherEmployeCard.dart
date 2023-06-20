@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -36,28 +38,7 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
   }
 
   Future<String> getDownloadURL() async {
-    final items = (await FirebaseStorage.instance.ref().listAll()).items;
-
-    log.d('items.. $items');
-
-    var x = items.where(
-            (item) => item.name.startsWith(RegExp('^${widget.employee.id}')));
-
-    try {
-      String filename = items
-          .where((item) =>
-          item.name.startsWith(RegExp('^${widget.employee.id}')))
-          .toList()[0]
-          .name;
-
-      log.d('filename: $filename');
-      return await FirebaseStorage.instance
-          .ref()
-          .child(filename)
-          .getDownloadURL();
-    } catch (e) {
-      return "";
-    }
+    return '';
   }
 
   String connectionError = "Erreur de connexion! Veillez reessayer";
@@ -86,12 +67,12 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
                 child: SizedBox(
                   height: 90.0,
                   width: 90.0,
-                  child: imageDownloadUrl == ''
+                  child: widget.employee.pictureDownloadUrl== null
                       ? Image.asset(
                     'assets/images/imsp1.png',
                     fit: BoxFit.fill,
                   )
-                      : Image.network(imageDownloadUrl),
+                      : Image.network(widget.employee.pictureDownloadUrl!),
                 ),
               ),
               Expanded(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/admin.dart';
 import '../widgets/afficheAdminCard.dart';
@@ -53,7 +53,7 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const StatistiquesForServices()))
+                              const AdminHomePage()))
                 },
             icon: const Icon(
               Icons.arrow_back,

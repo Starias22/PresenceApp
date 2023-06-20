@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/admin.dart';
-import 'package:presence_app/frontend/screens/afficherAdmins.dart';
+import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/pageModifierAdmin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
@@ -71,7 +71,7 @@ class AfficherAdminCard extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (BuildContext context) {
-                                  return FormulaireModifierAdmin(admin: admin);
+                                  return FormulaireModifierAdmin(admin: admin,himself: false,);
                                 }),
                               );
                             } else if (v == "supprimer") {

@@ -2,9 +2,11 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:presence_app/frontend/screens/employee_home_page.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -15,7 +17,6 @@ class CompteCard extends StatelessWidget {
   firebase_storage.FirebaseStorage storage =
       firebase_storage.FirebaseStorage.instance;
 
-  // File? _photo;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> removePictureIfExists() async {
@@ -54,7 +55,6 @@ class CompteCard extends StatelessWidget {
     var bytes=await pickedFile.readAsBytes();
     var contentType=pickedFile.mimeType;
 
-    log.d('Content type: $contentType');
     var ext=getImageExtensionFromMimeType(contentType!);
 
     var fileName ='${employee.id}.$ext';
@@ -65,9 +65,13 @@ class CompteCard extends StatelessWidget {
           firebase_storage.SettableMetadata(
               contentType: contentType
           ));
+
+      String downloadUrl=await getDownloadURL(fileName);
+      EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl);
+
+
       return success;
     } catch (e) {
-      print(e);
       return failure;
     }
   }
@@ -93,22 +97,6 @@ class CompteCard extends StatelessWidget {
 
     }
   }
-
-  // Future uploadFile() async {
-  //   if (_photo == null) return;
-  //   final fileName = basename(_photo!.path);
-  //   final destination = 'files/$fileName';
-  //
-  //   try {
-  //     final ref = firebase_storage.FirebaseStorage.instance
-  //         .ref(destination)
-  //         .child('file/');
-  //     await ref.putFile(_photo!);
-  //   } catch (e) {
-  //     print('error occurred');
-  //   }
-  // }
-
 
   @override
   Widget build(BuildContext context) {
@@ -276,11 +264,11 @@ class CompteCard extends StatelessWidget {
                 padding: const EdgeInsets.all(20.0),
                 child: Row(
                   children: [
-                    Icon(Icons.email),
+                    const Icon(Icons.email),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(employee.email,
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 20,
                             color: Colors.blue
                         ),),
@@ -309,49 +297,7 @@ class CompteCard extends StatelessWidget {
           ),
         ),
 
-          /*Padding(padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.security),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text("Mot de passe et sécurité",
-                        style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold
-                        ),
-                      ),
-                    )
-                  ],
-                ),
 
-                Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: InkWell(
-                    child: Row(
-                      children: [
-                        Icon(Icons.key),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text("Changer le mot de passe",
-                            style: TfforextStyle(
-                                fontSize: 20,
-                                color: Colors.blue
-                            ),),
-                        ),
-                      ],
-                    ),
-
-                    onTap: (){
-                      print("On m'a appuyé");
-                    },
-                  ),
-                )
-              ],
-            ),
-          )*/
       ],
     );
   }

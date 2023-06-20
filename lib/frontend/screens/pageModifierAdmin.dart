@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/frontend/screens/admins_list.dart';
 
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -13,8 +14,8 @@ import 'adminCompte.dart';
 
 class FormulaireModifierAdmin extends StatefulWidget {
   Admin admin;
-  bool updateEmail;
-  FormulaireModifierAdmin({Key? key, required this.admin, this.updateEmail=false}) : super(key: key);
+  bool himself;
+  FormulaireModifierAdmin({Key? key, required this.admin, this.himself=true}) : super(key: key);
 
   @override
   State<FormulaireModifierAdmin> createState() => _FormulaireModifierAdminState();
@@ -70,9 +71,18 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
               leading: IconButton(
                   onPressed: () => {
+
+                    if(widget.himself)
                     Navigator.pushReplacement(context, MaterialPageRoute(
                       builder: (context) => const AdminCompte()))
-                  },
+
+                    else
+                      Navigator.pushReplacement(context, MaterialPageRoute(
+                          builder: (context) => const AfficherAdmins()))
+
+                  }
+
+                  ,
 
                   icon: const Icon(Icons.arrow_back,)
               ),
@@ -154,7 +164,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                               const SizedBox(height: 12,),
 
                               TextFormField(
-                                enabled: widget.updateEmail,
+                                enabled: widget.himself,
                                   initialValue: widget.admin.email,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
@@ -192,10 +202,21 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
                                   ElevatedButton(
-                                    onPressed: ()=>  Navigator.pushReplacement(context, MaterialPageRoute(
-                                        builder: (context) => const StatistiquesForServices())),
-                                    child: const Text("Annuler"),
+
+                                      child: const Text("Annuler"),
+
+                                    onPressed: (){
+                        Navigator.pushReplacement(context, MaterialPageRoute(
+                        builder: (context) => const AfficherAdmins()
+                        )
+                        );
+
+                        }
+
+
+
                                   ),
+
 
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 

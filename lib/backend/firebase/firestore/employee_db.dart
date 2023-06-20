@@ -196,6 +196,11 @@ class EmployeeDB{
     _employee.doc(id).update({'status':utils.str(status)});
 
   }
+
+  void updatePictureDownloadUrl(String employeeId,String url){
+    _employee.doc(employeeId).update({'picture_download_url':url});
+
+  }
   void updateFingerprintId(String id,int fingerprintId){
     _employee.doc(id).update({'fingerprint_id':fingerprintId});
   }
