@@ -15,8 +15,7 @@ class CompteCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    User? currentUser = FirebaseAuth.instance.currentUser;
-    String? email = currentUser?.email;
+    String? email = FirebaseAuth.instance.currentUser?.email;
     admin.email=email!;
     return ListView(
       children: [

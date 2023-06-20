@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/admin.dart';
 import '../screens/pageStatistiques.dart';
@@ -46,8 +47,10 @@ Future<void> retrieve() async {
 
           leading: IconButton(
               onPressed: () => {
-                Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => const StatistiquesForServices()))
+
+                 Navigator.pushReplacement(context, MaterialPageRoute(
+                  builder: (context) => const AdminHomePage()))
+
               },
               icon: const Icon(Icons.arrow_back,)
           ),

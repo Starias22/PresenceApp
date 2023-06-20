@@ -8,6 +8,7 @@ import 'package:presence_app/backend/models/admin.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../utils.dart';
+import 'adminCompte.dart';
 
 
 class FormulaireModifierAdmin extends StatefulWidget {
@@ -68,8 +69,11 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
               ),
 
               leading: IconButton(
-                  onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) => const StatistiquesForServices()))},
+                  onPressed: () => {
+                    Navigator.pushReplacement(context, MaterialPageRoute(
+                      builder: (context) => const AdminCompte()))
+                  },
+
                   icon: const Icon(Icons.arrow_back,)
               ),
             ),

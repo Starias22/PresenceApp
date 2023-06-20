@@ -1,5 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:presence_app/app_settings/app_settings.dart';
+import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/frontend/screens/adminCompte.dart';
 import 'package:presence_app/frontend/screens/afficherAdmins.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
@@ -7,6 +12,9 @@ import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
+import 'package:presence_app/frontend/screens/welcome.dart';
+import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:provider/provider.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({Key? key}) : super(key: key);
@@ -17,10 +25,15 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   late double width1;
+
   @override
   Widget build(BuildContext context) {
+    var appSettings = Provider.of<AppSettings>(context);
     width1 = MediaQuery.of(context).size.width*4/5;
-    return Scaffold(
+
+    return Theme(
+        data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+    child: Scaffold(
       body: ListView(
         children: [
           Container(
@@ -34,6 +47,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
+
                   PopupMenuButton(
                     icon: const Icon(Icons.menu, color: Colors.white,),
                     itemBuilder: (BuildContext context) => <PopupMenuEntry>[
@@ -172,19 +186,85 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   GestureDetector(
                     onTap: (){
 
-                      Navigator.push(context,
-                          MaterialPageRoute(builder:
-                              (BuildContext context) {
-                            return const StatistiquesForServices();
-                          })
-                      );
+                      // Navigator.push(context,
+                      //     MaterialPageRoute(builder:
+                      //         (BuildContext context) {
+                      //       return const StatistiquesForServices();
+                      //     })
+                      // );
                     },
                     child: const CircleAvatar(
 
                       backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
-                  )
+                  ),
+                  PopupMenuButton<String>(
+                    onSelected: (value) async {
+                      if (value == "logout") {
+                        // Handle déconnexion option
 
+                        await Login().googleSingOut();
+                        ToastUtils.showToast(context, 'Vous êtes déconnecté',3);
+                        Future.delayed(const Duration(seconds: 3),
+                                () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+
+                                      builder: (context) => const WelcomeImsp()));
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (BuildContext context) {
+                                    return const WelcomeImsp();
+                                  }));
+                            });
+
+
+                      }
+                      else if (value == "handle") {
+                        // Handle Gérer mon compte option
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) =>  const AdminCompte()));
+                      }
+
+                      else if (value == "dark") {
+
+                        await Provider.of<AppSettings>(context, listen: false)
+                            .setDarkMode(
+                          !Provider.of<AppSettings>(context, listen: false).
+                          isDarkMode,
+                        );
+
+                      }
+                      else if (value == "language") {
+
+                        // Navigator.pushReplacement(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: (context) =>  const MonCompte()));
+                      }
+                    },
+                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+
+                      const PopupMenuItem<String>(
+                        value: "handle",
+                        child: Text("Mon compte"),
+                      ),
+                      PopupMenuItem<String>(
+                        value: "dark",
+                        child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: "language",
+                        child: Text("Langue"),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: "logout",
+                        child: Text("Déconnexion"),
+                      ),
+                    ],
+                  )
                 ],
               ),
             ),
@@ -259,7 +339,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               );
                             } else
                             if(value == 3){
-                              print("ZERTYYJJJJJKKKKAZERTY");
+
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
@@ -401,7 +481,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
               )
           )
         ],
-      ),
+      )),
     );
   }
 }
