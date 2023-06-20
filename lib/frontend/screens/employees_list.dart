@@ -1,3 +1,4 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/employee.dart';
@@ -16,6 +17,7 @@ class AfficherEmployes extends StatefulWidget {
 class _AfficherEmployesState extends State<AfficherEmployes> {
   List<String> tabBars = ["Tous", 'Présents', 'Retards', 'Absents', 'Sorties'];
   int _selectedIndex = 0;
+  late String pictureDownloadUrl;
 
 
   late List<Employee> employees = [];
@@ -27,8 +29,10 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
     retrieve();
   }
 
+
   Future<void> retrieve() async {
     var x = await EmployeeDB().getAllEmployees();
+    var y=
 
     setState((){
       employees=x;
@@ -160,7 +164,8 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
                       onTap: () {
                         },
                       child:
-                          AfficherEmployeCard(employee: employeesAff[index])),
+                          AfficherEmployeCard(employee: employeesAff[index])
+                  ),
                   const Padding(
                     padding:
                         EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
