@@ -23,6 +23,7 @@ class RegisterEmployee extends StatefulWidget {
 }
 
 class _RegisterEmployeeState extends State<RegisterEmployee> {
+  String startDate='JJ/MM/AAAA';
 
 
   void disableFingerprintEnrollmentIfPreviouslyEnabled(){
@@ -269,63 +270,66 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
   Future<void> selectStartDateAndAchieve(BuildContext context) async {
 
-    // await showDialog(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return AlertDialog(
-    //       title: const Text("Sélection de date"),
-    //       content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
-    //       actions: <Widget>[
-    //         TextButton(
-    //           child: const Text('Continuer'),
-    //           onPressed: () async {
-    //
-    //             Navigator.of(context).pop();
-    //
-    //
-    //           },
-    //         ),
-    //
-    //       ],
-    //     );
-    //   },
-    // );
-    //
-    // DateTime lastDate=utils.add30Days(today);
-    // DateTime nextWorkDate=utils.getNextWorkDate(today);
-    //
-    //
-    // selectedDate = await  showDatePicker(context: context,
-    //
-    //   locale: const Locale('fr'),
-    //   initialDate:nextWorkDate ,
-    //   firstDate: utils.isWeekend(today)?nextWorkDate:today ,
-    //   lastDate:lastDate,
-    //   currentDate: today,
-    // );
-    //
-    //
-    // if(selectedDate==null){
-    //
-    //
-    //
-    //   ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
-    //   return;
-    // }
-    // DateTime start=selectedDate!;
-    //
-    // if(utils.isWeekend(start)){
-    //   disableFingerprintEnrollmentIfPreviouslyEnabled();
-    //   ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
-    //   return;
-    // }
-    //
-    //
-    // if((await HolidayDB().isHoliday(start))){
-    //   disableFingerprintEnrollmentIfPreviouslyEnabled();
-    //   ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
-    //   return;
-    // }
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Sélection de date"),
+          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Continuer'),
+              onPressed: () async {
+
+                Navigator.of(context).pop();
+
+
+              },
+            ),
+
+          ],
+        );
+      },
+    );
+
+    DateTime lastDate=utils.add30Days(today);
+    DateTime nextWorkDate=utils.getNextWorkDate(today);
+
+
+    selectedDate = await  showDatePicker(context: context,
+
+      locale: const Locale('fr'),
+      initialDate:nextWorkDate ,
+      firstDate: utils.isWeekend(today)?nextWorkDate:today ,
+      lastDate:lastDate,
+      currentDate: today,
+    );
+
+    if(selectedDate==null){
+
+
+
+      ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
+      return;
+    }
+    DateTime start=selectedDate!;
+
+    if(utils.isWeekend(start)){
+      disableFingerprintEnrollmentIfPreviouslyEnabled();
+      ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
+      return;
+    }
+
+
+    if((await HolidayDB().isHoliday(start))){
+      disableFingerprintEnrollmentIfPreviouslyEnabled();
+      ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
+      return;
+    }
+    setState(() {
+      startDate=utils.frenchFormatDate(selectedDate);
+    });
+
     //
     //
     // Employee employee=Employee
@@ -773,9 +777,39 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                           const BorderSide(color: Colors.green),
                                     )),
                               ),
-                              const SizedBox(
-                                height: 12,
+                              const SizedBox(height: 12),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Date de début de travail',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10), // Espacement entre le titre et le champ de texte
+                                  Container(
+                                    width: 125, // Largeur du champ de texte encadré
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                        color: Colors.grey,
+                                        width: 1.0,
+                                      ),
+                                      borderRadius: BorderRadius.circular(4.0),
+                                    ),
+                                    padding: const EdgeInsets.all(10),
+                                    child: Text(
+                                      startDate,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
+                              const SizedBox(height: 12),
+
                               Row(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,

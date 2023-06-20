@@ -133,6 +133,14 @@ log.d(DateTime(date.year, date.month, day));
     return date.add(const Duration(days: 30));
   }
 
+  String frenchFormatDate(DateTime? dateTime) {
+    if(dateTime==null) return 'JJ/MM/AAAA';
+    String day = dateTime.day.toString().padLeft(2, '0');
+    String month = dateTime.month.toString().padLeft(2, '0');
+    String year = dateTime.year.toString();
+    return '$day/$month/$year';
+  }
+
   String x(Duration duration){
     log.i('///');
     String formattedTime = '${(duration.inHours).toString().
