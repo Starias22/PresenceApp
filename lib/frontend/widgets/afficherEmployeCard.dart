@@ -41,6 +41,34 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
     return '';
   }
 
+  Future<int> assureDataChanged(int fingerprintId,int val ) async {
+    int data = fingerprintId ;
+    int cpt = 0;
+
+    Future<int> fetchData() async {
+      data = await ESP32().receiveData();
+
+      if (cpt == 10) {
+
+        return 152;
+      }
+
+
+      if (data ==val) {
+        log.d('Data changed');
+        return data;
+      }
+      else {
+        cpt++;
+        await Future.delayed(const Duration(seconds: 1));
+        return await fetchData();
+      }
+
+    }
+
+    return await fetchData();
+  }
+
   String connectionError = "Erreur de connexion! Veillez reessayer";
 
   @override
@@ -163,51 +191,60 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () async {
-                                            String? id = await EmployeeDB()
-                                                .getEmployeeIdByEmail(
-                                                widget.employee.email);
+                                            Navigator.pop(context);
                                             log.d(widget.employee.lastname);
                                             int? fingerprintId =
                                                 widget.employee.fingerprintId;
 
                                             if (fingerprintId != null) {
+
                                               log.d('Fingerprint id:$fingerprintId');
                                               if (!await ESP32()
                                                   .sendData(
                                                   fingerprintId.toString())) {
-                                                ToastUtils.showToast(
-                                                    context,
-                                                    connectionError,
-                                                    3);
-                                                return;
-                                              }
-                                              int data = await ESP32()
-                                                  .receiveData();
-                                              if (data == espConnectionFailed) {
-                                                ToastUtils.showToast(
-                                                    context,
-                                                    connectionError,
-                                                    3);
-                                                return;
-                                              }
-                                              if (data != 1000) {
-                                                ToastUtils.showToast(
-                                                    context,
-                                                    'Echec de suppression',
-                                                    3);
-                                                return;
-                                              }
-                                            }
-                                            EmployeeDB().delete(id!);
 
-                                            Navigator.of(context).pop();
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                const AfficherEmployes(),
-                                              ),
-                                            );
+                                                ToastUtils.showToast(
+                                                    context,
+                                                    connectionError,
+                                                    3);
+                                                return;
+                                              }
+
+                                              // int data = await assureDataChanged(fingerprintId, 2000);
+                                              int data = await ESP32().receiveData();
+                                              log.d('data: $data');
+
+                                              if (data == 2000) {
+
+                                                ToastUtils.showToast(
+                                                    context,
+                                                    'Employé supprimé avec succès',
+                                                    3);
+                                                //delete the employee
+
+                                                //EmployeeDB().delete(id!);
+
+                                                Navigator.of(context).pop();
+                                                Navigator.pushReplacement(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                    const AfficherEmployes(),
+                                                  ),
+                                                );
+                                                return;
+                                              }
+                                              if (data == espConnectionFailed) {
+
+                                                ToastUtils.showToast(
+                                                    context,
+                                                    connectionError,
+                                                    3);
+                                                return;
+                                              }
+
+                                            }
+
                                           },
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:

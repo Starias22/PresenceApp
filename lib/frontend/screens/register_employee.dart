@@ -36,7 +36,8 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
   }
-  Future<int> assureDataChanged(int fingerprintId ) async {
+
+  Future<int> assureDataChanged(int fingerprintId,int val ) async {
     int data = fingerprintId ;
     int cpt = 0;
 
@@ -49,7 +50,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       }
 
 
-      if (data ==-1) {
+      if (data ==val) {
         log.d('Data changed');
         return data;
       }
@@ -191,7 +192,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         if(await ESP32().sendData('update')){
 
           
-          int y=await assureDataChanged(data);
+          int y=await assureDataChanged(data,-1);
 
           log.d('merveil bandit: $y');
 
@@ -214,31 +215,50 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
             int x=await g();
 
-            log.d('Nouvel id lu: $x');
+
 
             if(x==data){
-              ToastUtils.showToast(context, "Empreinte vérifiée", 3);
+              ToastUtils.showToast(context, "Empreinte vérifiée! Vous pouvez retirer votre doigt du capteur", 3);
               //create the employee
+
+              Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                      const RegisterEmployee()));
+              await  assureDataChanged(x,2000);
+              ESP32().sendData('-1');
+
+
 
               return;
 
             }
 
             if(x== noFingerDetected){
-              ToastUtils.showToast(context, "Aucun doigt détecté", 3);
-              return;
+              ToastUtils.showToast(context, "Aucun doigt détecté! Echec de l'enregistrement", 3);
+
 
             }
             //send the previous saved fingerprint id for delete
 
-            ESP32().sendData(data.toString());
-            ToastUtils.showToast(context, "Echec de l'enregistrement! Empreintes non correspndantes", 3);
-
-
-             if(x==espConnectionFailed){
-              ToastUtils.showToast(context, espConnectionError, 3);
+            
+            
+            if(x==espConnectionFailed){
+              ToastUtils.showToast(context, "$espConnectionError! Echec de l'enregistrement", 3);
+              
+              
             }
 
+
+            
+            if(x==noMatchingFingerprint) {
+              ToastUtils.showToast(context, "Empreintes non correspndantes! Echec de l'enregistrement", 3);
+            }
+
+            ESP32().sendData(data.toString());
+           await  assureDataChanged(x,2000);
+            ESP32().sendData('-1');
 
 
           }
