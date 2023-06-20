@@ -11,8 +11,8 @@ class Wrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
-    final _user = Provider.of<User?>(context);
-    if(_user == null) {
+    final user0 = Provider.of<User?>(context);
+    if(user0 == null) {
       return const WelcomeImsp();
 
     }

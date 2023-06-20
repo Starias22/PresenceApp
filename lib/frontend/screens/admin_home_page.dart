@@ -113,7 +113,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                 ],
                               onSelected: (value){
                                 if(value == 1){
-                                  print("ZERTYYJJJJJKKKKAZERTY");
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
@@ -122,7 +121,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   );
                                 } else
                                 if(value == 2){
-                                  print("ZERTYYJJJJJKKKKAZERTY");
+
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
@@ -146,7 +145,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     ],
                     onSelected: (value){
                       if(value == 3){
-                        print("ZERTYYJJJJJKKKKAZERTY");
                         Navigator.push(context,
                             MaterialPageRoute(builder:
                                 (BuildContext context) {
@@ -154,7 +152,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                             }));
                       } else
                       if(value == 4){
-                        print("ZERTYYJJJJJKKKKAZERTY");
                         Navigator.push(context,
                             MaterialPageRoute(builder:
                                 (BuildContext context) {
@@ -174,7 +171,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
                   GestureDetector(
                     onTap: (){
-                      print("On m'a appuyé");
+
                       Navigator.push(context,
                           MaterialPageRoute(builder:
                               (BuildContext context) {
@@ -187,9 +184,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
                       backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
                   )
+
                 ],
               ),
             ),
+
           ),
 
            Expanded(
@@ -230,7 +229,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                             items: [
                               const PopupMenuItem(
                                 value: 1,
-                                child: Text('Créer un compte emplyé'),
+                                child: Text('Créer un compte employé'),
                               ),
                               const PopupMenuItem(
                                 value: 2,
