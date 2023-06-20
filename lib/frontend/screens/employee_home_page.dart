@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
@@ -13,6 +14,7 @@ import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
+import 'package:provider/provider.dart';
 
 import 'monCompte.dart';
 
@@ -37,6 +39,7 @@ Future<String> getDownloadURL(String fileName) async {
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   late String imageDownloadURL;
+  bool showMenu=false;
   Future<String>? img;
   String? email = FirebaseAuth.instance.currentUser!.email;
   String? filename;
@@ -54,7 +57,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     });
     var newEventsData = await PresenceDB().getMonthReport(
         employee.id, newMonth);
-    log.i('new events: $newEventsData');
     setState(() {
       _events = newEventsData;
       isLoading = false;
@@ -62,7 +64,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   }
 
 
-  bool isDarkMode = false;
   Map<DateTime, EStatus> _events = {};
 
   Future<void> retrieveReport() async {
@@ -143,7 +144,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Future<void> retrieve() async {
     employee = await EmployeeDB().getEmployeeByEmail(email!);
 
-    log.d('aaaaa ${employee.id}');
 
     await getImageName();
 
@@ -155,7 +155,10 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    var appSettings = Provider.of<AppSettings>(context);
+    return Theme(
+        data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+    child: Scaffold(
       body: SafeArea(
         child: Stack(
           children: [
@@ -163,7 +166,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
               future: img,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting
-                    || isLoading||!snapshot.hasData) {
+                    ||!snapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
@@ -173,7 +176,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                   return CustomScrollView(
                     slivers: [
                       SliverAppBar(
-                        title: const Text("My Home Page"),
+                        title: const Text("Mes statistiques"),
                         elevation: 1,
                         floating: true,
                         forceElevated: true,
@@ -186,7 +189,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                               child: InkWell(
                                 onTap: () {
                                   setState(() {
-
+                                showMenu=true;
                                   });
                                 },
                                 child: Tooltip(
@@ -205,29 +208,52 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                               ),
                             ),
                           ),
-                          if (true)
+                          if (showMenu)
                             PopupMenuButton<String>(
                               onSelected: (value) async {
                                 if (value == "logout") {
                                   // Handle déconnexion option
 
                                   await Login().googleSingOut();
-                                  log.d('Déconnexion selected');
                                   ToastUtils.showToast(context, 'Vous êtes déconnecté',3);
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>  const WelcomeImsp()));
+                                  Future.delayed(const Duration(seconds: 3),
+                                  () {
+    Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+
+    builder: (context) => const WelcomeImsp()));
+    Navigator.push(context, MaterialPageRoute(
+        builder: (BuildContext context) {
+          return const WelcomeImsp();
+        }));
+                                  });
 
 
                                 }
                                 else if (value == "handle") {
                                   // Handle Gérer mon compte option
-                                  log.d('Gérer mon compte selected');
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>  const MonCompte()));
+                                }
+
+                                else if (value == "dark") {
+
+                                  await Provider.of<AppSettings>(context, listen: false)
+                                      .setDarkMode(
+                                    !Provider.of<AppSettings>(context, listen: false).
+                                    isDarkMode,
+                                  );
+
+                                }
+                                else if (value == "language") {
+
+                                  // Navigator.pushReplacement(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //         builder: (context) =>  const MonCompte()));
                                 }
                               },
                               itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -235,6 +261,14 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                                 const PopupMenuItem<String>(
                                   value: "handle",
                                   child: Text("Mon compte"),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: "dark",
+                                  child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
+                                ),
+                                const PopupMenuItem<String>(
+                                  value: "language",
+                                  child: Text("Langue"),
                                 ),
                                 const PopupMenuItem<String>(
                                   value: "logout",
@@ -245,26 +279,24 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                         ],
                       ),
                       SliverToBoxAdapter(
-                        child: Container(
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: SizedBox(
-                                    height: 500, // Replace 500 with the desired height
-                                    child: CalendrierCard(
-                                      events: _events,
-                                      onDayLongPressed: onDayLongPressed,
-                                      onCalendarChanged: onCalendarChanged,
-                                      minSelectedDate: employee.startDate,
-                                    ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Flexible(
+                                child: SizedBox(
+                                  height: 500, // Replace 500 with the desired height
+                                  child: CalendrierCard(
+                                    events: _events,
+                                    onDayLongPressed: onDayLongPressed,
+                                    onCalendarChanged: onCalendarChanged,
+                                    minSelectedDate: employee.startDate,
                                   ),
                                 ),
-                                // Other content...
-                              ],
-                            ),
+                              ),
+                              // Other content...
+                            ],
                           ),
                         ),
                       ),
@@ -275,7 +307,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
             ),
           ],
         ),
-      ),
+      )),
     );
   }
 }

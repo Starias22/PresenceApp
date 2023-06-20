@@ -41,6 +41,7 @@ late Presence presenceDoc;
     setState(() {
       isLoading = true;
     });
+
       var newEventsData = await PresenceDB().getMonthReport(employeeId!, newMonth);
       log.i('new events: $newEventsData');
       setState(() {
@@ -156,9 +157,6 @@ late Presence presenceDoc;
                   !Provider.of<AppSettings>(context, listen: false).isDarkMode,
                 );
 
-
-                // Exit the app to trigger the restart
-              //SystemNavigator.pop();
               } else if (value == 5) {
                 // action pour l'option 5
               } else if (value == 6) {
