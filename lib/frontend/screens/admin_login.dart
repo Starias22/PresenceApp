@@ -1,7 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/frontend/screens/acceuilAdmin.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
@@ -343,7 +343,7 @@ class _AuthentificationState extends State<Authentification> {
                 Navigator.push(context,
                     MaterialPageRoute(builder:
                         (BuildContext context) {
-                      return const HomePageOfAdmin();
+                      return const AdminHomePage();
                     }));
               });
         }

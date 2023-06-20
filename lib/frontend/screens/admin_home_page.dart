@@ -8,14 +8,14 @@ import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 
-class HomePageOfAdmin extends StatefulWidget {
-  const HomePageOfAdmin({Key? key}) : super(key: key);
+class AdminHomePage extends StatefulWidget {
+  const AdminHomePage({Key? key}) : super(key: key);
 
   @override
-  State<HomePageOfAdmin> createState() => _HomePageOfAdminState();
+  State<AdminHomePage> createState() => _AdminHomePageState();
 }
 
-class _HomePageOfAdminState extends State<HomePageOfAdmin> {
+class _AdminHomePageState extends State<AdminHomePage> {
   late double width1;
   @override
   Widget build(BuildContext context) {
@@ -46,7 +46,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                                   const PopupMenuItem(
                                     value: 1,
-                                    child: Text('Créer un compte emplyé'),
+                                    child: Text('Créer un compte employé'),
                                   ),
                                   const PopupMenuItem(
                                     value: 2,
@@ -59,7 +59,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                                 ],
                               onSelected: (value){
                                 if(value == 1){
-                                  print("ZERTYYJJJJJKKKKAZERTY");
+
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
@@ -68,7 +68,7 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                                   );
                                 } else
                                 if(value == 2){
-                                  print("ZERTYYJJJJJKKKKAZERTY");
+
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
@@ -77,7 +77,6 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                                   );
                                 } else
                                 if(value == 3){
-                                  print("ZERTYYJJJJJKKKKAZERTY");
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
@@ -245,7 +244,6 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                             elevation: 10,
                           ).then((value){
                             if(value == 1){
-                              print("ZERTYYJJJJJKKKKAZERTY");
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
@@ -254,7 +252,6 @@ class _HomePageOfAdminState extends State<HomePageOfAdmin> {
                               );
                             } else
                             if(value == 2){
-                              print("ZERTYYJJJJJKKKKAZERTY");
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {

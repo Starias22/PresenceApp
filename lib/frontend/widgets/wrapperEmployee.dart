@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/frontend/screens/acceuilAdmin.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/employee_home_page.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:provider/provider.dart';
@@ -20,7 +20,7 @@ class Wrapper extends StatelessWidget {
       List<UserInfo> providerData = user!.providerData;
       for(UserInfo userInfo in providerData){
         if (userInfo.providerId == 'password'){
-          return const HomePageOfAdmin();
+          return const AdminHomePage();
 
         }
         else{
