@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/backend/models/service.dart';
-import 'package:presence_app/backend/models/services.dart';
+import 'package:presence_app/backend/models/utils/service.dart';
+import 'package:presence_app/frontend/services.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 

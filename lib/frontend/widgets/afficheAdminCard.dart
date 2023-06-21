@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
-import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/pageModifierAdmin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';

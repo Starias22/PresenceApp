@@ -1,7 +1,7 @@
 
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/models/utils/admin.dart';
 
 
 

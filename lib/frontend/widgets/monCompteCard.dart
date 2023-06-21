@@ -3,7 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:presence_app/frontend/screens/employee_home_page.dart';

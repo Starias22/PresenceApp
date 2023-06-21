@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/presence.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
 
 

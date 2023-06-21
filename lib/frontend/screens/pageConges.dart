@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/holiday.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/holiday.dart';
 import 'package:presence_app/utils.dart';
 
 class PageConges extends StatefulWidget {

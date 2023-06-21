@@ -19,8 +19,6 @@ Future<List<DataService>> data() async {
   await Future.delayed(const Duration(seconds: 2));
  var x=await  PresenceDB().getServicesReport();
  List<DataService> pie = convertToDataService(x);
-log.d(x);
- log.d(pie);
 
   return pie;
 }

@@ -1,7 +1,7 @@
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
@@ -69,8 +69,6 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
 
   @override
   Widget build(BuildContext context) {
-    //retrieve();
-
 
     return DefaultTabController(
       length: tabBars.length,

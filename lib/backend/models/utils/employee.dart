@@ -101,8 +101,5 @@ class Employee {
     return currentTime.isBefore(utils.format(exitTime)!);
   }
 
-  static x(){
-
-  }
 
 }

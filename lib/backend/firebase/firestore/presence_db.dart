@@ -2,8 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/presence.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
 
 class PresenceDB {
@@ -158,6 +158,24 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   }
   return presenceIds;
 }
+
+  Future<List<Presence>> getDailyPresenceRecords({required DateTime date,String? service}) async {
+
+    QuerySnapshot querySnapshot = await _presence
+            .where('date',isEqualTo: utils.formatDateTime(date))
+        .orderBy('entry_time')
+        .get()
+    ;
+
+
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+
+    return presences;
+  }
+
+
 
   Future<List<Presence>> getMonthPresenceRecords(String employeeId,DateTime date) async {
     DateTime now=await utils.localTime();

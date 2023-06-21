@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:logger/logger.dart';
-import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 
 
 

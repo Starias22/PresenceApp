@@ -3,9 +3,9 @@ import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/presence.dart';
-import 'package:presence_app/backend/models/service.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
+import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/utils.dart';
 
 

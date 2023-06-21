@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/models/employee.dart';
-import 'package:presence_app/backend/models/service.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/utils.dart';
 
 

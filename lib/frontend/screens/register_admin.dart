@@ -2,7 +2,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/backend/models/admin.dart';
+import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../backend/firebase/firestore/presence_db.dart';
-import '../../backend/models/employee.dart';
+import '../../backend/models/utils/employee.dart';
 import '../../utils.dart';
 import '../screens/mesStatistiques.dart';
 import '../widgets/digrammeBarCard.dart';

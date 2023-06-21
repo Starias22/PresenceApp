@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
-import 'package:presence_app/backend/models/employee.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 import '../../utils.dart';
 
 

@@ -40,6 +40,16 @@
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
+  <script>
+    async function download() {
+      var pdfAsDataUri = "data:application/pdf;base64, " + pdfData;
+      var link = document.createElement('a');
+      link.download = filename;
+      link.href = pdfAsDataUri;
+      link.type = 'application/pdf';
+      link.click();
+    }
+</script>
 </head>
 <body>
   <script>

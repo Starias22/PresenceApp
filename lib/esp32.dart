@@ -31,7 +31,7 @@ class ESP32
       }
     }
     catch(e){
-      log.d('An error occured: $e');
+      log.d('An error occurred: $e');
 
     }
     return espConnectionFailed;
@@ -46,14 +46,13 @@ class ESP32
 
       if (response.statusCode == 200) {
         // Data sent successfully
-        print('Data sent to ESP32');
+
         return true;
       } else {
         // Request failed
-        print('Request failed with status: ${response.statusCode}.');
       }
     } catch (e) {
-      print('An error occurred: $e');
+
 
     }
     return false;

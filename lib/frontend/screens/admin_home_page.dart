@@ -10,6 +10,7 @@ import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/pageStatistiques.dart';
+import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
@@ -94,13 +95,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
-                                        return Scaffold(
-                                          body: ListView(
-                                            children: const [
-                                              Text("Télécharger rapport de presence")
-                                            ],
-                                          ),
-                                        );
+                                        return Report();
                                       })
                                   );
                                 }
@@ -343,13 +338,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
-                                    return Scaffold(
-                                      body: ListView(
-                                        children: const [
-                                          Text("Télécharger rapport de presence")
-                                        ],
-                                      ),
-                                    );
+                                    return Report();
                                   })
                               );
                             }

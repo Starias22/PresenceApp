@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -8,7 +10,7 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/esp32.dart';
 
 import 'package:presence_app/frontend/screens/login_menu.dart';
-import 'package:presence_app/frontend/upload_file.dart';
+import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
@@ -261,6 +263,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
                   builder: (BuildContext context) {
                     return const AdminLogin();
                       //return ImageUploads();
+
 
                   }
                   ));
