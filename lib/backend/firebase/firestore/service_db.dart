@@ -36,6 +36,21 @@ class ServiceDB {
     return null;
   }
 
+  Future<Service?> getServiceByName(String name) async {
+    QuerySnapshot querySnapshot = await _service
+        .where('name', isEqualTo: name)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      var service=Service(name: name);
+      service.id=querySnapshot.docs.first.id;
+      return  service;
+    }
+    return null;
+  }
+
+
   Future<bool> hasEmployee(String serviceId) async {
     return (await EmployeeDB().getEmployees(serviceId)).isNotEmpty;
   }

@@ -1,8 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
+import 'package:presence_app/backend/models/report_model/presence_record.dart';
+import 'package:presence_app/backend/models/report_model/presence_report.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/frontend/screens/pdf.dart';
 
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
@@ -16,6 +22,7 @@ class EmployeePresenceReport extends StatefulWidget {
 
 class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   String startDate='JJ/MM/AAAA';
+  bool operationInProcess=false;
 
 
 
@@ -112,9 +119,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
   }
 
-  late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
+  late String  gender;
 
-  bool fingerprintSaved=false;
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -123,11 +129,12 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   }
 
   Future<void> retrieveServices() async {
-    items = await ServiceDB().getServicesNames();
-    items.add('Tous');
+    items.addAll(await ServiceDB().getServicesNames());
+
+
   }
 
-  late List<String> items = [];
+  late List<String> items = ['Tous' ];
   String _valueChanged = '';
   final _key = GlobalKey<FormState>();
 
@@ -184,6 +191,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                           child: Column(
                             children: [
                               DropdownButtonFormField(
+                                value: 'all',
                                 items: const [
                                   DropdownMenuItem(
                                     value: "present",
@@ -201,7 +209,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 onSaved: (val) => setState(() {
-                                  //_service = int.parse(_valueSaved);
+
                                 }),
                                 validator: (String? v) {
                                   return null;
@@ -229,6 +237,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
+                                value: 'Tous',
                                 items: items.map((String item) {
                                   return DropdownMenuItem<String>(
                                     value: item,
@@ -250,7 +259,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                 }),
                                 decoration: InputDecoration(
-                                    labelText: 'Selectionnez le service',
+                                    labelText: 'Service',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(0.0),
                                       borderSide:
@@ -266,6 +275,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
+                                value: 'daily',
                                 items:  const [
                                   DropdownMenuItem(
                                     value: "daily",
@@ -283,6 +293,11 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     value: "year",
                                     child: Text("Annuel"),
                                   ),
+                                  DropdownMenuItem(
+                                    value: "period",
+                                    child: Text("Périodique"),
+                                  ),
+
                                 ],
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
@@ -295,7 +310,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                 }),
                                 decoration: InputDecoration(
-                                    labelText: "Selectionnez l'heure d'arrivée",
+                                    labelText: "Type de rapport",
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(0.0),
                                       borderSide:
@@ -311,27 +326,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 height: 12,
                               ),
 
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                                children: [
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-                                    ),
-                                    onPressed: () => Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                            const EmployeePresenceReport())),
-                                    child: const Text("Annuler"),
-                                  ),
-                                  ElevatedButton(
+                              operationInProcess?  const CircularProgressIndicator()
+                                  :   ElevatedButton(
                                     style: ButtonStyle(
                                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                         RoundedRectangleBorder(
@@ -341,24 +337,48 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                                     ),
                                     onPressed: () async {
+
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
                                       }
                                       else {
                                         return;
                                       }
-                                      DateTime now=await utils.localTime();
-                                      today=DateTime(now.year,now.month,now.day);
+                                      setState(() {
+                                        operationInProcess=true;
+                                      });
+                                      var presences= await PresenceDB().getAllDailyPresenceRecords( DateTime(2023,6,6));
 
-                                      selectStartDateAndAchieve(context);
 
+                                      List<PresenceRecord> presenceRows=[];
+                                      PresenceRecord presenceRecord;
+                                      Employee employee;
+
+
+                                      for(var presence in presences){
+
+                                        if(presence.status==EStatus.present||presence.status==EStatus.late) {
+                                          employee=await EmployeeDB().getEmployeeById(presence.employeeId);
+                                          presenceRecord=PresenceRecord(employee: employee, presence: presence);
+                                          presenceRows.add(presenceRecord);
+                                        }
+
+
+                                      }
+
+                                      var presenceReport=PresenceReport
+                                        (presenceRows: presenceRows, date: '');
+
+                                 await Report().createAndDownloadOrOpenPdf( presenceReport);
+                                      setState(() {
+                                        operationInProcess=false;
+                                      });
 
 
                                     },
-                                    child: const Text('Télécharger'),
+                                    child:const Text('Télécharger'),
                                   ),
-                                ],
-                              )
+
                             ],
                           ),
                         ),

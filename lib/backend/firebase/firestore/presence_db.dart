@@ -79,8 +79,6 @@ Future<bool> entered(String employeeId) async {
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
     String date=utils.formatDateTime(dateTime);
-    //log.d('The date:$date');
-    //log.d('Employee id:$employeeId');
     QuerySnapshot querySnapshot = await _presence
         .where('date', isEqualTo: date)
         .where('employee_id', isEqualTo: employeeId)
@@ -159,15 +157,14 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   return presenceIds;
 }
 
-  Future<List<Presence>> getDailyPresenceRecords({required DateTime date,String? service}) async {
+  Future<List<Presence>> getAllDailyPresenceRecords( DateTime date) async {
 
     QuerySnapshot querySnapshot = await _presence
             .where('date',isEqualTo: utils.formatDateTime(date))
         .orderBy('entry_time')
+        .orderBy('exit_time')
         .get()
     ;
-
-
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).toList();
@@ -175,6 +172,86 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     return presences;
   }
 
+  Future<Map<String,List<Presence>>> groupPresenceRecordsByService
+      ( List<Presence> presences) async {
+
+    List<Presence> presenceRecords=[] ;
+    Map<String,List<Presence>> groupedReport={};
+    var services=await ServiceDB().getAllServices();
+    Employee employee;
+
+    for(var service in services){
+
+      presenceRecords=[] ;
+      for(var presence in presences){
+
+      employee=(await EmployeeDB().getEmployeeById(presence.employeeId));
+      if(employee.service==service.name){
+        presenceRecords.add(presence);
+
+      }
+      groupedReport[service.name]=presenceRecords;
+      }
+
+    }
+
+    return groupedReport;
+
+
+   
+  }
+
+  Future<List<Presence>> getSomeEmployeesDailyPresenceRecords( DateTime date,
+     List<String> employeesIds) async {
+
+    QuerySnapshot querySnapshot = await _presence
+        .where('date',isEqualTo: utils.formatDateTime(date))
+        .where('employee_id',whereIn: employeesIds)
+        .orderBy('entry_time')
+        .orderBy('exit_time')
+    
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+
+    return presences;
+  }
+
+
+  Future<List<Presence>> getAServiceDailyPresenceRecords( DateTime date,
+     String serviceId) async {
+
+   var employees= await EmployeeDB().getEmployees(serviceId);
+   List<String> employeesIds=[];
+
+   for(var employee in employees){
+     employeesIds.add(employee.id);
+   }
+   return await getSomeEmployeesDailyPresenceRecords(date,employeesIds);
+
+  }
+
+
+  Future<List<Presence>> getPeriodicPresenceRecords(
+      {required DateTime start,required DateTime
+  end,String? service}) async {
+
+    QuerySnapshot querySnapshot = await _presence
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(end))
+        .orderBy('date')
+        .orderBy('entry_time')
+        .orderBy('exit_time')
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+
+    return presences;
+  }
 
 
   Future<List<Presence>> getMonthPresenceRecords(String employeeId,DateTime date) async {
@@ -215,7 +292,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     String end=utils.formatDateTime(date);
     QuerySnapshot querySnapshot = await _presence
         .where('date', isGreaterThanOrEqualTo:start )
-        .where('date',isLessThanOrEqualTo: end).get();
+        .where('date',isLessThanOrEqualTo: end).
+    get();
 
 
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {

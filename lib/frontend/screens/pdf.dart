@@ -17,15 +17,10 @@ import 'dart:html' as html;
 
 
 
-class Report extends StatelessWidget {
-  Report({super.key});
+class Report  {
 
 
-
-  void formatReport(Presence presence){
-
-  }
-  late List<int> bytes;
+  late List<int> bytes=[];
   
 Future<void> saveAndOpen(String filename) async {
   //Get external storage directory
@@ -41,7 +36,7 @@ Future<void> saveAndOpen(String filename) async {
   await file.writeAsBytes(bytes, flush: true);
 
 //Open the PDF document in mobile
-  OpenFile.open('$path/Output.pdf');
+  OpenFile.open('$path/$filename');
 
 }
 void saveAndOpenOrDownloadPdf(String filename) async {
@@ -53,6 +48,11 @@ void saveAndOpenOrDownloadPdf(String filename) async {
   }
 
 }
+Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
+   await createPdf(presenceReport);
+   saveAndOpenOrDownloadPdf('report.pdf');
+
+}
 
   void saveAndDownloadPDFOnWeb(String filename) {
     html.AnchorElement(
@@ -61,7 +61,7 @@ void saveAndOpenOrDownloadPdf(String filename) async {
       ..setAttribute('download', filename)
       ..click();
   }
-Future<void> x() async {
+Future<void> createPdf(PresenceReport presenceReport) async {
   //Creates a new PDF document
   PdfDocument document = PdfDocument();
 
@@ -186,9 +186,7 @@ Future<void> x() async {
     header.cells[i].style = headerStyle;
   }
 
-
-  //var presences= await PresenceDB().getDailyPresenceRecords(date: DateTime(2023,6,20));
-  var presences= await PresenceDB().getDailyPresenceRecords(date: DateTime(2023,6,6));
+  var presences= await PresenceDB().getAllDailyPresenceRecords( DateTime(2023,6,6));
 
 
   List<PresenceRecord> presenceRows=[];
@@ -204,6 +202,7 @@ Future<void> x() async {
       presenceRows.add(presenceRecord);
     }
 
+
   }
 
   var presenceReport=PresenceReport(presenceRows: presenceRows, date: '');
@@ -218,34 +217,6 @@ Future<void> x() async {
     row.cells[4].value = presenceRow.punctualityDeviation;
     row.cells[5].value = presenceRow.exitDeviation;
   }
-//
-// //Add rows to grid
-//    row = grid.rows.add();
-//   row.cells[0].value = 'CA-1098';
-//   row.cells[1].value = 'AWC Logo Cap';
-//   row.cells[2].value = '\$8.99';
-//   row.cells[3].value = '2';
-//   row.cells[4].value = '\$17.98';
-//
-//   row = grid.rows.add();
-//   row.cells[0].value = 'LJ-0192';
-//   row.cells[1].value = 'Long-Sleeve Logo Jersey,M';
-//   row.cells[2].value = '\$49.99';
-//   row.cells[3].value = '3';
-//   row.cells[4].value = '\$149.97';
-//
-//   row = grid.rows.add();
-//   row.cells[0].value = 'So-B909-M';
-//   row.cells[1].value = 'Mountain Bike Socks,M';
-//   row.cells[2].value = '\$9.5';
-//   row.cells[3].value = '2';
-//   row.cells[4].value = '\$19';
-//   row = grid.rows.add();
-//   row.cells[0].value = 'LJ-0192';
-//   row.cells[1].value = 'Long-Sleeve Logo Jersey,M';
-//   row.cells[2].value = '\$49.99';
-//   row.cells[3].value = '4';
-//   row.cells[4].value = '\$199.96';
 
 //Set padding for grid cells
   grid.style.cellPadding = PdfPaddings(left: 2, right: 2, top: 2, bottom: 2);
@@ -297,45 +268,7 @@ Future<void> x() async {
   bytes=await document.save();
 
 }
-  Future<void> _createPDF() async {
-    // Create a new PDF document
-    PdfDocument document = PdfDocument();
-
-    // Add a new page and draw text
-    document.pages.add().graphics.drawString(
-      'Hello World!',
-      PdfStandardFont(PdfFontFamily.helvetica, 20),
-      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-      bounds: const Rect.fromLTWH(0, 0, 500, 50),
-    );
-
-    // Save the document
-    bytes = await document.save();
-
-    // Dispose the document
-    document.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Rapport de présence'),
-      ),
-      body: Center(
-        child: ElevatedButton(
-          child: const Text('Télécharger'),
-          onPressed: () async {
-            // Action à effectuer lorsque le bouton est pressé
-            //await _createPDF();
-            //saveAndDownloadPDFOnWeb('report.pdf');
-            await x();
-            saveAndDownloadPDFOnWeb('report.pdf');
 
 
-          },
-        ),
-      ),
-    );
-  }
+
 }
