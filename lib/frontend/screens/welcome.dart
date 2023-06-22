@@ -6,9 +6,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
-import 'package:presence_app/esp32.dart';
-
+import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
 
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
@@ -59,6 +57,12 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   bool noNetworkConnection=false;
 
   Timer?  dataFetchTimer;
+  Image employeePicture=Image.network('assets/images/imsp1.png');
+  bool pictureDownloadInProcess=false;
+  late DateTime now;
+
+  late Employee employee;
+  
 
 
 
@@ -103,91 +107,129 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   Future<void> getData()
   async {
 
-    String message;
-    //there is no internet connection
-    if (await Connectivity().checkConnectivity()
+     String message;
+    // //there is no internet connection
+    // if (await Connectivity().checkConnectivity()
+    //
+    //     == ConnectivityResult.none) {
+    //
+    //   connectionStatusOff=false;
+    //   //log.d('There is no internet connection');
+    //   //if there were no internet connection
+    //   if(noNetworkConnection) {
+    //     taskCompleted=true;
+    //     return ;
+    //   }
+    //   //else there were network connection
+    //
+    //
+    //     message = "Aucune connexion internet";
+    //
+    //     if(nextPage) return;
+    //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    //     ToastUtils.showToast(context, message,24*3600 );
+    //
+    //
+    //     noNetworkConnection=true;
+    //     taskCompleted=true;
+    //     return;
+    //
+    // }
+    //
+    //
+    // log.d('There is internet connection');
+    // //if there were no internet connection
+    // if(noNetworkConnection) {
+    //   message = "Connexion internet rétablie !";
+    //   noNetworkConnection=false;
+    //
+    //   //if(nextPage) return;
+    //
+    //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
+    //   ToastUtils.showToast(context, message, 3 );
+    //
+    // }
+    //
+    //
+    //   data=await ESP32().receiveData();
+    //
+    //
+    // if(data==espConnectionFailed&&connectionStatusOff==false) {
+    //
+    //   log.d('esp failed');
+    //   connected=false;
+    //   message = "Connexion non reussie avec le micrôtrolleur!";
+    //
+    //   if(nextPage) return;
+    //
+    //
+    //   ToastUtils.showToast(context, message,24*3600 );
+    //
+    //
+    //   connectionStatusOff=true;
+    //   taskCompleted=true;
+    //   return;
+    //
+    // }
 
-        == ConnectivityResult.none) {
-      
-      connectionStatusOff=false;
-      //log.d('There is no internet connection');
-      //if there were no internet connection
-      if(noNetworkConnection) {
-        taskCompleted=true;
-        return ;
-      }
-      //else there were network connection
-
-
-        message = "Aucune connexion internet";
-
-        if(nextPage) return;
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        ToastUtils.showToast(context, message,24*3600 );
-
-
-        noNetworkConnection=true;
-        taskCompleted=true;
-        return;
-
-    }
-    
-
-    log.d('There is internet connection');
-    //if there were no internet connection
-    if(noNetworkConnection) {
-      message = "Connexion internet rétablie !";
-      noNetworkConnection=false;
-
-      //if(nextPage) return;
-
-      ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      ToastUtils.showToast(context, message, 3 );
-      
-    }
-
-
-      data=await ESP32().receiveData();
-
-
-    if(data==espConnectionFailed&&connectionStatusOff==false) {
-
-      log.d('esp failed');
-      connected=false;
-      message = "Connexion non reussie avec le micrôtrolleur!";
-
-      if(nextPage) return;
-
-
-      ToastUtils.showToast(context, message,24*3600 );
-
-
-      connectionStatusOff=true;
-      taskCompleted=true;
-      return;
-
-    }
-
+     data=2;
      if (1 <= data && data <= 127) {
 
-      var employee = await EmployeeDB()
+
+       Employee? nullableEmployee = await EmployeeDB()
           .getEmployeeByFingerprintId(data);
 
-      if (employee == null) {
+
+      if (nullableEmployee == null) {
         ToastUtils.showToast(context, 'Vous êtes un intru', 3);
         taskCompleted=true;
         return;
       }
 
-      var before=DateTime.now();
-      int code = await PresenceDB().handleEmployeeAction(data);
-      var after=DateTime.now();
-      var duration=after.difference(before);
-      log.d('duration: $duration');
+       now=await utils.localTime();
+      employee=nullableEmployee;
 
-      ToastUtils.showToast(context, '${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
-          ' ${employee.firstname}'
-          ' ${employee.lastname}: ${getMessage(code)}', 3);
+
+
+      //int code = await PresenceDB().handleEmployeeAction(data,now);
+      int code=entryMarkedSuccessfully;
+
+      final snackBar = CustomSnackBar(
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:'${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
+            ' ${employee.firstname}'
+            ' ${employee.lastname}: ${getMessage(code)}' ,
+        image: pictureDownloadInProcess?const CircularProgressIndicator():employeePicture ,
+      );
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+
+      if(employee.pictureDownloadUrl!= null){
+        setState(() {
+          pictureDownloadInProcess=true;
+
+        // });
+        //
+        // setState(() {
+          employeePicture= Image.network(employee.pictureDownloadUrl!);
+        });
+        pictureDownloadInProcess=false;
+      }
+
+
+
+
+      // var before=DateTime.now();
+
+      // var after=DateTime.now();
+      // var duration=after.difference(before);
+      // log.d('duration: $duration');
+      
+
+      
+      
+
+
       taskCompleted=true;
       return;
 
@@ -227,17 +269,17 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
       return "Sortie déjà marquée";
     }
     if(code==exitMarkedSuccessfully){
-      return "Sortie marquée avec succès";
+      return "Sortie marquée avec succès(${utils.formatTime(now)})";
     }
     if(code==entryMarkedSuccessfully){
-      return "Entrée marqué avec succès";
+      return "Entrée marquée avec succès(${utils.formatTime(now)})";
     }
 
     if(code==desireToExitBeforeEntryTime){
-      return "Sortie marquée avant heure d'entrée' officiel";
+      return "Sortie marquée(${utils.formatTime(now)}) avant heure d'entrée officielle(${employee.entryTime})";
     }
     if(code==desireToExitEarly){
-      return "Sortie marquée avant heure de sortie officiel";
+      return "Sortie marquée(${utils.formatTime(now)}) avant heure de sortie officielle(${employee.exitTime})";
     }
     return 'Inconnu';
 
@@ -258,33 +300,13 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
               child: InkWell(
                 onTap: (){
                   nextPage=true;
-                  // Navigator.push(context,MaterialPageRoute(
-                  // builder: (BuildContext context) {
-                  //   //return const AdminLogin();
-                  //
-                  //
-                  //
-                  // }
-                  // ));
-                  // const snackBar = SnackBar(
-                  //   content: Row(
-                  //     mainAxisAlignment: MainAxisAlignment.center,
-                  //     children: [
-                  //       Icon(Icons.info),
-                  //       SizedBox(width: 8),
-                  //       Text('Hello SnackBar!'),
-                  //     ],
-                  //   ),
-                  // );
+                  Navigator.push(context,MaterialPageRoute(
+                  builder: (BuildContext context) {
+                   return const AdminLogin();
+                  }));
+    },
 
-                  final snackBar = CustomSnackBar(
-                    width: MediaQuery.of(context).size.width - 16,
-                    message: 'Hello SnackBar!',
-                    image: Image.asset('assets/images/person.jpg'), //
-                  );
-                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                  },
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(35),

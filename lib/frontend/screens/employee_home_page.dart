@@ -202,6 +202,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
 
                                       backgroundColor: Colors.grey,
+
                       backgroundImage: employee.pictureDownloadUrl == null
                          ? Image.asset(
                 'assets/images/imsp1.png',

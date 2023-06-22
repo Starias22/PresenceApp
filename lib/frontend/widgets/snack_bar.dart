@@ -5,33 +5,41 @@ class CustomSnackBar extends SnackBar {
     Key? key,
     required String message,
     required Widget image,
-    Duration duration = const Duration(seconds: 3),
-    double width = 300, // Set your desired width here
-  }) : super(
+    double width=600,
+    Duration duration = const Duration(seconds: 60),
 
-    width:900,// MediaQuery().of(context).size,
+  }) : super(
+    width: width,
+    showCloseIcon: true,
     key: key,
     duration: duration,
-     behavior: SnackBarBehavior.floating,
+    behavior: SnackBarBehavior.floating,
     content: Container(
-      width: width,
-      constraints: const BoxConstraints(
+      //width: width,
+      constraints:
+      const BoxConstraints(
         maxHeight: 100,
-        maxWidth: 100, // Définissez la largeur maximale souhaitée
+        maxWidth: 100, // Set your desired maximum width here
       ),
-      child: Align(
-        alignment: Alignment.center,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 8.0),
-              child: image,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start, // Align children at the start (left)
+        children: [
+
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: image,
+          ),
+          
+          Expanded(
+            child: Align(
+               child: Text(message,overflow: TextOverflow.ellipsis,maxLines: 2,),
+
             ),
-            Text(message),
-          ],
-        ),
+          ),
+        ],
       ),
+
     ),
   );
 }

@@ -50,7 +50,7 @@ Future<bool> entered(String employeeId) async {
     return (await getPresenceById
       ((await getPresenceId(await utils.localTime(), employeeId))!)).exitTime!=null;
   }
-  Future<int> handleEmployeeAction( int fingerprintId) async {
+  Future<int> handleEmployeeAction( int fingerprintId,DateTime dateTime) async {
 
     DateTime dateTime=await utils.localTime();
     if(utils.isWeekend(dateTime)) {

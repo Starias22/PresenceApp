@@ -9,9 +9,8 @@ import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
-import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
+import 'package:presence_app/frontend/screens/presence_statistics.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
@@ -72,6 +71,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                     value: 3,
                                     child: Text('Rapport de présence'),
                                   ),
+                                  const PopupMenuItem(
+                                    value: 4,
+                                    child: Text('Statistiques de présence'),
+                                  ),
                                 ],
                               onSelected: (value){
                                 if(value == 1){
@@ -91,12 +94,20 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                         return const AfficherEmployes();
                                       })
                                   );
-                                } else
-                                if(value == 3){
+                                }
+                                else if(value == 3){
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
                                         return const EmployeePresenceReport();
+                                      })
+                                  );
+                                }
+                                else if(value == 4){
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder:
+                                          (BuildContext context) {
+                                        return const EmployeePresenceStatistics();
                                       })
                                   );
                                 }
@@ -315,6 +326,10 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                 value: 3,
                                 child: Text('Rapport de présence'),
                               ),
+                              const PopupMenuItem(
+                                value: 4,
+                                child: Text('Statistiques de présence'),
+                              ),
                             ],
                             elevation: 10,
                           ).then((value){
@@ -384,7 +399,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               ],
                           ).then((value){
                             if(value == 1){
-                              print("ZERTYYJJJJJKKKKAZERTY");
+
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
@@ -392,7 +407,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   }));
                             } else
                             if(value == 2){
-                              print("ZERTYYJJJJJKKKKAZERTY");
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {

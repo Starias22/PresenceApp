@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
@@ -266,10 +268,10 @@ class _AuthentificationState extends State<Authentification> {
   Future<void> singIn() async{
 
     var loginCode= await Login().signIn(email!, password!);
-    log.i('fff: $loginCode');
 
     try {
       final result = await (Connectivity().checkConnectivity());
+
       if (result != ConnectivityResult.none) {
         setState(() {
           inLoginProcess = true;
