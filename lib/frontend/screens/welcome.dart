@@ -10,7 +10,8 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/esp32.dart';
 
 import 'package:presence_app/frontend/screens/login_menu.dart';
-import 'package:presence_app/frontend/screens/pdf.dart';
+
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
@@ -43,8 +44,6 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     super.didPopNext();
 
   }
-  final GlobalKey<ScaffoldMessengerState>
-  _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   /*may be:
   both esp32 and the device are not connected to the same network
@@ -259,14 +258,32 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
               child: InkWell(
                 onTap: (){
                   nextPage=true;
-                  Navigator.push(context,MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return const AdminLogin();
-                      //return ImageUploads();
+                  // Navigator.push(context,MaterialPageRoute(
+                  // builder: (BuildContext context) {
+                  //   //return const AdminLogin();
+                  //
+                  //
+                  //
+                  // }
+                  // ));
+                  // const snackBar = SnackBar(
+                  //   content: Row(
+                  //     mainAxisAlignment: MainAxisAlignment.center,
+                  //     children: [
+                  //       Icon(Icons.info),
+                  //       SizedBox(width: 8),
+                  //       Text('Hello SnackBar!'),
+                  //     ],
+                  //   ),
+                  // );
 
+                  final snackBar = CustomSnackBar(
+                    width: MediaQuery.of(context).size.width - 16,
+                    message: 'Hello SnackBar!',
+                    image: Image.asset('assets/images/person.jpg'), //
+                  );
+                  ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                  }
-                  ));
                   },
                 child: Container(
                   decoration: BoxDecoration(
