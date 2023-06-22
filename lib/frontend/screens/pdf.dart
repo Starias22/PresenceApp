@@ -3,11 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
-import 'package:presence_app/backend/models/utils/employee.dart';
-import 'package:presence_app/backend/models/utils/presence.dart';
-import 'package:presence_app/backend/models/report_model/presence_record.dart';
 import 'package:presence_app/backend/models/report_model/presence_report.dart';
 import 'package:presence_app/utils.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -185,27 +180,6 @@ Future<void> createPdf(PresenceReport presenceReport) async {
     }
     header.cells[i].style = headerStyle;
   }
-
-  var presences= await PresenceDB().getAllDailyPresenceRecords( DateTime(2023,6,6));
-
-
-  List<PresenceRecord> presenceRows=[];
-  PresenceRecord presenceRecord;
-  Employee employee;
-
-
-  for(var presence in presences){
-
-    if(presence.status==EStatus.present||presence.status==EStatus.late) {
-      employee=await EmployeeDB().getEmployeeById(presence.employeeId);
-      presenceRecord=PresenceRecord(employee: employee, presence: presence);
-      presenceRows.add(presenceRecord);
-    }
-
-
-  }
-
-  var presenceReport=PresenceReport(presenceRows: presenceRows, date: '');
 
   PdfGridRow row;
   for(var presenceRow in presenceReport.presenceRows){

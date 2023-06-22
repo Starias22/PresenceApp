@@ -194,11 +194,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
       }
 
     }
-
     return groupedReport;
 
-
-   
   }
 
   Future<List<Presence>> getSomeEmployeesDailyPresenceRecords( DateTime date,

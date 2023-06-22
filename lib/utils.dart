@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:logger/logger.dart';
+import 'package:presence_app/backend/models/report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 
 
@@ -23,21 +24,14 @@ Future<DateTime> getBeninTime() async {
   }
 }
 
-void main() async {
-  try {
-    final beninTime = await getBeninTime();
-    print('Current time in Benin: $beninTime');
-  } catch (e) {
-    print('Error: $e');
-  }
-}
+
 
 
 final utils = Utils();
 bool darkMode=false;
 const success = 0,
     invalidFirstname = 1,
-    invalidLname = 2,
+    invalidLastname = 2,
     invalidEmail = 3,
     invalidPassword = 4,
     emailExists = 5,
@@ -75,7 +69,7 @@ const success = 0,
     noService = 36,
     popupClosedByUser = 37,
     sameFName = 38,
-    sameLname = 39,
+    sameLastname = 39,
     networkError = 40,
     adminExists = 41,
     employeeExists = 42,
@@ -146,7 +140,7 @@ log.d(DateTime(date.year, date.month, day));
     String formattedTime = '${(duration.inHours).toString().
     padLeft(2, '0')}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}';
     log.i('///');
-    print(formattedTime);
+
     return formattedTime;
 
   }
@@ -260,6 +254,14 @@ log.d(DateTime(date.year, date.month, day));
 
   bool isWeekend(DateTime date){
     return date.weekday == DateTime.saturday||date.weekday==DateTime.sunday;
+
+  }
+  ReportType convert (String type){
+    if(type=='daily') return ReportType.daily;
+    if(type=='weekly') return ReportType.weekly;
+    if(type=='monthly') return ReportType.monthly;
+    if(type=='annual') return ReportType.annual;
+    /*if(type=='daily')*/ return ReportType.daily;
 
   }
 

@@ -23,6 +23,9 @@ class EmployeePresenceReport extends StatefulWidget {
 class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   String startDate='JJ/MM/AAAA';
   bool operationInProcess=false;
+  late ReportType reportType=ReportType.daily;
+  EStatus? status;
+  List<String>? services;
 
 
 
@@ -152,14 +155,14 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   @override
   void initState() {
     super.initState();
-
+    retrieveServices();
     _getValue();
   }
 
   @override
   Widget build(BuildContext context) {
 
-    retrieveServices();
+
 
     return SafeArea(
         child: Scaffold(
@@ -212,13 +215,14 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                 }),
                                 validator: (String? v) {
+                                  if(v=='all') {
+                                    status=null;
+                                  } else {
+                                    status=utils.convertES(v!);
+                                  }
                                   return null;
 
-                                  // if (v != null) {
-                                  //   gender = v;
-                                  //   return null;
-                                  // }
-                                  // return "Sélectionnez le sexe";
+
                                 },
                                 decoration: InputDecoration(
                                     labelText: 'Statut',
@@ -247,13 +251,15 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 validator: (String? v) {
+                                  if(v=='Tous') {
+                                    services=null;
+                                  } else {
+                                    services ??= [];
+                                    services?.add(v!);
+                                  }
                                   return null;
 
-                                  // if (v != null) {
-                                  //   serviceName = v;
-                                  //   return null;
-                                  // }
-                                  // return "Sélectionnez le service";
+
                                 },
                                 onSaved: (val) => setState(() {
 
@@ -282,19 +288,19 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     child: Text("Journalier"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "week",
+                                    value: "weekly",
                                     child: Text("hebdomadaire"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "month",
+                                    value: "monthly",
                                     child: Text("Mensuel"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "year",
+                                    value: "annuel",
                                     child: Text("Annuel"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "period",
+                                    value: "other",
                                     child: Text("Périodique"),
                                   ),
 
@@ -302,6 +308,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                 onChanged: (val) =>
                                     setState(() => _valueChanged = val!),
                                 validator: (String? v) {
+                                  reportType=utils.convert(v!);
                                   return null;
 
 
@@ -354,20 +361,29 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       PresenceRecord presenceRecord;
                                       Employee employee;
 
+                     presences=presences.where((presence) =>
+                     presence.status==EStatus.present||presence.status==EStatus.late).toList();
 
-                                      for(var presence in presences){
+                     log.d('aaaa:: $status');
 
-                                        if(presence.status==EStatus.present||presence.status==EStatus.late) {
+                     if(status!=null) {
+                       presences=presences.where((presence) =>
+                       presence.status==status).toList();
+                     }
+                     for(var presence in presences){
+
                                           employee=await EmployeeDB().getEmployeeById(presence.employeeId);
                                           presenceRecord=PresenceRecord(employee: employee, presence: presence);
                                           presenceRows.add(presenceRecord);
-                                        }
 
 
                                       }
 
+
+
                                       var presenceReport=PresenceReport
-                                        (presenceRows: presenceRows, date: '');
+                                        (presenceRows: presenceRows, date: '',status: status,reportPeriodType:
+                                      reportType,services: services);
 
                                  await Report().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {
