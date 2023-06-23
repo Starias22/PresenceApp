@@ -30,8 +30,6 @@ class Wrapper extends StatelessWidget {
         }
       }
     }
-    return Container(
-      child: const Text("Quelque chose s'est mal tournée"),
-    );
+    return const Text("Quelque chose s'est mal tournée");
   }
 }

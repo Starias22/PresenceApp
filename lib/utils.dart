@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:logger/logger.dart';
-import 'package:presence_app/backend/models/report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+
+import 'backend/models/presence_report_model/presence_report.dart';
 
 
 
@@ -283,7 +284,36 @@ log.d(DateTime(date.year, date.month, day));
     if(type=='weekly') return ReportType.weekly;
     if(type=='monthly') return ReportType.monthly;
     if(type=='annual') return ReportType.annual;
-    /*if(type=='daily')*/ return ReportType.daily;
+    /*if(type=='daily')*/ return ReportType.periodic;
+
+  }
+  String day(DateTime date){
+
+    if(date.weekday==DateTime.monday) return 'Lundi';
+    if(date.weekday==DateTime.tuesday) return 'Merdi';
+    if(date.weekday==DateTime.wednesday) return 'Mercredi';
+    if(date.weekday==DateTime.thursday) return 'Jeudi';
+    if(date.weekday==DateTime.friday) return 'Vendredi';
+    if(date.weekday==DateTime.saturday) return 'Samei';
+    /*if(date.weekday==DateTime.sunday)*/ return 'Dimanche';
+
+  }
+
+  String month(DateTime date){
+
+    if(date.month==DateTime.january) return 'Janvier';
+    if(date.month==DateTime.february) return 'Février';
+    if(date.month==DateTime.march) return 'Mars';
+    if(date.month==DateTime.april) return 'Avril';
+    if(date.month==DateTime.may) return 'Mai';
+    if(date.month==DateTime.june) return 'Juin';
+    if(date.month==DateTime.july) return 'Juillet';
+    if(date.month==DateTime.august) return 'Aout';
+    if(date.month==DateTime.september) return 'Septembre';
+    if(date.month==DateTime.october) return 'Octobre';
+    if(date.month==DateTime.november) return 'Novembre';
+
+    /*if(date.month==DateTime.december) */ return 'Décembre';
 
   }
 

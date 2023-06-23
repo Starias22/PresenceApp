@@ -1,4 +1,4 @@
-import 'package:presence_app/backend/models/report_model/presence_record.dart';
+import 'package:presence_app/backend/models/presence_report_model/presence_record.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 
 import 'package:presence_app/utils.dart';
@@ -50,12 +50,12 @@ class PresenceReport{
     else if(reportPeriodType==ReportType.annual){
       x=start!.year.toString();
     }
-    else if(reportPeriodType==ReportType.monthly||reportPeriodType==ReportType.periodic){
+    else if(reportPeriodType==ReportType.weekly||reportPeriodType==ReportType.periodic){
       x='Du ${utils.frenchFormatDate(start)} au ${utils.frenchFormatDate(end)}';
     }
     else //if(reportPeriodType==ReportType.monthly)
     {
-      x='${start!.month}/${start!.year}';
+      x='Mois de ${utils.month(start!)} ${start!.year}';
     }
     fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 

@@ -16,7 +16,7 @@ class AfficherAdminCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        print("tapppp");
+
       },
       child: Container(
         color: Colors.white,

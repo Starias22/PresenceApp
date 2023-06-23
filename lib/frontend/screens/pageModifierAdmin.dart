@@ -6,7 +6,6 @@ import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
 
-import 'package:presence_app/frontend/screens/pageStatistiques.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../utils.dart';
 import 'adminCompte.dart';
