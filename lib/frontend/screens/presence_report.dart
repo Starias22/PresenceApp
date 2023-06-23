@@ -26,6 +26,9 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   late ReportType reportType=ReportType.daily;
   EStatus? status;
   List<String>? services;
+  bool? groupByService;
+  late DateTime start;
+  DateTime? end;
 
 
 
@@ -305,8 +308,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     child: Text("Annuel"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "other",
-                                    child: Text("Périodique"),
+                                    value: "periodic",
+                                    child: Text("Autre période"),
                                   ),
 
                                 ],
@@ -362,8 +365,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                      var report=
                                       await PresenceDB().getPresenceReport
-                                        (reportType: reportType,
-                                          start:  DateTime(2023,6,6),
+                                        (reportType: reportType,groupByService: groupByService,
+                                          start:  DateTime(2023,6,6),end: end,
                                           services: services
                                       );
                                       if(report=={}){
@@ -386,6 +389,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                         presenceRows=[];
                                         for(var presence in presences){
 
+
                                           employee=await EmployeeDB().
                                           getEmployeeById(presence.employeeId);
                                           presenceRow=PresenceRecord
@@ -398,9 +402,10 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       });
 
                                       var presenceReport=PresenceReport
-                                        ( date: '',status: status,reportPeriodType:
-                                      reportType,services: services, presenceRowsByService:
-                                      presenceRowsByService, groupByService: null);
+                                        ( date: '',status: status,
+                                          reportPeriodType: reportType,services: services,
+                                          presenceRowsByService: presenceRowsByService,
+                                          groupByService: groupByService);
 
                                       await Report().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {

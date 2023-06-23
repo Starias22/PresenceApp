@@ -118,6 +118,8 @@ Future<void> removeAllPresenceDocuments(String employeeId) async {
 
   for (final doc in documentsToDelete) {
     batch.delete(doc.reference);
+
+
   }
 
   await batch.commit();
@@ -370,6 +372,24 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     return presences;
   }
+
+
+  Future<void> getPresenceStatistics(
+      {required ReportType reportType, required DateTime start, DateTime?
+  end,
+    List<String> status=const['present','late','absent' ],
+    required List<String>? services,
+
+    List<String>? employeesIds,
+    bool? groupByService
+  })
+
+  async {
+    Map<String?, List<Presence> > presenceReport=await  getPresenceReport(
+        reportType: reportType, start: start, services: services);
+
+  }
+
 
 
   Future<Map<String?, List<Presence>>> getPresenceReport(
@@ -927,17 +947,34 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
     }
   }
 
-  // Future<void> addIdFieldToPresenceDocuments() async {
-  //   QuerySnapshot querySnapshot = await _presence.get();
-  //
-  //   // Iterate through the documents and update each document with the "id" field
-  //   for (var doc in querySnapshot.docs) {
-  //     String documentId = doc.id;
-  //
-  //     // Update the document with the "id" field
-  //     _presence.doc(documentId).update({'id': documentId});
-  //   }
-  // }
+  Future<void> addServiceFieldToPresenceDocuments() async {
+    QuerySnapshot querySnapshot = await _presence.get();
+
+    Employee employee;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+
+
+
+    final batch = FirebaseFirestore.instance.batch();
+
+    await batch.commit();
+
+    for (var doc in presences) {
+
+      employee = await EmployeeDB().getEmployeeById(doc.employeeId);
+
+      if (employee.id == doc.employeeId) {
+
+        batch.update(_presence.doc(doc.employeeId), {'employee_service': employee.service});
+      }
+
+    }
+
+
+    }
+
 
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {
 
