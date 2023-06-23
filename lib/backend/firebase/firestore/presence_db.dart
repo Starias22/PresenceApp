@@ -959,7 +959,7 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
     final batch = FirebaseFirestore.instance.batch();
 
-    await batch.commit();
+
 
     for (var doc in presences) {
 
@@ -967,10 +967,11 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
       if (employee.id == doc.employeeId) {
 
-        batch.update(_presence.doc(doc.employeeId), {'employee_service': employee.service});
+        batch.update(_presence.doc(doc.id), {'employee_service': employee.service});
       }
 
     }
+    await batch.commit();
 
 
     }

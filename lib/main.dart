@@ -23,7 +23,7 @@ void main() async {
   log.i('update ***');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
 
-  await PresenceDB().addServiceFieldToPresenceDocuments();
+  //await PresenceDB().addServiceFieldToPresenceDocuments();
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
 

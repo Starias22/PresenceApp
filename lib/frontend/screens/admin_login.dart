@@ -4,6 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 import 'package:presence_app/utils.dart';
@@ -27,6 +28,7 @@ class _AuthentificationState extends State<Authentification> {
       passwordC = TextEditingController();
 
   String? email, password;
+  bool emailSending=false;
 
 
 
@@ -172,11 +174,11 @@ class _AuthentificationState extends State<Authentification> {
                           const SizedBox(
                             height: 20,
                           ),
-                          inLoginProcess ? const Center(child: CircularProgressIndicator(),) :
+
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              ElevatedButton(
+                             if(!inLoginProcess) ElevatedButton(
                                 style: ButtonStyle(
                                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -196,7 +198,7 @@ class _AuthentificationState extends State<Authentification> {
                                   ),
                                 ),
                               ),
-                              ElevatedButton(
+                              inLoginProcess ? const Center(child: CircularProgressIndicator(),) :   ElevatedButton(
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
@@ -211,9 +213,11 @@ class _AuthentificationState extends State<Authentification> {
                                     } else {
                                       return;
                                     }
-                                    log.d('ooof');
+                                    setState(() {
+                                      inLoginProcess=true;
+                                    });
                                     retrieveTexts();
-                                    log.d(email);
+                                    
 
                                     await singIn();
                                   },
@@ -228,7 +232,8 @@ class _AuthentificationState extends State<Authentification> {
                           const SizedBox(
                             height: 40,
                           ),
-                          InkWell(
+                         emailSending?
+                         const CircularProgressIndicator(): InkWell(
                               child: const Text(
                                 'Mot de passe oublié ?',
                                 style: TextStyle(
@@ -237,9 +242,18 @@ class _AuthentificationState extends State<Authentification> {
                                 ),
                               ),
                               onTap: () async {
+                                setState(() {
+                                  emailSending=true;
+                                });
                                 retrieveTexts();
                                 String message;
-                               if(await AdminDB().exists(email!)){
+
+
+        if (await Connectivity().checkConnectivity()== ConnectivityResult.none) {
+    message='Aucune connexion internet';
+      }
+                              else if(await AdminDB().exists(email!)){
+
                                  if(await Login().resetPassword(email!)) {
                                    message =
                                  'Un email de réinitialisation de mot de passe a été envoyé à cette adresse';
@@ -250,9 +264,18 @@ class _AuthentificationState extends State<Authentification> {
                                else{
                                  message="Aucun admin avec une telle adresse email";
                                }
+                               setState(() {
+                                 emailSending=false;
+                               });
 
-                                log.d(message);
-                                ToastUtils.showToast(context, message, 3);
+                                ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                  simple: true,
+                                  showCloseIcon: false,
+                                  duration: const Duration(seconds: 3) ,
+                                  //width: MediaQuery.of(context).size.width-2*10,
+                                  message:message ,
+                                ));
+
                               })
                         ],
                       ))
@@ -270,24 +293,34 @@ class _AuthentificationState extends State<Authentification> {
     var loginCode= await Login().signIn(email!, password!);
 
     try {
-      final result = await (Connectivity().checkConnectivity());
 
-      if (result != ConnectivityResult.none) {
+
+      if (await Connectivity().checkConnectivity()== ConnectivityResult.none) {
         setState(() {
-          inLoginProcess = true;
+          inLoginProcess = false;
         });
 
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 3) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:'Aucune connexion internet!' ,
+        ));
+
+
+        return;
+      }
 
         String message;
         switch (loginCode) {
           case networkRequestFailed:
-            inLoginProcess = false;
+
             message =
             "La requête a échoué. Vous n'êtes peut être pas connecté à internet";
             break;
 
           case emailNotExists:
-            inLoginProcess = false;
             message =
             'Aucun admin avec une telle adresse email';
             break;
@@ -298,12 +331,12 @@ class _AuthentificationState extends State<Authentification> {
             break;
 
           case wrongPassword:
-            inLoginProcess = false;
+
             message = 'Mot de passe incorrect';
             break;
 
           case tooManyRequests:
-            inLoginProcess = false;
+
             Login().resetPassword(email!);
             message =
             "L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez immédiatement le restaurez en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. Un email de reinitialisation est envoyé à cette adresse";
@@ -327,18 +360,25 @@ class _AuthentificationState extends State<Authentification> {
 
           default:
             inLoginProcess = false;
-            log.d('****loginCode:$loginCode');
             message = '****Erreur inconnue';
             break;
         }
+      setState(() {
+        inLoginProcess=false;
+      });
 
-        log.d(message);
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
 
 
-        ToastUtils.showToast(context,message,3);
-        //ToastUtils.showToast(context,message,3);
-        //ToastUtils.showToast(context,message,3);
-        if (loginCode == success) {
+
+
+      if (loginCode == success) {
           inLoginProcess = false;
           Future.delayed(const Duration(seconds: 5),
                   () {
@@ -350,10 +390,7 @@ class _AuthentificationState extends State<Authentification> {
               });
         }
 
-      } else {
-        ToastUtils.showToast(context,"Aucune connexion internet",3);
 
-      }
     } catch (_) {
       ToastUtils.showToast(context,"Une erreur s'est produite lors de la connexion",3);
 

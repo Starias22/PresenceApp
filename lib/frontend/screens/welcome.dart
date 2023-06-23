@@ -1,16 +1,14 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
-
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
-
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 
@@ -57,7 +55,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   bool noNetworkConnection=false;
 
   Timer?  dataFetchTimer;
-  Image employeePicture=Image.network('assets/images/imsp1.png');
+  late Image employeePicture;
   bool pictureDownloadInProcess=false;
   late DateTime now;
 
@@ -67,7 +65,11 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
   @override
+
+
+
   void initState() {
+
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       routeObserver.subscribe(this, ModalRoute.of(context)!);
     });
@@ -90,6 +92,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   }
 
 
+
   void startDataFetching() {
 
 
@@ -101,6 +104,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         await getData();
       }
     });
+
   }
 
 
@@ -108,71 +112,90 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   async {
 
      String message;
-    // //there is no internet connection
-    // if (await Connectivity().checkConnectivity()
-    //
-    //     == ConnectivityResult.none) {
-    //
-    //   connectionStatusOff=false;
-    //   //log.d('There is no internet connection');
-    //   //if there were no internet connection
-    //   if(noNetworkConnection) {
-    //     taskCompleted=true;
-    //     return ;
-    //   }
-    //   //else there were network connection
-    //
-    //
-    //     message = "Aucune connexion internet";
-    //
-    //     if(nextPage) return;
-    //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    //     ToastUtils.showToast(context, message,24*3600 );
-    //
-    //
-    //     noNetworkConnection=true;
-    //     taskCompleted=true;
-    //     return;
-    //
-    // }
-    //
-    //
-    // log.d('There is internet connection');
-    // //if there were no internet connection
-    // if(noNetworkConnection) {
-    //   message = "Connexion internet rétablie !";
-    //   noNetworkConnection=false;
-    //
-    //   //if(nextPage) return;
-    //
-    //   ScaffoldMessenger.of(context).removeCurrentSnackBar();
-    //   ToastUtils.showToast(context, message, 3 );
-    //
-    // }
-    //
-    //
-    //   data=await ESP32().receiveData();
-    //
-    //
-    // if(data==espConnectionFailed&&connectionStatusOff==false) {
-    //
-    //   log.d('esp failed');
-    //   connected=false;
-    //   message = "Connexion non reussie avec le micrôtrolleur!";
-    //
-    //   if(nextPage) return;
-    //
-    //
-    //   ToastUtils.showToast(context, message,24*3600 );
-    //
-    //
-    //   connectionStatusOff=true;
-    //   taskCompleted=true;
-    //   return;
-    //
-    // }
 
-     data=2;
+    //there is no internet connection
+    if (await Connectivity().checkConnectivity()
+
+        == ConnectivityResult.none) {
+
+      connectionStatusOff=false;
+      //if there were no internet connection
+      if(noNetworkConnection) {
+        taskCompleted=true;
+        return ;
+      }
+
+      //else there were network connection
+
+
+        message = "Aucune connexion internet";
+
+        if(nextPage) return;
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+
+
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        showCloseIcon: true,
+        duration: const Duration(days: 1) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
+
+
+
+
+        noNetworkConnection=true;
+        taskCompleted=true;
+        return;
+
+    }
+
+    //if there were no internet connection
+    if(noNetworkConnection) {
+      message = "Connexion internet rétablie !";
+      noNetworkConnection=false;
+
+      if(nextPage) return;
+
+      ScaffoldMessenger.of(context).removeCurrentSnackBar();
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
+
+    }
+
+
+      data=await ESP32().receiveData();
+
+
+    if(data==espConnectionFailed&&connectionStatusOff==false) {
+
+      log.d('esp failed');
+      connected=false;
+      message = "Connexion non reussie avec le micrôtrolleur!";
+
+      if(nextPage) return;
+
+
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: true,
+        duration: const Duration(days: 1) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
+
+
+      connectionStatusOff=true;
+      taskCompleted=true;
+      return;
+
+    }
+
      if (1 <= data && data <= 127) {
 
 
@@ -181,7 +204,15 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
       if (nullableEmployee == null) {
-        ToastUtils.showToast(context, 'Vous êtes un intru', 3);
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: true,
+          duration: const Duration(seconds: 1) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:'Vous êtes un intru' ,
+        ));
+
+
         taskCompleted=true;
         return;
       }
@@ -194,40 +225,44 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
       //int code = await PresenceDB().handleEmployeeAction(data,now);
       int code=entryMarkedSuccessfully;
 
-      final snackBar = CustomSnackBar(
-        //width: MediaQuery.of(context).size.width-2*10,
-        message:'${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
-            ' ${employee.firstname}'
-            ' ${employee.lastname}: ${getMessage(code)}' ,
-        image: pictureDownloadInProcess?const CircularProgressIndicator():employeePicture ,
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+       employeePicture=
+       employee.pictureDownloadUrl==null?Image.asset('assets/images/imsp1.png') :
+       Image.network(
+         employee.pictureDownloadUrl!,
+         loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+           if (loadingProgress == null) {
+
+             return child;
+           }
+
+           final totalBytes = loadingProgress.expectedTotalBytes;
+           final bytesLoaded = loadingProgress.cumulativeBytesLoaded;
+
+           // Calculate the download progress as a percentage
+           final progress = (totalBytes != null)
+               ? (bytesLoaded / totalBytes * 100).toInt()
+               : null;
+
+           // Display the progress or any other custom widget
+           return Center(
+             child: CircularProgressIndicator(
+               value: progress != null ? progress / 100 : null,
+             ),
+           );
+         },
+       );
 
 
-      if(employee.pictureDownloadUrl!= null){
-        setState(() {
-          pictureDownloadInProcess=true;
 
-        // });
-        //
-        // setState(() {
-          employeePicture= Image.network(employee.pictureDownloadUrl!);
-        });
-        pictureDownloadInProcess=false;
-      }
-
-
-
-
-      // var before=DateTime.now();
-
-      // var after=DateTime.now();
-      // var duration=after.difference(before);
-      // log.d('duration: $duration');
-      
-
-      
-      
+       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+         showCloseIcon: true,
+         //width: MediaQuery.of(context).size.width-2*10,
+         message:'${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
+             ' ${employee.firstname}'
+             ' ${employee.lastname}: ${getMessage(code)}' ,
+         image: employeePicture  ,
+       ));
 
 
       taskCompleted=true;
@@ -243,7 +278,15 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         ScaffoldMessenger.of(context).removeCurrentSnackBar();
         message = "Connexion reussie avec le micrôtrolleur!";
 
-        ToastUtils.showToast(context, message, 5);
+
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 5) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:message ,
+        ));
+
         connected = true;
       }
 
@@ -251,8 +294,15 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     else if (data == 151) {
       message =
       "Employé non reconnue! Veuillez reessayer!";
-      ToastUtils.showToast(context, message, 3);
-    }
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
+
+     }
     taskCompleted=true;
   }
 

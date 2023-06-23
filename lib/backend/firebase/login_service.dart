@@ -94,21 +94,18 @@ class Login {
       }
     }
 
-    log.d('User signed in successfully');
-
     return success;
   }
 
 // Function to handle Google Sign-In
   Future<int> googleSignIn() async {
-    UserCredential credential;
 
     try {
       if (kIsWeb) {
-        //log.d("L'application s'exécute dans un navigateur Web.");
-        credential = (await withWeb())!;
+
+        await withWeb();
       } else {
-        credential = (await withoutWeb())!;
+         await withoutWeb();
       }
 
       return success;
@@ -156,8 +153,9 @@ class Login {
             return true;
         // Email verification sent successfully
       }).catchError((error) {
+        //error.toString().contains(other)
         // Handle the error
-        log.e('Error while sending email:$error');
+
         return false;
       });
       return true;
