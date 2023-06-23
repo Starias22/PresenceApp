@@ -1,8 +1,10 @@
+// ignore_for_file: avoid_web_libraries_in_flutter
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:presence_app/backend/models/report_model/presence_record.dart';
 import 'package:presence_app/backend/models/report_model/presence_report.dart';
 import 'package:presence_app/utils.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
@@ -55,6 +57,13 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
     )
       ..setAttribute('download', filename)
       ..click();
+  }
+
+  void createATable(
+  MapEntry<String?,List<PresenceRecord>> table){
+
+
+
   }
 Future<void> createPdf(PresenceReport presenceReport) async {
   //Creates a new PDF document
@@ -182,7 +191,19 @@ Future<void> createPdf(PresenceReport presenceReport) async {
   }
 
   PdfGridRow row;
-  for(var presenceRow in presenceReport.presenceRows){
+
+  var tables=presenceReport.presenceRowsByService;
+  //
+  if(tables=={}){
+    //empty report
+  }
+
+  else {
+
+  }
+
+  for(var presenceRow in presenceReport.presenceRowsByService['Direction']!)
+  {
     row = grid.rows.add();
     row.cells[0].value = presenceRow.employeeName;
     row.cells[1].value = presenceRow.entryTime;

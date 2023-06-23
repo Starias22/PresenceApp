@@ -1,7 +1,7 @@
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
 
-import '../utils/employee.dart';
-import '../utils/presence.dart';
 
 class PresenceRecord{
   Employee employee;

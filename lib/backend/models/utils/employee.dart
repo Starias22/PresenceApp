@@ -87,6 +87,7 @@ class Employee {
         utils.format(entryTime)!.isAtSameMomentAs(currentTime));
   }
 
+
   bool desireToExitBeforeEntryTime(DateTime now) {
     return now.isBefore(utils.format(entryTime)!);
   }

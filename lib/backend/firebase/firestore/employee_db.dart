@@ -35,8 +35,12 @@ class EmployeeDB{
 
     if(employee.startDate.isAtSameMomentAs(today)) employee.status=EStatus.absent;
     if(employee.status==EStatus.absent) {
+      Presence presence=Presence(date: today, employeeId: employee.id, status: EStatus.absent);
+      presence.employeeService=employee.service;
 
-      PresenceDB().create(Presence(date: today, employeeId: employee.id, status: EStatus.absent));
+      PresenceDB().create(
+          presence
+      );
     }
     return true;
   }

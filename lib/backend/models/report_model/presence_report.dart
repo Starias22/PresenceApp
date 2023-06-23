@@ -1,27 +1,34 @@
 import 'package:presence_app/backend/models/report_model/presence_record.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+
 import 'package:presence_app/utils.dart';
 
 enum ReportType{
-  daily,weekly,monthly,annual,other
+  daily,weekly,monthly,annual,periodic
 }
 class PresenceReport{
-  List<PresenceRecord> presenceRows;
+
+  Map<String?,List<PresenceRecord>> presenceRowsByService;
+  bool? groupByService;
   List<String>?  services;
   DateTime? end;
   DateTime? start;
+  DateTime? selectedDate;
   //date or period
   String date;
   EStatus? status;
-  bool? groupByService;
+
   ReportType reportPeriodType;
   late String fStatus;
   List<String>  fServices=[];
   late String fReportType;
 
 
-  PresenceReport({required this.presenceRows,this.services, required this.date,
-  this.status,this.groupByService,this.reportPeriodType=ReportType.daily}){
+  PresenceReport({required this.presenceRowsByService,
+    this.services, required this.date,
+    this.status,required this.groupByService,this.reportPeriodType=ReportType.daily}){
+
+
     if(status==null) {
       fStatus='Tous';
     }
@@ -33,6 +40,8 @@ class PresenceReport{
     }
 
 
+
+
     fReportType=utils.str(reportPeriodType);
     String x;
     if(reportPeriodType==ReportType.daily){
@@ -41,14 +50,14 @@ class PresenceReport{
     else if(reportPeriodType==ReportType.annual){
       x=start!.year.toString();
     }
-    else if(reportPeriodType==ReportType.monthly||reportPeriodType==ReportType.other){
+    else if(reportPeriodType==ReportType.monthly||reportPeriodType==ReportType.periodic){
       x='Du ${utils.frenchFormatDate(start)} au ${utils.frenchFormatDate(end)}';
     }
     else //if(reportPeriodType==ReportType.monthly)
     {
       x='${start!.month}/${start!.year}';
     }
-    fReportType='${utils.str(reportPeriodType)}($x)';
+    fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 
   }
 

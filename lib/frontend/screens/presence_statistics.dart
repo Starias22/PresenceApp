@@ -300,7 +300,8 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
                                   setState(() {
                                     operationInProcess=true;
                                   });
-                                  var presences= await PresenceDB().getAllDailyPresenceRecords( DateTime(2023,6,6));
+                                  var presences= await PresenceDB().
+                                  getAllDailyPresenceRecords(  date:  DateTime(2023,6,6));
 
 
                                   List<PresenceRecord> presenceRows=[];
@@ -328,8 +329,8 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
 
 
                                   var presenceReport=PresenceReport
-                                    (presenceRows: presenceRows, date: '',status: status,reportPeriodType:
-                                  reportType,services: services);
+                                    ( date: '',status: status,reportPeriodType:
+                                  reportType,services: services, presenceRowsByService: {}, groupByService: null);
 
                                   await Report().createAndDownloadOrOpenPdf( presenceReport);
                                   setState(() {

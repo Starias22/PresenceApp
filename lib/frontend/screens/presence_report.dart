@@ -8,6 +8,7 @@ import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/report_model/presence_record.dart';
 import 'package:presence_app/backend/models/report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
 
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -254,8 +255,13 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                   if(v=='Tous') {
                                     services=null;
                                   } else {
-                                    services ??= [];
-                                    services?.add(v!);
+
+                                    // services ??= [];
+                                    // services?.add(v!);
+
+                                    //for the moment consider a single service
+                                    services!.removeAt(0);
+                                    services!.add(v!);
                                   }
                                   return null;
 
@@ -354,41 +360,61 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       setState(() {
                                         operationInProcess=true;
                                       });
-                                      var presences= await PresenceDB().getAllDailyPresenceRecords( DateTime(2023,6,6));
 
-
-                                      List<PresenceRecord> presenceRows=[];
-                                      PresenceRecord presenceRecord;
-                                      Employee employee;
-
-                     presences=presences.where((presence) =>
-                     presence.status==EStatus.present||presence.status==EStatus.late).toList();
-
-                     log.d('aaaa:: $status');
-
-                     if(status!=null) {
-                       presences=presences.where((presence) =>
-                       presence.status==status).toList();
-                     }
-                     for(var presence in presences){
-
-                                          employee=await EmployeeDB().getEmployeeById(presence.employeeId);
-                                          presenceRecord=PresenceRecord(employee: employee, presence: presence);
-                                          presenceRows.add(presenceRecord);
-
-
+                                     var report=
+                                      await PresenceDB().getPresenceReport
+                                        (reportType: reportType,
+                                          start:  DateTime(2023,6,6),
+                                          services: services
+                                      );
+                                      if(report=={}){
+                                        //empty report
+                                        ToastUtils.showToast(context, 'Rapport de présence vide', 3);
+                                        return;
                                       }
 
+                                      List<PresenceRecord> presenceRows=[];
+                                      PresenceRecord presenceRow;
+                                      Employee employee;
 
+                                      Map<String?,List<PresenceRecord>>
+                                      presenceRowsByService={};
+
+
+                                      report.forEach((serviceName, presences)
+                                      async {
+
+                                        presenceRows=[];
+                                        for(var presence in presences){
+
+                                          employee=await EmployeeDB().
+                                          getEmployeeById(presence.employeeId);
+                                          presenceRow=PresenceRecord
+                                            (employee: employee, presence: presence);
+                                          presenceRows.add(presenceRow);
+
+                                        }
+                                        presenceRowsByService[serviceName]=presenceRows;
+
+                                      });
 
                                       var presenceReport=PresenceReport
-                                        (presenceRows: presenceRows, date: '',status: status,reportPeriodType:
-                                      reportType,services: services);
+                                        ( date: '',status: status,reportPeriodType:
+                                      reportType,services: services, presenceRowsByService:
+                                      presenceRowsByService, groupByService: null);
 
-                                 await Report().createAndDownloadOrOpenPdf( presenceReport);
+                                      await Report().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {
                                         operationInProcess=false;
                                       });
+
+
+
+
+
+
+
+
 
 
                                     },

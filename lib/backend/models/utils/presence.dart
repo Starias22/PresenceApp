@@ -10,12 +10,14 @@ class Presence {
   DateTime? exitTime;
   late emp.EStatus status;
   late String employeeId;
+  late String employeeService;
 
   Presence({this.id='',required this.date, this.entryTime, this.exitTime,
-    required this.employeeId, required this.status});
+    required this.employeeId, required this.status, this.employeeService=''});
 
   Map<String, dynamic> toMap() =>
       {
+        'employee_service':employeeService,
         'date': utils.formatDateTime(date),
         'entry_time': entryTime==null?null : utils.formatTime(entryTime!),
         'exit_time': exitTime==null?null :utils.formatTime(exitTime!),
@@ -25,6 +27,7 @@ class Presence {
 
   static Presence fromMap(Map<String, dynamic> map) {
     return Presence(
+      employeeService: map['employee_service'],
         id: map['id'],
         date: DateTime.parse(map['date']),
         status: utils.convertES(map['status']),

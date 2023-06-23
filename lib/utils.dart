@@ -150,6 +150,28 @@ log.d(DateTime(date.year, date.month, day));
 
   }
 
+  DateTime getWeeksMonday(DateTime aDateInTheWeek){
+
+    return aDateInTheWeek.subtract(Duration(days: aDateInTheWeek.day-(aDateInTheWeek.weekday-1) ));
+  }
+
+  DateTime getWeeksFriday(DateTime aDateInTheWeek){
+
+
+    int day;
+    if(aDateInTheWeek.weekday==DateTime.saturday) {
+      day=-1;
+    }
+    if(aDateInTheWeek.weekday==DateTime.sunday) {
+      day=-2;
+    }
+
+    else {
+      day=5-aDateInTheWeek.weekday;
+    }
+
+    return aDateInTheWeek.add(Duration(days: day));
+  }
 
   bool isWeekEnd(int weekday) {
     return weekday == DateTime.saturday || weekday == DateTime.sunday;
