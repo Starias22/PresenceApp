@@ -212,11 +212,18 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     child: Text("Tous"),
                                   ),
                                 ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
-                                onSaved: (val) => setState(() {
+                                onChanged: (val) {
+                                  setState(() {
+                                    _valueChanged = val!;
 
-                                }),
+                                    if(_valueChanged=='all') {
+                                      status=null;
+                                    } else {
+                                      status=utils.convertES(_valueChanged);
+                                    }
+
+                                  });
+                                },
                                 validator: (String? v) {
                                   if(v=='all') {
                                     status=null;
@@ -304,7 +311,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     child: Text("Mensuel"),
                                   ),
                                   DropdownMenuItem(
-                                    value: "annuel",
+                                    value: "annual",
                                     child: Text("Annuel"),
                                   ),
                                   DropdownMenuItem(
@@ -313,13 +320,17 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                   ),
 
                                 ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
+
+                                onChanged: (val) {
+                                  setState(() {
+                                    _valueChanged = val!;
+                                    reportType = utils.convert(val);
+                                    log.d( 'Report type : $reportType');// Update the reportType based on the selected value
+                                  });
+                                },
                                 validator: (String? v) {
-                                  reportType=utils.convert(v!);
+                                  //reportType=utils.convert(v!);
                                   return null;
-
-
                                 },
                                 onSaved: (val) => setState(() {
 

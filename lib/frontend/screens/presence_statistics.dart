@@ -23,7 +23,7 @@ class EmployeePresenceStatistics extends StatefulWidget {
 class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics> {
   String startDate='JJ/MM/AAAA';
   bool operationInProcess=false;
-  late ReportType reportType=ReportType.daily;
+  ReportType reportType=ReportType.daily;
   EStatus? status;
   List<String>? services;
 
@@ -251,10 +251,17 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
                                   ),
 
                                 ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
+
+                                onChanged: (val) {
+                                  setState(() {
+                                    _valueChanged = val!;
+                                    reportType = utils.convert(val);
+                                    log.d( 'Report type : $reportType');// Update the reportType based on the selected value
+                                  });
+                                },
                                 validator: (String? v) {
-                                  reportType=utils.convert(v!);
+                                  //reportType=utils.convert(v!);
+
                                   return null;
 
 
