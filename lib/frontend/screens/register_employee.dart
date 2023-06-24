@@ -23,6 +23,8 @@ class RegisterEmployee extends StatefulWidget {
 }
 
 class _RegisterEmployeeState extends State<RegisterEmployee> {
+
+  int gelond=45;
   String startDate='JJ/MM/AAAA';
 
 
