@@ -40,11 +40,12 @@ class _ArrowAnimationState extends State<ArrowAnimation> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+
     return SlideTransition(
       position: _offsetAnimation,
       child: CustomPaint(
         size: Size(widget.size, widget.size),
-        painter: ArrowPainter(Colors.red, 10),
+        painter: ArrowPainter(Colors.black, 10),
       ),
     );
   }
