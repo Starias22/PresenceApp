@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/screens/admin_login.dart';
 import 'package:presence_app/utils.dart';
 
@@ -66,12 +66,19 @@ class _AdminLoginState extends State<AdminLogin> {
       final result = await (Connectivity().checkConnectivity());
 
       if (result == ConnectivityResult.none) {
-        ToastUtils.showToast(context, 'Aucune connexion internet', 3);
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 3) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:'Aucune connexion internet' ,
+        ));
+        setState(() {
+          loginInProcess = false;
+        });
+
         return;
       }
-        setState(() {
-          loginInProcess = true;
-        });
 
 
     String message;
@@ -111,7 +118,17 @@ class _AdminLoginState extends State<AdminLogin> {
         break;
     }
 
-    ToastUtils.showToast(context, message, 3);
+      setState(() {
+        loginInProcess = false;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:message ,
+      ));
     if (loginCode == success) {
 
       Navigator.push(context,
@@ -120,11 +137,6 @@ class _AdminLoginState extends State<AdminLogin> {
       }));
     }
 
-    else {
-      setState(() {
-        loginInProcess = false; 
-      });
-    }
 
   }
 
@@ -185,7 +197,12 @@ class _AdminLoginState extends State<AdminLogin> {
                       email=FirebaseAuth.instance.currentUser!.email;
 
                     }
-                    else {googleSignIn();}
+                    else {
+                      setState(() {
+                        loginInProcess = true;
+                      });
+
+                      googleSignIn();}
                   },
                   child:  const Text("Connexion avec Google",
                     style: TextStyle(

@@ -14,7 +14,7 @@ import 'package:presence_app/frontend/screens/presence_statistics.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:provider/provider.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -211,7 +211,14 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         // Handle déconnexion option
 
                         await Login().googleSingOut();
-                        ToastUtils.showToast(context, 'Vous êtes déconnecté',3);
+                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                          simple: true,
+                          showCloseIcon: false,
+                          duration: const Duration(seconds: 3) ,
+                          //width: MediaQuery.of(context).size.width-2*10,
+                          message:'Vous êtes déconnecté' ,
+                        ));
+
                         Future.delayed(const Duration(seconds: 3),
                                 () {
                               Navigator.pushReplacement(

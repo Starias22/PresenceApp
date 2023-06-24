@@ -13,7 +13,7 @@ import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 import 'package:provider/provider.dart';
@@ -67,8 +67,14 @@ late Presence presenceDoc;
     nExitTime=utils.format(employee.exitTime)!;
     if(employee.status==EStatus.pending){
     x[employee.startDate]=EStatus.pending;
-    // ignore: use_build_context_synchronously
-    ToastUtils.showToast(context, 'Employé en attente', 5);
+    ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+      simple: true,
+      showCloseIcon: false,
+      duration: const Duration(seconds: 5) ,
+      //width: MediaQuery.of(context).size.width-2*10,
+      message:'Employé en attente' ,
+    ));
+
     }
    now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
@@ -166,8 +172,14 @@ late Presence presenceDoc;
                 // action pour l'option 6
 
                 Login().googleSingOut();
-                ToastUtils.showToast(
-                    context, 'Vous êtes déconnecté', 3);
+                ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                  simple: true,
+                  showCloseIcon: false,
+                  duration: const Duration(seconds: 5) ,
+                  //width: MediaQuery.of(context).size.width-2*10,
+                  message:'Vous êtes déconnecté' ,
+                ));
+
 
                 Future.delayed(const Duration(seconds: 3),
                         () {
@@ -211,9 +223,24 @@ late Presence presenceDoc;
   }
 
   onDayLongPressed(DateTime date) async {
+    ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+      simple: true,
+      showCloseIcon: false,
+      duration: const Duration(seconds: 5) ,
+      //width: MediaQuery.of(context).size.width-2*10,
+      message:'Vous êtes déconnecté' ,
+    ));
+
 
     if(utils.isWeekend(date)){
-      ToastUtils.showToast(context, 'Weekend', 3);
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 5) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:'Weekend' ,
+      ));
+
     }
 
     if((!utils.isWeekend(date))&&(date.isBefore(today)||date.isAtSameMomentAs(today))) {
@@ -224,7 +251,14 @@ late Presence presenceDoc;
 
 
       if(myPresence.status==EStatus.absent) {
-        ToastUtils.showToast(context, 'Absent', 3);
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 5) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:'Absent' ,
+        ));
+
       }
 else {
   Navigator.push(

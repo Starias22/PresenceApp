@@ -5,7 +5,7 @@ import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
+
 
 import 'package:presence_app/utils.dart';
 
@@ -392,7 +392,14 @@ class _AuthentificationState extends State<Authentification> {
 
 
     } catch (_) {
-      ToastUtils.showToast(context,"Une erreur s'est produite lors de la connexion",3);
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:"Une erreur s'est produite lors de la connexion" ,
+      ));
+
 
     }
   }

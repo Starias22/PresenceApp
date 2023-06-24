@@ -1,12 +1,13 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:email_validator/email_validator.dart';
 
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
-import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 
-import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../utils.dart';
 import 'adminCompte.dart';
 
@@ -262,11 +263,24 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                                      log.d(message);
 
                                      updateAdminData(admin);
-                                      ToastUtils.showToast(context, message, 3);
-                                      if(_email!=widget.admin.email){
-                                        Login().updateEmailForCurrentUser(_email);
+                                      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                        simple: true,
+                                        showCloseIcon: false,
+                                        duration: const Duration(seconds: 5) ,
+                                        //width: MediaQuery.of(context).size.width-2*10,
+                                        message:message ,
+                                      ));
 
-                                        ToastUtils.showToast(context, "Un email de modification d'adresse email a été envoyé à votre adresse $widget.admin.email", 3);
+                                      if(_email!=widget.admin.email){
+
+                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                          simple: true,
+                                          showCloseIcon: false,
+                                          duration: const Duration(seconds: 5) ,
+                                          //width: MediaQuery.of(context).size.width-2*10,
+                                          message: "Un email de modification d'adresse email a été envoyé à votre adresse email ${widget.admin.email}" ,
+                                        ));
+
                                       }
 
                                     },

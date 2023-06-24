@@ -26,6 +26,26 @@ class AdminDB {
     return querySnapshot.docs.isNotEmpty;
   }
 
+  Future<Admin> getAdminByEmail(String email) async {
+
+    QuerySnapshot querySnapshot = await _admin
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+
+    DocumentSnapshot<Map<String, dynamic>> snapshot =
+    querySnapshot.docs.first as DocumentSnapshot<Map<String, dynamic>>;
+    if (snapshot.exists) {
+
+      Admin employee = Admin.fromMap(snapshot.data()!);
+      return employee;
+    } else {
+      throw Exception('Admin not found');
+    }
+  }
+
+
   Future<String?> getAdminIdByEmail(String email) async {
     QuerySnapshot querySnapshot = await _admin
         .where('email', isEqualTo: email)

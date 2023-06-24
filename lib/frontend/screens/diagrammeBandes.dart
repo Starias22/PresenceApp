@@ -1,7 +1,10 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import '../../backend/firebase/firestore/presence_db.dart';
 import '../../backend/models/utils/employee.dart';
@@ -40,7 +43,15 @@ late String email;
 
    if( employee.status==EStatus.pending) {
      x=[0,0,0];
-     ToastUtils.showToast(context, 'Employé en attente', 5);
+     ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+       simple: true,
+       showCloseIcon: false,
+       duration: const Duration(seconds: 5) ,
+       //width: MediaQuery.of(context).size.width-2*10,
+       message:'Employé en attente' ,
+     ));
+
+
      //return;
    }
     startDate = employee.startDate;

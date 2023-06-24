@@ -12,6 +12,7 @@ import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
@@ -71,7 +72,14 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     nExitTime = utils.format(employee.exitTime)!;
     if (employee.status == EStatus.pending) {
       x[employee.startDate] = EStatus.pending;
-      ToastUtils.showToast(context, 'Employé en attente', 5);
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 5) ,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message:'Employé en attente' ,
+      ));
+
     }
     now = await utils.localTime();
     today = DateTime(now.year, now.month, now.day);

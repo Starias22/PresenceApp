@@ -152,7 +152,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
     //if there were no internet connection
     if(noNetworkConnection) {
-      message = "Connexion internet rétablie !";
+      message = "Connexion internet rétablie!";
       noNetworkConnection=false;
 
       if(nextPage) return;

@@ -4,7 +4,7 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -367,7 +367,15 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                       log.i('wE ARE gona update');
 
                                        await EmployeeDB().update(employee);
-                                       ToastUtils.showToast(context, 'Employé modifié avec succès', 3);
+                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                          simple: true,
+                                          showCloseIcon: false,
+                                          duration: const Duration(seconds: 5) ,
+                                          //width: MediaQuery.of(context).size.width-2*10,
+                                          message:'Employé modifié avec succès' ,
+                                        ));
+
+
                                       }
                                     },
                                     child: const Text('Confirmer'),

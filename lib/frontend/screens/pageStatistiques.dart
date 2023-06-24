@@ -165,8 +165,9 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                 }
                 else if (value == 5) {
                   String email=FirebaseAuth.instance.currentUser!.email!;
-                 String adminId= (await AdminDB().getAdminIdByEmail(email))!;
-                if(!(await AdminDB().getAdminById(adminId)).isSuper){
+
+                if( !(await AdminDB().getAdminByEmail(email)).isSuper)
+                {
                   ToastUtils.showToast(context, 'Seul le super admin peut créer des employés', 3);
                   return;
 
