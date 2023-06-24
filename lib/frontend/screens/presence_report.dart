@@ -9,6 +9,7 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
+import 'package:presence_app/frontend/widgets/snack_bar.dart';
 
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
@@ -222,6 +223,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       status=utils.convertES(_valueChanged);
                                     }
 
+                                    log.d('New status: $status');
+
                                   });
                                 },
                                 validator: (String? v) {
@@ -258,20 +261,42 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                     child: Text(item),
                                   );
                                 }).toList(),
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
+
+                                onChanged: (val) {
+                                  setState(() {
+                                    _valueChanged = val!;
+
+                                    if(_valueChanged=='Tous') {
+                                      services=null;
+                                    } else {
+
+                                      services ??= [];
+                                      services?.add(_valueChanged);
+
+                                      // //for the moment consider a single service
+                                      // services!.removeAt(0);
+                                      // services!.add(v!);
+                                    }
+
+                                    log.d('Services list: $services');
+
+                                  });
+
+                                },
                                 validator: (String? v) {
                                   if(v=='Tous') {
                                     services=null;
                                   } else {
 
-                                    // services ??= [];
-                                    // services?.add(v!);
+                                    services ??= [];
+                                    services?.add(v!);
 
-                                    //for the moment consider a single service
-                                    services!.removeAt(0);
-                                    services!.add(v!);
+                                    // //for the moment consider a single service
+                                    // services!.removeAt(0);
+                                    // services!.add(v!);
                                   }
+
+                                  log.d('Services list: $services');
                                   return null;
 
 
@@ -382,9 +407,20 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       );
                                       if(report=={}){
                                         //empty report
-                                        ToastUtils.showToast(context, 'Rapport de présence vide', 3);
+
+                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                          simple: true,
+                                          showCloseIcon: true,
+                                          duration: const Duration(seconds: 3) ,
+                                          //width: MediaQuery.of(context).size.width-2*10,
+                                          message:'Rapport de présence vide' ,
+                                        ));
+
+
                                         return;
                                       }
+
+                                      log.d('Report is not empty');
 
                                       List<PresenceRecord> presenceRows=[];
                                       PresenceRecord presenceRow;
@@ -394,29 +430,33 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       presenceRowsByService={};
 
 
-                                      report.forEach((serviceName, presences)
-                                      async {
+                                      await Future.forEach(report.entries, (entry) async {
+                                        final serviceNameOrNull = entry.key;
+                                        final presences = entry.value;
 
-                                        presenceRows=[];
-                                        for(var presence in presences){
-
-
-                                          employee=await EmployeeDB().
-                                          getEmployeeById(presence.employeeId);
-                                          presenceRow=PresenceRecord
-                                            (employee: employee, presence: presence);
+                                        final presenceRows = <PresenceRecord>[];
+                                        for (var presence in presences) {
+                                          final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
+                                          final presenceRow = PresenceRecord(employee: employee, presence: presence);
                                           presenceRows.add(presenceRow);
-
                                         }
-                                        presenceRowsByService[serviceName]=presenceRows;
 
+                                        presenceRowsByService[serviceNameOrNull] = presenceRows;
                                       });
+
+
+                                      log.d('the Number of concerned services:${presenceRowsByService.length}');
+
+
 
                                       var presenceReport=PresenceReport
                                         ( date: '',status: status,
                                           reportPeriodType: reportType,services: services,
                                           presenceRowsByService: presenceRowsByService,
                                           groupByService: groupByService);
+
+                                      log.d('Still progressing');
+                                     log.d('Start PDF generating');
 
                                       await Report().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {

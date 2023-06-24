@@ -26,7 +26,7 @@ class PresenceReport{
 
   PresenceReport({required this.presenceRowsByService,
     this.services, required this.date,
-    this.status,required this.groupByService,this.reportPeriodType=ReportType.daily}){
+    this.status,required this.groupByService,required this.reportPeriodType}){
 
 
     if(status==null) {

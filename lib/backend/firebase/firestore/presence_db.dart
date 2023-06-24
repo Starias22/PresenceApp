@@ -165,7 +165,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     List<String> status=const['present','late' ]
       }) async {
 
-    QuerySnapshot querySnapshot = await _presence
+        QuerySnapshot querySnapshot = await _presence
             .where('date',isEqualTo: utils.formatDateTime(date))
             .where('status',whereIn: status)
             .orderBy('entry_time')
@@ -176,6 +176,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).toList();
 
+    log.d('The presences list: ${presences.length}') ;
     return presences;
   }
   
@@ -190,7 +191,9 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     if(services==null&&employeesIds==null)
     {
+      log.d('Of course all');
       presences=await getAllDailyPresenceRecords(date: date,status: status);
+      log.d('All daily presence record are got');
     }
 
     else
@@ -207,6 +210,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
       }
       
     }
+
+    log.d('Returning presence documents') ;
     return presences;
   }
   //
@@ -294,9 +299,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
         .where('employee_service', whereIn: services )
         .where('status',whereIn: status)
         .orderBy('entry_time')
-        .orderBy('entry_time')
         .orderBy('exit_time')
-
         .get()
     ;
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
@@ -345,9 +348,12 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
 
     if(reportType==ReportType.daily) {
+      
+      log.d('Daily presence records') ;
       presences=await getDailyPresenceRecords(
         employeesIds: employeesIds,
         services: services, date: start,status: status,);
+      log.d('All daily presence records are got') ;
     }
 
     else if(reportType==ReportType.periodic) {
@@ -369,7 +375,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
          start: limits[0],
          end:limits[1]);
     }
-
+    log.d('Returning all daily presence records');
     return presences;
   }
 
@@ -408,14 +414,21 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     Map<String?, List<Presence>> report={};
 
+    log.d('Getting presence report');
+
     List<Presence> presences=await getPresenceRecords(
         reportType: reportType, start: start,
         end: end,status: status,
         services: services,employeesIds: employeesIds
     );
+    log.d('Presence records are got');
+    log.d('number: ${presences.length}');
 
     if(groupByService==null||!groupByService){
+
+      log.d('Do not group by service');
       report[null]=presences;
+      log.d('Okay doing');
     }
 
     else//groupByService is true
@@ -429,6 +442,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     }
 
     }
+    log.d('Report to be returned: $report');
 
     return report;
   }

@@ -192,17 +192,9 @@ Future<void> createPdf(PresenceReport presenceReport) async {
 
   PdfGridRow row;
 
-  var tables=presenceReport.presenceRowsByService;
-  //
-  if(tables=={}){
-    //empty report
-  }
 
-  else {
 
-  }
-
-  for(var presenceRow in presenceReport.presenceRowsByService['Direction']!)
+  for(var presenceRow in presenceReport.presenceRowsByService[null]!)
   {
     row = grid.rows.add();
     row.cells[0].value = presenceRow.employeeName;
