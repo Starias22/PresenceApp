@@ -118,6 +118,11 @@ class _AdminLoginState extends State<AdminLogin> {
         break;
     }
 
+    log.d('Out of switch');
+      log.d(message);
+
+log.d(message);
+
       setState(() {
         loginInProcess = false;
       });
@@ -125,10 +130,11 @@ class _AdminLoginState extends State<AdminLogin> {
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         simple: true,
         showCloseIcon: false,
-        duration: const Duration(seconds: 3) ,
+        duration: const Duration(seconds: 10) ,
         //width: MediaQuery.of(context).size.width-2*10,
         message:message ,
       ));
+
     if (loginCode == success) {
 
       Navigator.push(context,
@@ -202,7 +208,8 @@ class _AdminLoginState extends State<AdminLogin> {
                         loginInProcess = true;
                       });
 
-                      googleSignIn();}
+                      googleSignIn();
+                    }
                   },
                   child:  const Text("Connexion avec Google",
                     style: TextStyle(

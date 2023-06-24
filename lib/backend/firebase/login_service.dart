@@ -102,17 +102,21 @@ class Login {
 
     try {
       if (kIsWeb) {
-
+log.d('Signing in on web');
         await withWeb();
+
+
       } else {
          await withoutWeb();
       }
-
       return success;
+
+
     } catch (e) {
 
       log.e(e);
       log.e(e.toString());
+
       if (e.toString().contains('popup-closed-by-user') ||
           e.toString().contains('null value')) {
         log.e('Pop up closed by user');
@@ -283,19 +287,17 @@ class Login {
     return auth.authStateChanges();
   }
 
-  Future<UserCredential?> withWeb() async {
+  Future<UserCredential> withWeb() async {
     FirebaseAuth auth = FirebaseAuth.instance;
 
     GoogleAuthProvider authProvider = GoogleAuthProvider();
     authProvider.addScope('email');
     authProvider.addScope('https://www.googleapis.com/auth/cloud-platform');
 
-    try {
-      return await auth.signInWithPopup(authProvider);
-    } catch (e) {
-      log.e(e);
-    }
-    return null;
+
+       return await auth.signInWithPopup(authProvider);
+
+
   }
 
   Future<UserCredential?> withoutWeb() async {

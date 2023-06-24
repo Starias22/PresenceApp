@@ -365,6 +365,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   })
                               );
                             }
+                           else if(value == 4){
+
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder:
+                                      (BuildContext context) {
+                                    return const EmployeePresenceStatistics();
+                                  })
+                              );
+                            }
                           });
                         },
                         child: Container(

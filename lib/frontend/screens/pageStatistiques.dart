@@ -15,7 +15,6 @@ import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
-import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 import '../widgets/StatistiquesCard.dart';
 import '../widgets/cardTabbar.dart';
@@ -238,7 +237,6 @@ class _StatistiquesForServicesState extends State<StatistiquesForServices> {
                   }),
                   isScrollable: true,
                   onTap: (index) {
-                    print("tap");
                     setState(() {
                       _selectedIndex = index;
                       _etat(_selectedIndex);

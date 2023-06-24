@@ -234,7 +234,7 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: 'daily',
+                                value: 'monthly',
                                 items:  const [
 
                                   DropdownMenuItem(
