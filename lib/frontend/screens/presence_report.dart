@@ -12,7 +12,6 @@ import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/date_action_widget.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 class EmployeePresenceReport extends StatefulWidget {
@@ -30,12 +29,14 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   List<String>? services;
   bool? groupByService;
   late DateTime start;
+  DateTime? selectedDateOrNull;
   DateTime? end;
   String selectedStartDate='JJ/MM/AAAA';
   String selectedMonth='Mois';
   String selectedYear='Année';
   String selectedWeek='Semaine';
-  String selectedEndDat='JJ/MM/AAAA';
+  final defaultDate='JJ/MM/AAAA';
+  late String selectedEndDate;
 
   @override
   void dispose() {
@@ -45,6 +46,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   DateTime? selectedDate;
   bool canEnrollFingerprint=false;
   late DateTime today;
+
+
 
 void selectPeriodLimits(){
 //selectDate(initialDate: today);
@@ -115,8 +118,7 @@ String getTitle(){
   }
   Future<void> retrieveServices() async {
     items.addAll(await ServiceDB().getServicesNames());
-
-
+    today=await utils.localTime();
   }
 
   late List<String> items = ['Tous' ];
@@ -138,6 +140,7 @@ String getTitle(){
   void initState() {
     super.initState();
     retrieveServices();
+    selectedStartDate=defaultDate;
     _getValue();
   }
 
@@ -366,35 +369,40 @@ String getTitle(){
                                 DateActionContainer(title: 'Début',
                                   selectedDate: selectedStartDate,
                                   onSelectDate: () {  },),
+                                const SizedBox(height: 12,),
                                 DateActionContainer(title: 'Fin',
-                                  selectedDate: selectedEndDat,
+                                  selectedDate: selectedEndDate,
                                   onSelectDate: () {  },),
-                              ],)
+                              ],
+                              )
                                   :DateActionContainer(
                                 title: getTitle(),
                                 selectedDate: selectedStartDate,
                                 onSelectDate:
                                     () async {
+                                  selectedDateOrNull= await selectDate
 
-                                  await selectDate(
-                                      initialDate: today,
-                                      firstDate: DateTime(2023,5,1));
                                   //replace by the date when the company installed the app
-                                  //DateTime(2023,6,25),
-                                  DateTime? s= await selectDate
-                                    (initialDate: today, firstDate: DateTime(2023,6,25));
-                                  if(selectedDate==null)
+                                    (initialDate: today, firstDate: DateTime(2023,1,1));
+                                  if(selectedDateOrNull==null)
                                   {
                                     show();
+                                    setState(() {
+                                      selectedStartDate=defaultDate;
+                                    });
 
                                   }
                                   else {
-                                    start=s!;
-                                    selectedStartDate=utils.frenchFormatDate(start);
+                                    start=selectedDateOrNull!;
+                                    setState(() {
+                                      selectedStartDate=utils.frenchFormatDate(start);
+                                    });
+
                                   }
 
                                     },
                               ),
+                              const SizedBox(height: 10,),
 
                               operationInProcess?  const CircularProgressIndicator()
                                   :   ElevatedButton(
@@ -421,25 +429,13 @@ String getTitle(){
                                      var report=
                                       await PresenceDB().getPresenceReport
                                         (reportType: reportType,groupByService: groupByService,
-                                          start:  DateTime(2023,6,6),end: end,
+                                          start:  start,end: end,
                                           services: services
                                       );
-                                      if(report=={}){
-                                        //empty report
 
-                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-                                          simple: true,
-                                          showCloseIcon: true,
-                                          duration: const Duration(seconds: 3) ,
-                                          //width: MediaQuery.of(context).size.width-2*10,
-                                          message:'Rapport de présence vide' ,
-                                        ));
+                                     log.d('The report: $report');
+                                      log.d('The length of the report: ${report.length}');
 
-
-                                        return;
-                                      }
-
-                                      log.d('Report is not empty');
 
 
                                       Map<String?,List<PresenceRecord>>
@@ -469,8 +465,24 @@ String getTitle(){
                                           presenceRowsByService: presenceRowsByService,
                                           groupByService: groupByService);
 
+                                      if(presenceReport.isEmpty()){
+                                        //empty report
 
-                                     log.d('Start PDF generating');
+                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                                          simple: true,
+                                          showCloseIcon: true,
+                                          duration: const Duration(seconds: 3) ,
+                                          //width: MediaQuery.of(context).size.width-2*10,
+                                          message:'Rapport de présence vide' ,
+                                        ));
+                                        setState(() {
+                                          operationInProcess=false;
+                                        });
+
+                                        return;
+                                      }
+
+                                      log.d('Start PDF generating');
 
                                       await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {

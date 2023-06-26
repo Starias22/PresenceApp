@@ -61,4 +61,13 @@ class PresenceReport{
 
   }
 
+  bool isEmpty() {
+    for (final value in presenceRowsByService.values) {
+      if (value.isNotEmpty) {
+        return false;
+      }
+    }
+    return  true;
+  }
+
 }
