@@ -137,10 +137,10 @@ log.d(DateTime(date.year, date.month, day));
   }
 
   String x(Duration duration){
-    log.i('///');
+
     String formattedTime = '${(duration.inHours).toString().
     padLeft(2, '0')}:${(duration.inMinutes % 60).toString().padLeft(2, '0')}';
-    log.i('///');
+
 
     return formattedTime;
 

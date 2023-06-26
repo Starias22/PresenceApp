@@ -154,7 +154,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
     await getImageName();
 
-     // imageDownloadURL =await  getDownloadURL(filename!);
 
     await retrieveReport();
   }

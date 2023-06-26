@@ -1,7 +1,7 @@
-
+import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:presence_app/backend/models/presence_report_model/presence_record.dart';
@@ -9,8 +9,8 @@ import 'package:presence_app/backend/models/presence_report_model/presence_repor
 import 'package:presence_app/utils.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:async';
-import 'dart:convert';
-// import 'dart:html' as html;
+
+
 
 
 
@@ -38,13 +38,20 @@ Future<void> saveAndOpen(String filename) async {
 }
 
 void saveAndOpenOrDownloadPdf(String filename) async {
-  // if(kIsWeb ) {
-  //   import; 'package:my_package/web_library.dart';
-  //   saveAndDownloadPDFOnWeb(filename);
-  // }
-  // else{
-    saveAndOpen(filename);
-  //}
+  if(kIsWeb ) {
+
+String pdfUrl= 'https://www.africau.edu/images/default/sample.pdf';
+    if ( await canLaunch(pdfUrl)) {
+      await launch(pdfUrl);
+    } else {
+      throw 'Could not launch the PDF';
+    }
+
+  }
+  else{
+
+     saveAndOpen(filename);
+  }
 
 }
 Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
@@ -53,13 +60,6 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
 }
 
-  // void saveAndDownloadPDFOnWeb(String filename) {
-  //   AnchorElement(
-  //     href: 'data:application/octet-stream;base64,${base64.encode(bytes)}',
-  //   )
-  //     ..setAttribute('download', filename)
-  //     ..click();
-  // }
 
   void createATable(
   MapEntry<String?,List<PresenceRecord>> table){

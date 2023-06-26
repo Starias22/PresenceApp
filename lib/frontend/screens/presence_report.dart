@@ -346,6 +346,8 @@ String getTitle(){
                                     setState(() {
                                       reportType = utils.convert(val);
 
+                                      log.d('Report type $reportType');
+
                                       if(reportType==ReportType.daily||
                                           reportType==ReportType.weekly){
                                         selectedStartDate=defaultDate;
@@ -361,8 +363,6 @@ String getTitle(){
                                         selectedStartDate=defaultDate;
                                         selectedYear=defaultYear;
                                       }
-
-
 
                                     });
 
@@ -502,7 +502,8 @@ String getTitle(){
 
                                      var report=
                                       await PresenceDB().getPresenceReport
-                                        (reportType: reportType,groupByService: groupByService,
+                                        (reportType: reportType,
+                                          groupByService: groupByService,
                                           start:  start,end: end,
                                           services: services
                                       );
@@ -535,8 +536,10 @@ String getTitle(){
 
                                       var presenceReport=PresenceReport
                                         ( date: '',status: status,
-                                          reportPeriodType: reportType,services: services,
-                                          presenceRowsByService: presenceRowsByService,
+                                          reportPeriodType: reportType,
+                                          services: services,
+                                          presenceRowsByService:
+                                          presenceRowsByService,
                                           groupByService: groupByService);
 
                                       if(presenceReport.isEmpty()){
@@ -549,6 +552,7 @@ String getTitle(){
                                           //width: MediaQuery.of(context).size.width-2*10,
                                           message:'Rapport de présence vide' ,
                                         ));
+
                                         setState(() {
                                           operationInProcess=false;
                                         });

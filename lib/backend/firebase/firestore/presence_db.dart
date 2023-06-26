@@ -357,6 +357,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     }
 
     else if(reportType==ReportType.periodic) {
+      log.d('Periodic presence records') ;
       presences=await getPeriodicPresenceReport(
         status: status,
         services: services,
@@ -633,8 +634,9 @@ else if(reportType==ReportType.weekly)
       }) async {
 
     QuerySnapshot querySnapshot = await _presence
-        .where('date',isLessThanOrEqualTo: utils.formatDateTime(start))
-        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(end))
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
+        .where('status',whereIn: status)
         .orderBy('date')
         .orderBy('entry_time')
         .orderBy('exit_time')
@@ -656,12 +658,15 @@ else if(reportType==ReportType.weekly)
       }
       )
   async {
+    log.d('Periodic presence report');
 
     List<Presence> presences;
 
     if(services==null&&employeesIds==null)
     {
-      presences=await getAllPeriodicPresenceRecords(start: start, end: end,status:status);
+      log.d('services  null and no employee targeted');
+      presences=await getAllPeriodicPresenceRecords(
+          start: start, end: end,status:status);
     }
 
     else
