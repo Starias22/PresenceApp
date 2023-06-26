@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,14 +10,15 @@ import 'package:presence_app/utils.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html' as html;
+// import 'dart:html' as html;
+
 
 
 
 class ReportPdf  {
 
   late List<int> bytes=[];
-  
+
 Future<void> saveAndOpen(String filename) async {
   //Get external storage directory
   final directory = await getApplicationSupportDirectory();
@@ -35,13 +36,15 @@ Future<void> saveAndOpen(String filename) async {
   OpenFile.open('$path/$filename');
 
 }
+
 void saveAndOpenOrDownloadPdf(String filename) async {
-  if(kIsWeb ) {
-    saveAndDownloadPDFOnWeb(filename);
-  }
-  else{
+  // if(kIsWeb ) {
+  //   import; 'package:my_package/web_library.dart';
+  //   saveAndDownloadPDFOnWeb(filename);
+  // }
+  // else{
     saveAndOpen(filename);
-  }
+  //}
 
 }
 Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
@@ -50,13 +53,13 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
 }
 
-  void saveAndDownloadPDFOnWeb(String filename) {
-    html.AnchorElement(
-      href: 'data:application/octet-stream;base64,${base64.encode(bytes)}',
-    )
-      ..setAttribute('download', filename)
-      ..click();
-  }
+  // void saveAndDownloadPDFOnWeb(String filename) {
+  //   AnchorElement(
+  //     href: 'data:application/octet-stream;base64,${base64.encode(bytes)}',
+  //   )
+  //     ..setAttribute('download', filename)
+  //     ..click();
+  // }
 
   void createATable(
   MapEntry<String?,List<PresenceRecord>> table){
@@ -152,7 +155,7 @@ Future<void> createPdf(PresenceReport presenceReport) async {
 
 //Add the columns to the grid
   grid.columns.add(count: 6);
-  
+
 
 
 //Add header to the grid

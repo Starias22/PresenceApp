@@ -5,6 +5,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
@@ -220,10 +221,8 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
        now=await utils.localTime();
       employee=nullableEmployee;
 
-
-
-      //int code = await PresenceDB().handleEmployeeAction(data,now);
-      int code=entryMarkedSuccessfully;
+      int code = await PresenceDB().handleEmployeeAction(data,now);
+      //int code=entryMarkedSuccessfully;
 
 
        employeePicture=
@@ -319,10 +318,10 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
       return "Sortie déjà marquée";
     }
     if(code==exitMarkedSuccessfully){
-      return "Sortie marquée avec succès(${utils.formatTime(now)})";
+      return "Sortie marquée avec succès(${utils.formatTime(now)})! Veuillez enlever votre doigt du capteur!";
     }
     if(code==entryMarkedSuccessfully){
-      return "Entrée marquée avec succès(${utils.formatTime(now)})";
+      return "Entrée marquée avec succès(${utils.formatTime(now)})! Veuillez enlever votre doigt du capteur!";
     }
 
     if(code==desireToExitBeforeEntryTime){
