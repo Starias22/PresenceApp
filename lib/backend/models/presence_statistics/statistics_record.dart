@@ -3,13 +3,13 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 
 class StatisticsRecord{
   Employee employee;
-   String pre;
-   String abs;
+   String presence;
+   String absence;
    String late;
   late String employeeName;
 
-  StatisticsRecord({required this.employee,required this.pre,
-    required this.late,required this.abs})
+  StatisticsRecord({required this.employee,required this.presence,
+    required this.late,required this.absence})
   {
     employeeName='${employee.lastname } ${employee.firstname}';
 

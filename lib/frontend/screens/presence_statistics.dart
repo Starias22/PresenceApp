@@ -339,7 +339,7 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
                                     ( date: '',status: status,reportPeriodType:
                                   reportType,services: services, presenceRowsByService: {}, groupByService: null);
 
-                                  await Report().createAndDownloadOrOpenPdf( presenceReport);
+                                  await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
                                   setState(() {
                                     operationInProcess=false;
                                   });

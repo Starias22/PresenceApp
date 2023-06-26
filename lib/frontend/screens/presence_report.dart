@@ -9,8 +9,9 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
+import 'package:presence_app/frontend/widgets/alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/date_action_widget.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
-
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -22,7 +23,7 @@ class EmployeePresenceReport extends StatefulWidget {
 }
 
 class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
-  String startDate='JJ/MM/AAAA';
+
   bool operationInProcess=false;
   late ReportType reportType=ReportType.daily;
   EStatus? status;
@@ -30,15 +31,11 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   bool? groupByService;
   late DateTime start;
   DateTime? end;
-
-
-
-
-
-
-
-
-
+  String selectedStartDate='JJ/MM/AAAA';
+  String selectedMonth='Mois';
+  String selectedYear='Année';
+  String selectedWeek='Semaine';
+  String selectedEndDat='JJ/MM/AAAA';
 
   @override
   void dispose() {
@@ -49,92 +46,73 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   bool canEnrollFingerprint=false;
   late DateTime today;
 
+void selectPeriodLimits(){
+//selectDate(initialDate: today);
+}
+void show({String message="Date  non sélectionnée"}){
+  ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+    simple: true,
+    showCloseIcon: true,
+    duration: const Duration(seconds: 3) ,
+    //width: MediaQuery.of(context).size.width-2*10,
+    message: message,
 
-  Future<void> selectStartDateAndAchieve(BuildContext context) async {
+  ));
+}
+
+String getTitle(){
+  if(reportType==ReportType.daily) return 'Date';
+  if(reportType==ReportType.weekly) return 'Semaine du';
+  if(reportType==ReportType.monthly) return 'Mois';
+  if(reportType==ReportType.annual) return 'Année';
+  return 'Unknown';
+}
+
+  Future<DateTime?> selectDate(
+      {String name='',
+        required DateTime initialDate,
+        required DateTime firstDate}) async {
 
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sélection de date"),
-          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Continuer'),
-              onPressed: () async {
 
+        return CustomDialog
+          (title: "Sélection de date",
+            message: "Continuer pour sélectionner la date",
+            context: context);
 
-                Navigator.of(context).pop();
-
-
-              },
-            ),
-
-          ],
-        );
       },
     );
 
-    DateTime lastDate=utils.add30Days(today);
-    DateTime nextWorkDate=utils.getNextWorkDate(today);
-
-
-    selectedDate = await  showDatePicker(context: context,
-
+    //selectedDate =
+    return await  showDatePicker(context: context,
       locale: const Locale('fr'),
-      initialDate:nextWorkDate ,
-      firstDate: utils.isWeekend(today)?nextWorkDate:today ,
-      lastDate:lastDate,
+      initialDate:initialDate ,
+      //replace by the date when the company installed the app
+      firstDate: firstDate,
+      lastDate:today,
       currentDate: today,
     );
 
-    if(selectedDate==null){
+    //
+    // if(selectedDate==null){
+    //   ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+    //     simple: true,
+    //     showCloseIcon: true,
+    //     duration: const Duration(seconds: 3) ,
+    //     //width: MediaQuery.of(context).size.width-2*10,
+    //     message:"Date de $name non sélectionnée" ,
+    //   ));
 
+    // }
+    //
+    //
+    //  start=selectedDate!;
 
-
-      ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
-      return;
-    }
-    DateTime start=selectedDate!;
-
-    if(utils.isWeekend(start)){
-
-      ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
-      return;
-    }
-
-
-    if((await HolidayDB().isHoliday(start))){
-
-      ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
-      return;
-    }
-    setState(() {
-      startDate=utils.frenchFormatDate(selectedDate);
-    });
-
-    return;
-
-
-
-
-
-
-
-
-
+   // return selectedDate;
 
   }
-
-  late String  gender;
-
-  void showToast(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(message),
-      duration: const Duration(seconds: 3),
-    ));
-  }
-
   Future<void> retrieveServices() async {
     items.addAll(await ServiceDB().getServicesNames());
 
@@ -329,7 +307,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                   ),
                                   DropdownMenuItem(
                                     value: "weekly",
-                                    child: Text("hebdomadaire"),
+                                    child: Text("Hebdomadaire"),
                                   ),
                                   DropdownMenuItem(
                                     value: "monthly",
@@ -346,13 +324,18 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                 ],
 
-                                onChanged: (val) {
+                                onChanged: (val) async {
                                   setState(() {
                                     _valueChanged = val!;
-                                    reportType = utils.convert(val);
+
+                                    setState(() {
+                                      reportType = utils.convert(val);
+                                    });
+
                                     log.d( 'Report type : $reportType');// Update the reportType based on the selected value
                                   });
-                                },
+
+                                  },
                                 validator: (String? v) {
                                   //reportType=utils.convert(v!);
                                   return null;
@@ -375,6 +358,42 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                               ),
                               const SizedBox(
                                 height: 12,
+                              ),
+
+                              reportType==ReportType.periodic?
+                              Column(
+                                children: [
+                                DateActionContainer(title: 'Début',
+                                  selectedDate: selectedStartDate,
+                                  onSelectDate: () {  },),
+                                DateActionContainer(title: 'Fin',
+                                  selectedDate: selectedEndDat,
+                                  onSelectDate: () {  },),
+                              ],)
+                                  :DateActionContainer(
+                                title: getTitle(),
+                                selectedDate: selectedStartDate,
+                                onSelectDate:
+                                    () async {
+
+                                  await selectDate(
+                                      initialDate: today,
+                                      firstDate: DateTime(2023,5,1));
+                                  //replace by the date when the company installed the app
+                                  //DateTime(2023,6,25),
+                                  DateTime? s= await selectDate
+                                    (initialDate: today, firstDate: DateTime(2023,6,25));
+                                  if(selectedDate==null)
+                                  {
+                                    show();
+
+                                  }
+                                  else {
+                                    start=s!;
+                                    selectedStartDate=utils.frenchFormatDate(start);
+                                  }
+
+                                    },
                               ),
 
                               operationInProcess?  const CircularProgressIndicator()
@@ -422,9 +441,6 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
                                       log.d('Report is not empty');
 
-                                      List<PresenceRecord> presenceRows=[];
-                                      PresenceRecord presenceRow;
-                                      Employee employee;
 
                                       Map<String?,List<PresenceRecord>>
                                       presenceRowsByService={};
@@ -433,14 +449,12 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                       await Future.forEach(report.entries, (entry) async {
                                         final serviceNameOrNull = entry.key;
                                         final presences = entry.value;
-
                                         final presenceRows = <PresenceRecord>[];
                                         for (var presence in presences) {
                                           final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
                                           final presenceRow = PresenceRecord(employee: employee, presence: presence);
                                           presenceRows.add(presenceRow);
                                         }
-
                                         presenceRowsByService[serviceNameOrNull] = presenceRows;
                                       });
 
@@ -455,22 +469,13 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
                                           presenceRowsByService: presenceRowsByService,
                                           groupByService: groupByService);
 
-                                      log.d('Still progressing');
+
                                      log.d('Start PDF generating');
 
-                                      await Report().createAndDownloadOrOpenPdf( presenceReport);
+                                      await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
                                       setState(() {
                                         operationInProcess=false;
                                       });
-
-
-
-
-
-
-
-
-
 
                                     },
                                     child:const Text('Télécharger'),

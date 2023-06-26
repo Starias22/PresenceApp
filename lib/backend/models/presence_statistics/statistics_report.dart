@@ -31,10 +31,10 @@ class PresenceStatistics{
 
     fReportType=utils.str(reportPeriodType);
     String x;
-    if(reportPeriodType==ReportType.daily){
-      x=date;
-    }
-    else if(reportPeriodType==ReportType.annual){
+    // if(reportPeriodType==ReportType.daily){//no daily report
+    //   x=date;
+    // }
+     if(reportPeriodType==ReportType.annual){
       x=start!.year.toString();
     }
     else if(reportPeriodType==ReportType.weekly||reportPeriodType==ReportType.periodic){

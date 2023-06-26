@@ -392,7 +392,8 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
   async {
     Map<String?, List<Presence> > presenceReport=await  getPresenceReport(
-        reportType: reportType, start: start, services: services);
+        reportType: reportType, start: start, services: services,
+        end: end,status: status,employeesIds: employeesIds,groupByService: groupByService);
 
   }
 
@@ -492,7 +493,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .where('employee_service', isEqualTo:service )
         .where('status',whereIn: status)
-        .orderBy('entry_time')
         .orderBy('entry_time')
         .orderBy('exit_time')
 

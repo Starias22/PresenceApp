@@ -14,8 +14,7 @@ import 'dart:html' as html;
 
 
 
-class Report  {
-
+class ReportPdf  {
 
   late List<int> bytes=[];
   
