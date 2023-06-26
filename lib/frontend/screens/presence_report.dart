@@ -32,9 +32,16 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   DateTime? selectedDateOrNull;
   DateTime? end;
   String selectedStartDate='JJ/MM/AAAA';
-  String selectedMonth='Mois';
-  String selectedYear='Année';
-  String selectedWeek='Semaine';
+
+  late String selectedMonth;
+  late String selectedYear;
+
+  String defaultMonth='Mois';
+  String defaultYear='Année';
+
+
+  late String selectedWeek;
+
   final defaultDate='JJ/MM/AAAA';
   late String selectedEndDate;
 
@@ -139,8 +146,13 @@ String getTitle(){
   @override
   void initState() {
     super.initState();
-    retrieveServices();
     selectedStartDate=defaultDate;
+    selectedEndDate=defaultDate;
+    selectedMonth=defaultMonth;
+    selectedYear=defaultYear;
+    selectedWeek=defaultDate;
+    retrieveServices();
+
     _getValue();
   }
 
@@ -333,6 +345,25 @@ String getTitle(){
 
                                     setState(() {
                                       reportType = utils.convert(val);
+
+                                      if(reportType==ReportType.daily||
+                                          reportType==ReportType.weekly){
+                                        selectedStartDate=defaultDate;
+                                      }
+
+                                     else if(reportType==ReportType.monthly){
+                                        selectedStartDate=defaultMonth;
+                                      }
+                                      else if(reportType==ReportType.annual){
+                                        selectedStartDate=defaultYear;
+                                      }
+                                      else if(reportType==ReportType.periodic){
+                                        selectedStartDate=defaultDate;
+                                        selectedYear=defaultYear;
+                                      }
+
+
+
                                     });
 
                                     log.d( 'Report type : $reportType');// Update the reportType based on the selected value
@@ -340,7 +371,7 @@ String getTitle(){
 
                                   },
                                 validator: (String? v) {
-                                  //reportType=utils.convert(v!);
+
                                   return null;
                                 },
                                 onSaved: (val) => setState(() {
@@ -368,11 +399,54 @@ String getTitle(){
                                 children: [
                                 DateActionContainer(title: 'Début',
                                   selectedDate: selectedStartDate,
-                                  onSelectDate: () {  },),
+                                  onSelectDate: () async {
+
+                                    selectedDateOrNull= await selectDate
+
+                                    //replace by the date when the company installed the app
+                                      (initialDate: today, firstDate: DateTime(2023,1,1));
+                                    if(selectedDateOrNull==null)
+                                    {
+                                      show();
+                                      setState(() {
+                                        selectedStartDate=defaultDate;
+                                      });
+
+                                    }
+                                    else {
+                                      start=selectedDateOrNull!;
+                                      setState(() {
+                                        selectedStartDate=utils.frenchFormatDate(start);
+                                      });
+
+                                    }
+                                  },),
                                 const SizedBox(height: 12,),
                                 DateActionContainer(title: 'Fin',
                                   selectedDate: selectedEndDate,
-                                  onSelectDate: () {  },),
+                                  onSelectDate: () async {
+
+                                    selectedDateOrNull= await selectDate
+
+                                    //replace by the date when the company installed the app
+                                      (initialDate: today, firstDate: DateTime(2023,1,1));
+                                    if(selectedDateOrNull==null)
+                                    {
+                                      show();
+                                      setState(() {
+                                        selectedEndDate=defaultDate;
+                                      });
+
+                                    }
+                                    else {
+                                      end=selectedDateOrNull!;
+                                      setState(() {
+                                        selectedEndDate=utils.frenchFormatDate(end);
+                                      });
+
+                                    }
+
+                                  },),
                               ],
                               )
                                   :DateActionContainer(
