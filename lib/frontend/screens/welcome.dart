@@ -78,10 +78,6 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
       startDataFetching();
 
-
-
-
-
   }
 
 
@@ -100,6 +96,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     const duration = Duration(seconds: 3);
     dataFetchTimer = Timer.periodic(duration, (_)  async {
       if(nextPage) return;
+
       if(taskCompleted) {
         taskCompleted=false;
         await getData();
@@ -107,10 +104,37 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     });
 
   }
+  Future<int> assureDataChanged(int fingerprintId,int val ) async {
+    int data = fingerprintId ;
+    int cpt = 0;
+
+    Future<int> fetchData() async {
+      data = await ESP32().receiveData();
+
+      if (cpt == 10) {
+
+        return 152;
+      }
+
+      if (data ==val) {
+        log.d('Data changed');
+        return data;
+      }
+      else {
+        cpt++;
+        await Future.delayed(const Duration(seconds: 1));
+        return await fetchData();
+      }
+
+    }
+
+    return await fetchData();
+  }
 
 
   Future<void> getData()
   async {
+    log.d('Getting data');
 
      String message;
 
@@ -199,12 +223,13 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
      if (1 <= data && data <= 127) {
 
-
+       log.d('That is a fingerprint id');
        Employee? nullableEmployee = await EmployeeDB()
           .getEmployeeByFingerprintId(data);
 
 
       if (nullableEmployee == null) {
+        log.d('INTRU');
         ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
           simple: true,
           showCloseIcon: true,
@@ -213,8 +238,12 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
           message:'Vous êtes un intru' ,
         ));
 
+        log.d('11111');
+        int x=await assureDataChanged(data, 150);
+        if(x==152) {
+          taskCompleted=true;
+        }
 
-        taskCompleted=true;
         return;
       }
 
@@ -262,14 +291,17 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
              ' ${employee.lastname}: ${getMessage(code)}' ,
          image: employeePicture  ,
        ));
-
-
-      taskCompleted=true;
+log.d('22222');
+  int x=await assureDataChanged(data, 150);
+  if(x==150) {
+    taskCompleted=true;
+  }
       return;
 
     }
 
     else if(data==150)  {
+
       log.d('data... $data');
       //if not already connected
       if (!connected) {
@@ -287,10 +319,16 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         ));
 
         connected = true;
+
       }
 
+      //log.d('The end');
+      taskCompleted=true;
+
     }
+
     else if (data == 151) {
+
       message =
       "Employé non reconnue! Veuillez reessayer!";
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -300,9 +338,19 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         //width: MediaQuery.of(context).size.width-2*10,
         message:message ,
       ));
+      log.d('33333');
+
+      int x=await assureDataChanged(data, 150);
+
+      if(x==152) {
+        taskCompleted=true;
+      }
+
 
      }
-    taskCompleted=true;
+    //log.d('The end of the function');
+
+
   }
 
 

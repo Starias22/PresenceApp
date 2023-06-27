@@ -1,3 +1,6 @@
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
@@ -36,14 +39,35 @@ Future<void> saveAndOpen(String filename) async {
   OpenFile.open('$path/$filename');
 
 }
+  Future<String> getDownloadURL(String fileName) async {
+    try {
+      return await FirebaseStorage.instance
+          .ref()
+          .child(fileName)
+          .getDownloadURL();
+    } catch (e) {
+      return "";
+    }
+  }
+
 
 void saveAndOpenOrDownloadPdf(String filename) async {
   if(kIsWeb ) {
+    Uint8List uint8List = Uint8List.fromList(bytes);
+    await FirebaseStorage.instance.ref().child(filename).putData(uint8List,
+        firebase_storage.SettableMetadata(contentType: 'application/pdf')
+    );
 
-String pdfUrl= 'https://www.africau.edu/images/default/sample.pdf';
-    if ( await canLaunch(pdfUrl)) {
-      await launch(pdfUrl);
-    } else {
+    String pdfUrl= await getDownloadURL(filename);
+
+if (await canLaunch(pdfUrl)) {
+  await launch(
+    pdfUrl,
+    // forceSafariVC: false,
+    // forceWebView: false,
+  );
+}
+    else {
       throw 'Could not launch the PDF';
     }
 
