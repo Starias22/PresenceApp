@@ -32,7 +32,8 @@ Future<String> getDownloadURL(String fileName) async {
         .ref()
         .child(fileName)
         .getDownloadURL();
-  } catch (e) {
+  }
+  catch (e) {
     return "";
   }
 }

@@ -381,7 +381,7 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   }
 
 
-  Future<void> getPresenceStatistics(
+  Future<Map<String?, List<double>>> getPresenceStatistics(
       {required ReportType reportType, required DateTime start, DateTime?
   end,
     List<String> status=const['present','late','absent' ],
@@ -392,10 +392,35 @@ Future<List<String>> getPresenceIds(String employeeId) async {
   })
 
   async {
-    Map<String?, List<Presence> > presenceReport=await  getPresenceReport(
-        reportType: reportType, start: start, services: services,
-        end: end,status: status,employeesIds: employeesIds,groupByService: groupByService);
+    Map<String?, List<Presence> > presenceReport=
+    await  getPresenceReport(
+        reportType: reportType,
+        start: start,
+        services: services,
+        end: end,
+        status: status,
+        employeesIds: employeesIds,
+        groupByService: groupByService);
+    int total,pre,late,abs;
+    List<double> statistics=[];
+    List<Presence> presences=[];
 
+    Map<String?, List<double> >report={};
+
+    Map<String?, Map<Employee, List<double>> >stats={};
+
+    for(var entry in presenceReport.entries){
+      var service=entry.key;
+      presences=presenceReport[service]!;
+      total=presences.length;
+      pre= presences.where((doc) =>doc.status==EStatus.present ).length;
+      late= presences.where((doc) =>doc.status==EStatus.late ).length;
+      abs= presences.where((doc) =>doc.status==EStatus.absent ).length;
+      statistics=total==0?[0,0,0]:[100*pre/total,100*late/total,100*abs/total];
+      report[service]=statistics;
+    }
+
+    return report;
   }
 
 

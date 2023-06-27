@@ -35,6 +35,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   late String selectedMonth;
   late String selectedYear;
 
+
   String defaultMonth='Mois';
   String defaultYear='Année';
   DateTime today = DateTime.now();
@@ -42,7 +43,8 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
   late String selectedWeek;
 
-  final defaultDate='JJ/MM/AAAA';
+  String defaultSelectedStartDate='JJ/MM/AAAA';
+  String defaultSelectedEndDate='JJ/MM/AAAA';
   late String selectedEndDate;
 
   @override
@@ -98,8 +100,12 @@ String getTitle(){
 
   }
   Future<void> retrieveServices() async {
-    today=await utils.localTime();
+    var x=await utils.localTime();
+    setState(() {
+      today=x;
+    });
     items.addAll(await ServiceDB().getServicesNames());
+
 
   }
 
@@ -117,16 +123,28 @@ String getTitle(){
     });
   }
 
+void setSelectedDates(){
 
+  if( reportType==ReportType.monthly) {
+    defaultSelectedStartDate=utils.getMonthAndYear(today);
+  }
+  else if( reportType==ReportType.annual) {
+    defaultSelectedStartDate=today.year.toString();
+  }
+  else //daily weekly periodic
+      {
+    defaultSelectedStartDate=utils.frenchFormatDate(today);
+    //for periodic
+    defaultSelectedEndDate=utils.frenchFormatDate(today);
+  }
+}
   @override
   void initState() {
     super.initState();
-    selectedStartDate=utils.frenchFormatDate(today);
-    selectedEndDate=utils.frenchFormatDate(today);
-    selectedMonth=utils.getMonthAndYear(today);
-    selectedYear=today.year.toString();
-    selectedWeek=utils.frenchFormatDate(today);
     retrieveServices();
+
+     setSelectedDates();
+
 
     _getValue();
   }
@@ -191,8 +209,6 @@ String getTitle(){
                                       status=utils.convertES(_valueChanged);
                                     }
 
-                                    log.d('New status: $status');
-
                                   });
                                 },
                                 validator: (String? v) {
@@ -247,9 +263,7 @@ String getTitle(){
                                         services!.add(_valueChanged);
                                       }
                                       log.d('sjkkkgkgkkg: $services');
-                                      // //for the moment consider a single service
-                                      // services!.removeAt(0);
-                                      // services!.add(v!);
+
                                     }
 
                                     log.d('Services list: $services');
@@ -264,10 +278,6 @@ String getTitle(){
 
                                     services ??= [];
                                     services?.add(v!);
-
-                                    // //for the moment consider a single service
-                                    // services!.removeAt(0);
-                                    // services!.add(v!);
                                   }
 
                                   log.d('Services list: $services');
@@ -326,33 +336,15 @@ String getTitle(){
 
                                     setState(() {
                                       reportType = utils.convert(val);
-
                                       log.d('Report type $reportType');
-
-                                      if(reportType==ReportType.daily||
-                                          reportType==ReportType.weekly){
-                                        selectedStartDate=defaultDate;
-                                      }
-
-                                     else if(reportType==ReportType.monthly){
-                                        selectedStartDate=defaultMonth;
-                                      }
-                                      else if(reportType==ReportType.annual){
-                                        selectedStartDate=defaultYear;
-                                      }
-                                      else if(reportType==ReportType.periodic){
-                                        selectedStartDate=defaultDate;
-                                        selectedYear=defaultYear;
-                                      }
-
+                                    setSelectedDates();
                                     });
 
-                                    log.d( 'Report type : $reportType');// Update the reportType based on the selected value
                                   });
 
-                                  },
+                                  }
+                                  ,
                                 validator: (String? v) {
-
                                   return null;
                                 },
                                 onSaved: (val) => setState(() {
@@ -389,9 +381,6 @@ String getTitle(){
                                     if(selectedDateOrNull==null)
                                     {
                                       show();
-                                      setState(() {
-                                        selectedStartDate=defaultDate;
-                                      });
 
                                     }
                                     else {
@@ -415,12 +404,10 @@ String getTitle(){
                                     if(selectedDateOrNull==null)
                                     {
                                       show();
-                                      setState(() {
-                                        selectedEndDate=defaultDate;
-                                      });
 
                                     }
-                                    else {
+                                    else
+                                    {
                                       end=selectedDateOrNull!;
                                       setState(() {
                                         selectedEndDate=utils.frenchFormatDate(end);
@@ -437,25 +424,19 @@ String getTitle(){
                                 onSelectDate:
                                     () async {
 
-
-
-
-
                                   selectedDateOrNull= await selectDate
 
                                   //replace by the date when the company installed the app
-                                    (initialDate: today, firstDate: DateTime(2023,1,1)
+                                    (initialDate: today,
+                                      firstDate: DateTime(2023,1,1)
                                   );
                                   if(selectedDateOrNull==null)
                                   {
                                     show();
-                                    setState(() {
-
-                                      selectedStartDate=defaultDate;
-                                    });
 
                                   }
-                                  else {
+                                  else
+                                  {
                                     start=selectedDateOrNull!;
                                     setState(() {
                                       if(reportType==ReportType.monthly) {
@@ -475,7 +456,8 @@ String getTitle(){
                               ),
                               const SizedBox(height: 10,),
 
-                              operationInProcess?  const CircularProgressIndicator()
+                              operationInProcess?
+                              const CircularProgressIndicator()
                                   :   ElevatedButton(
                                     style: ButtonStyle(
                                       shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -500,7 +482,8 @@ String getTitle(){
                                      var report=
                                       await PresenceDB().getPresenceReport
                                         (reportType: reportType,
-                                          status: status==null?['late','present']:[utils.str(status)],
+                                          status:
+                                          status==null?['late','present']:[utils.str(status)],
                                           groupByService: groupByService,
                                           start:  start,end: end,
                                           services: services
@@ -509,13 +492,12 @@ String getTitle(){
                                      log.d('The report: $report');
                                       log.d('The length of the report: ${report.length}');
 
-
-
                                       Map<String?,List<PresenceRecord>>
                                       presenceRowsByService={};
 
 
-                                      await Future.forEach(report.entries, (entry) async {
+                                      await Future.forEach
+                                        (report.entries, (entry) async {
                                         final serviceNameOrNull = entry.key;
                                         final presences = entry.value;
                                         final presenceRows = <PresenceRecord>[];
@@ -533,13 +515,14 @@ String getTitle(){
 
 
                                       var presenceReport=PresenceReport
-                                        ( date: '',status: status,
+                                        ( date: '',
+                                          status: status,
                                           reportPeriodType: reportType,
                                           services: services,
-                                          presenceRowsByService:
-                                          presenceRowsByService,
+                                          presenceRowsByService: presenceRowsByService,
                                           groupByService: groupByService,
-                                          start: start, end: end);
+                                          start: start,
+                                          end: end);
 
                                       if(presenceReport.isEmpty()){
                                         //empty report
