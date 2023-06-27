@@ -30,21 +30,9 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   late DateTime start;
   DateTime? selectedDateOrNull;
   DateTime? end;
-  String selectedStartDate='dd';
-
-  // late String selectedMonth;
-  // late String selectedYear;
-
-
-  // String defaultMonth='Mois';
-  // String defaultYear='Année';
+  String selectedStartDate='DD/MM/YYY';
   DateTime today = DateTime.now();
 
-
-  // late String selectedWeek;
-
-  String defaultSelectedStartDate='JJ/MM/AAAA';
-  String defaultSelectedEndDate='JJ/MM/AAAA';
   late String selectedEndDate;
 
   @override
@@ -99,12 +87,12 @@ String getTitle(){
     );
 
   }
-  Future<void> retrieveServices() async {
+  Future<void> retrieve() async {
     var x=await utils.localTime();
     setState(() {
       today=x;
       start=today;
-      setSelectedDates();
+      setSelectedDates(date: today);
     });
     items.addAll(await ServiceDB().getServicesNames());
 
@@ -125,20 +113,23 @@ String getTitle(){
     });
   }
 
-void setSelectedDates(){
+void setSelectedDates({required DateTime date}){
 
       setState(() {
         if( reportType==ReportType.monthly) {
-          selectedStartDate=utils.getMonthAndYear(today);
+          selectedStartDate=utils.getMonthAndYear(date);
         }
         else if( reportType==ReportType.annual) {
-          selectedStartDate=today.year.toString();
+          selectedStartDate=date.year.toString();
         }
-        else //daily weekly periodic
+        else if( reportType==ReportType.weekly) {
+          selectedStartDate=utils.frenchFormatDate(utils.getWeeksMonday(date));
+        }
+        else //daily  periodic
             {
-          selectedStartDate=utils.frenchFormatDate(today);
+          selectedStartDate=utils.frenchFormatDate(date);
           //for periodic
-          selectedEndDate=utils.frenchFormatDate(today);
+          selectedEndDate=utils.frenchFormatDate(date);
         }
 
       });
@@ -147,11 +138,7 @@ void setSelectedDates(){
   @override
   void initState() {
     super.initState();
-    retrieveServices();
-
-    // setSelectedDates();
-
-
+    retrieve();
     _getValue();
   }
 
@@ -343,7 +330,7 @@ void setSelectedDates(){
                                     setState(() {
                                       reportType = utils.convert(val);
                                       log.d('Report type $reportType');
-                                    setSelectedDates();
+                                    setSelectedDates(date: today);
                                     });
 
                                   });
@@ -415,10 +402,7 @@ void setSelectedDates(){
                                     else
                                     {
                                       end=selectedDateOrNull!;
-                                      setState(() {
-                                        selectedEndDate=utils.frenchFormatDate(end);
-                                      });
-
+                                     setSelectedDates(date: end!);
                                     }
 
                                   },),
@@ -431,7 +415,6 @@ void setSelectedDates(){
                                     () async {
 
                                   selectedDateOrNull= await selectDate
-
                                   //replace by the date when the company installed the app
                                     (initialDate: today,
                                       firstDate: DateTime(2023,1,1)
@@ -439,23 +422,23 @@ void setSelectedDates(){
                                   if(selectedDateOrNull==null)
                                   {
                                     show();
-
                                   }
                                   else
                                   {
                                     start=selectedDateOrNull!;
-                                    setState(() {
-                                      if(reportType==ReportType.monthly) {
-                                        selectedStartDate=utils.getMonthAndYear(start);
-                                      }
-                                      else if(reportType==ReportType.annual) {
-                                        selectedStartDate=start.year.toString();
-                                      }
-                                      // else if(reportType==ReportType.daily) {
-                                        selectedStartDate=utils.frenchFormatDate(start);
-                                     // }
-                                    });
+                                    // setState(() {
+                                    //   if(reportType==ReportType.monthly) {
+                                    //     selectedStartDate=utils.getMonthAndYear(start);
+                                    //   }
+                                    //   else if(reportType==ReportType.annual) {
+                                    //     selectedStartDate=start.year.toString();
+                                    //   }
+                                    //   // else if(reportType==ReportType.daily) {
+                                    //     selectedStartDate=utils.frenchFormatDate(start);
+                                    //  // }
+                                    // });
 
+                                    setSelectedDates(date: start);
                                   }
 
                                     },
@@ -489,7 +472,8 @@ void setSelectedDates(){
                                       await PresenceDB().getPresenceReport
                                         (reportType: reportType,
                                           status:
-                                          status==null?['late','present']:[utils.str(status)],
+                                          status==null?['late','present']
+                                              :[utils.str(status)],
                                           groupByService: groupByService,
                                           start:  start,end: end,
                                           services: services

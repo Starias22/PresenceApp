@@ -151,10 +151,17 @@ log.d(DateTime(date.year, date.month, day));
 
   }
 
-  DateTime getWeeksMonday(DateTime aDateInTheWeek){
+  DateTime getWeeksMonday(DateTime aDateInTheWeek) {
+    // Calculate the number of days to subtract to get to the previous Monday
+    int daysToMonday = aDateInTheWeek.weekday - DateTime.monday;
+    if (daysToMonday < 0) {
+      daysToMonday += 7; // Adjust for negative values
+    }
 
-    return aDateInTheWeek.subtract(Duration(days: aDateInTheWeek.day-(aDateInTheWeek.weekday-1) ));
+    // Subtract the calculated duration from the input date
+    return aDateInTheWeek.subtract(Duration(days: daysToMonday));
   }
+
 
   DateTime getWeeksFriday(DateTime aDateInTheWeek){
 
