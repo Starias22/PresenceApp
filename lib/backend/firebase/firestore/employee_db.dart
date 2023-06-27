@@ -22,10 +22,10 @@ class EmployeeDB{
     employee.serviceId=(await ServiceDB().getServiceIdByName(employee.service))!;
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
-    int uniqueCode;
-    do{
-      uniqueCode=utils.generateRandomCode();
-    }while(await uniqueCodeExists(uniqueCode) );
+    // int uniqueCode;
+    // do{
+    //   uniqueCode=utils.generateRandomCode();
+    // }while(await uniqueCodeExists(uniqueCode) );
 
     //employee.uniqueCode=uniqueCode;
        await _employee.add(employee.toMap());

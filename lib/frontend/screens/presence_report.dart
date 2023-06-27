@@ -30,18 +30,18 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
   late DateTime start;
   DateTime? selectedDateOrNull;
   DateTime? end;
-  String selectedStartDate='JJ/MM/AAAA';
+  String selectedStartDate='dd';
 
-  late String selectedMonth;
-  late String selectedYear;
+  // late String selectedMonth;
+  // late String selectedYear;
 
 
-  String defaultMonth='Mois';
-  String defaultYear='Année';
+  // String defaultMonth='Mois';
+  // String defaultYear='Année';
   DateTime today = DateTime.now();
 
 
-  late String selectedWeek;
+  // late String selectedWeek;
 
   String defaultSelectedStartDate='JJ/MM/AAAA';
   String defaultSelectedEndDate='JJ/MM/AAAA';
@@ -103,6 +103,8 @@ String getTitle(){
     var x=await utils.localTime();
     setState(() {
       today=x;
+      start=today;
+      setSelectedDates();
     });
     items.addAll(await ServiceDB().getServicesNames());
 
@@ -125,25 +127,29 @@ String getTitle(){
 
 void setSelectedDates(){
 
-  if( reportType==ReportType.monthly) {
-    defaultSelectedStartDate=utils.getMonthAndYear(today);
-  }
-  else if( reportType==ReportType.annual) {
-    defaultSelectedStartDate=today.year.toString();
-  }
-  else //daily weekly periodic
-      {
-    defaultSelectedStartDate=utils.frenchFormatDate(today);
-    //for periodic
-    defaultSelectedEndDate=utils.frenchFormatDate(today);
-  }
+      setState(() {
+        if( reportType==ReportType.monthly) {
+          selectedStartDate=utils.getMonthAndYear(today);
+        }
+        else if( reportType==ReportType.annual) {
+          selectedStartDate=today.year.toString();
+        }
+        else //daily weekly periodic
+            {
+          selectedStartDate=utils.frenchFormatDate(today);
+          //for periodic
+          selectedEndDate=utils.frenchFormatDate(today);
+        }
+
+      });
+
 }
   @override
   void initState() {
     super.initState();
     retrieveServices();
 
-     setSelectedDates();
+    // setSelectedDates();
 
 
     _getValue();
