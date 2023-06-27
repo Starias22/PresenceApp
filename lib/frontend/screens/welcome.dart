@@ -104,33 +104,34 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     });
 
   }
-  Future<int> assureDataChanged(int fingerprintId,int val ) async {
-    int data = fingerprintId ;
-    int cpt = 0;
-
-    Future<int> fetchData() async {
-      data = await ESP32().receiveData();
-
-      if (cpt == 10) {
-
-        return 152;
-      }
-
-      if (data ==val) {
-        log.d('Data changed');
-        return data;
-      }
-      else {
-        cpt++;
-        await Future.delayed(const Duration(seconds: 1));
-        return await fetchData();
-      }
-
-    }
-
-    return await fetchData();
-  }
-
+  //
+  // Future<int> assureDataChanged(int fingerprintId,int val ) async {
+  //   int data = fingerprintId ;
+  //   int cpt = 0;
+  //
+  //   Future<int> fetchData() async {
+  //     data = await ESP32().receiveData();
+  //
+  //     if (cpt == 10) {
+  //
+  //       return 152;
+  //     }
+  //
+  //     if (data ==val) {
+  //       log.d('Data changed');
+  //       return data;
+  //     }
+  //     else {
+  //       cpt++;
+  //       await Future.delayed(const Duration(seconds: 1));
+  //       return await fetchData();
+  //     }
+  //
+  //   }
+  //
+  //   return await fetchData();
+  // }
+  //
 
   Future<void> getData()
   async {
@@ -238,12 +239,12 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
           message:'Vous êtes un intru' ,
         ));
 
-        log.d('11111');
-        int x=await assureDataChanged(data, 150);
-        if(x==152) {
-          taskCompleted=true;
-        }
-
+        // log.d('11111');
+        // int x=await assureDataChanged(data, 150);
+        // if(x==152) {
+        //   taskCompleted=true;
+        // }
+        //
         return;
       }
 
@@ -291,11 +292,12 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
              ' ${employee.lastname}: ${getMessage(code)}' ,
          image: employeePicture  ,
        ));
-log.d('22222');
-  int x=await assureDataChanged(data, 150);
-  if(x==150) {
+//
+// log.d('22222');
+//   int x=await assureDataChanged(data, 150);
+//   if(x==150) {
     taskCompleted=true;
-  }
+  // }
       return;
 
     }
@@ -340,11 +342,12 @@ log.d('22222');
       ));
       log.d('33333');
 
-      int x=await assureDataChanged(data, 150);
-
-      if(x==152) {
-        taskCompleted=true;
-      }
+      // int x=await assureDataChanged(data, 150);
+      //
+      // if(x==152) {
+      //   taskCompleted=true;
+      // }
+       taskCompleted=true;
 
 
      }
