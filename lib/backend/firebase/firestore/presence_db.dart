@@ -297,14 +297,14 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     QuerySnapshot querySnapshot = await _presence
         .where('date',isEqualTo: utils.formatDateTime(date))
         .where('employee_service', whereIn: services )
-        .where('status',whereIn: status)
         .orderBy('entry_time')
         .orderBy('exit_time')
         .get()
     ;
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
-    }).toList();
+    }).toList().
+    where((presence) =>status.contains(utils.str(presence.status)) ).toList();
 
     return presences;
   }
@@ -465,16 +465,15 @@ Future<List<String>> getPresenceIds(String employeeId) async {
         .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .where('employee_service', whereIn: services )
-        .where('status',whereIn: status)
-        .orderBy('entry_time')
+        .orderBy('date')
         .orderBy('entry_time')
         .orderBy('exit_time')
-
         .get()
     ;
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
-    }).toList();
+    }).toList().
+    where((presence) =>status.contains(utils.str(presence.status)) ).toList();
 
     return presences;
 
@@ -994,6 +993,32 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
 
     }
+
+
+  Future<void>x() async {
+    QuerySnapshot querySnapshot = await _presence.
+    where('entry_time',isNull: true)
+    .where('status',isEqualTo: 'present')
+    .get();
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+
+    final batch = FirebaseFirestore.instance.batch();
+
+
+
+    for (var doc in presences) {
+
+
+        batch.update(_presence.doc(doc.id), {'entry_time': '06:30'});
+
+
+    }
+    await batch.commit();
+
+
+  }
 
 
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {

@@ -42,7 +42,7 @@ class PresenceStatistics{
     }
     else //if(reportPeriodType==ReportType.monthly)
         {
-      x='Mois de ${utils.month(start!)} ${start!.year}';
+      x='Mois de ${utils.getMonthAndYear(start!)}';
     }
     fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 

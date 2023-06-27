@@ -4,7 +4,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/presence_report_model/presence_record.dart';
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
@@ -38,6 +37,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
 
   String defaultMonth='Mois';
   String defaultYear='Année';
+  DateTime today = DateTime.now();
 
 
   late String selectedWeek;
@@ -50,15 +50,7 @@ class _EmployeePresenceReportState extends State<EmployeePresenceReport> {
     _controller?.dispose();
     super.dispose();
   }
-  DateTime? selectedDate;
-  bool canEnrollFingerprint=false;
-  late DateTime today;
 
-
-
-void selectPeriodLimits(){
-//selectDate(initialDate: today);
-}
 void show({String message="Date  non sélectionnée"}){
   ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
     simple: true,
@@ -81,21 +73,19 @@ String getTitle(){
   Future<DateTime?> selectDate(
       {String name='',
         required DateTime initialDate,
-        required DateTime firstDate}) async {
+        required DateTime firstDate,
+        DatePickerMode initialDatePickerMode=DatePickerMode.day}) async {
 
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-
         return CustomDialog
           (title: "Sélection de date",
             message: "Continuer pour sélectionner la date",
             context: context);
-
       },
     );
 
-    //selectedDate =
     return await  showDatePicker(context: context,
       locale: const Locale('fr'),
       initialDate:initialDate ,
@@ -103,29 +93,14 @@ String getTitle(){
       firstDate: firstDate,
       lastDate:today,
       currentDate: today,
+      initialDatePickerMode: initialDatePickerMode,
     );
-
-    //
-    // if(selectedDate==null){
-    //   ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-    //     simple: true,
-    //     showCloseIcon: true,
-    //     duration: const Duration(seconds: 3) ,
-    //     //width: MediaQuery.of(context).size.width-2*10,
-    //     message:"Date de $name non sélectionnée" ,
-    //   ));
-
-    // }
-    //
-    //
-    //  start=selectedDate!;
-
-   // return selectedDate;
 
   }
   Future<void> retrieveServices() async {
-    items.addAll(await ServiceDB().getServicesNames());
     today=await utils.localTime();
+    items.addAll(await ServiceDB().getServicesNames());
+
   }
 
   late List<String> items = ['Tous' ];
@@ -146,11 +121,11 @@ String getTitle(){
   @override
   void initState() {
     super.initState();
-    selectedStartDate=defaultDate;
-    selectedEndDate=defaultDate;
-    selectedMonth=defaultMonth;
-    selectedYear=defaultYear;
-    selectedWeek=defaultDate;
+    selectedStartDate=utils.frenchFormatDate(today);
+    selectedEndDate=utils.frenchFormatDate(today);
+    selectedMonth=utils.getMonthAndYear(today);
+    selectedYear=today.year.toString();
+    selectedWeek=utils.frenchFormatDate(today);
     retrieveServices();
 
     _getValue();
@@ -263,9 +238,15 @@ String getTitle(){
                                       services=null;
                                     } else {
 
-                                      services ??= [];
-                                      services?.add(_valueChanged);
+                                      log.d('sjkkkgkgkkg: $services');
 
+                                      services ??= [];
+
+                                      if(!services!.contains(_valueChanged))
+                                      {
+                                        services!.add(_valueChanged);
+                                      }
+                                      log.d('sjkkkgkgkkg: $services');
                                       // //for the moment consider a single service
                                       // services!.removeAt(0);
                                       // services!.add(v!);
@@ -429,7 +410,8 @@ String getTitle(){
                                     selectedDateOrNull= await selectDate
 
                                     //replace by the date when the company installed the app
-                                      (initialDate: today, firstDate: DateTime(2023,1,1));
+                                      (
+                                        initialDate: today, firstDate: DateTime(2023,1,1));
                                     if(selectedDateOrNull==null)
                                     {
                                       show();
@@ -454,14 +436,21 @@ String getTitle(){
                                 selectedDate: selectedStartDate,
                                 onSelectDate:
                                     () async {
+
+
+
+
+
                                   selectedDateOrNull= await selectDate
 
                                   //replace by the date when the company installed the app
-                                    (initialDate: today, firstDate: DateTime(2023,1,1));
+                                    (initialDate: today, firstDate: DateTime(2023,1,1)
+                                  );
                                   if(selectedDateOrNull==null)
                                   {
                                     show();
                                     setState(() {
+
                                       selectedStartDate=defaultDate;
                                     });
 
@@ -469,7 +458,15 @@ String getTitle(){
                                   else {
                                     start=selectedDateOrNull!;
                                     setState(() {
-                                      selectedStartDate=utils.frenchFormatDate(start);
+                                      if(reportType==ReportType.monthly) {
+                                        selectedStartDate=utils.getMonthAndYear(start);
+                                      }
+                                      else if(reportType==ReportType.annual) {
+                                        selectedStartDate=start.year.toString();
+                                      }
+                                      // else if(reportType==ReportType.daily) {
+                                        selectedStartDate=utils.frenchFormatDate(start);
+                                     // }
                                     });
 
                                   }
@@ -503,6 +500,7 @@ String getTitle(){
                                      var report=
                                       await PresenceDB().getPresenceReport
                                         (reportType: reportType,
+                                          status: status==null?['late','present']:[utils.str(status)],
                                           groupByService: groupByService,
                                           start:  start,end: end,
                                           services: services
@@ -540,7 +538,8 @@ String getTitle(){
                                           services: services,
                                           presenceRowsByService:
                                           presenceRowsByService,
-                                          groupByService: groupByService);
+                                          groupByService: groupByService,
+                                          start: start, end: end);
 
                                       if(presenceReport.isEmpty()){
                                         //empty report
@@ -568,7 +567,7 @@ String getTitle(){
                                       });
 
                                     },
-                                    child:const Text('Télécharger'),
+                                    child:const Text('Générer'),
                                   ),
 
                             ],

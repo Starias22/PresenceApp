@@ -53,6 +53,7 @@ Future<void> saveAndOpen(String filename) async {
 
 void saveAndOpenOrDownloadPdf(String filename) async {
   if(kIsWeb ) {
+
     Uint8List uint8List = Uint8List.fromList(bytes);
     await FirebaseStorage.instance.ref().child(filename).putData(uint8List,
         firebase_storage.SettableMetadata(contentType: 'application/pdf')

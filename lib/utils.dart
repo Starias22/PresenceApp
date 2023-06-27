@@ -299,21 +299,37 @@ log.d(DateTime(date.year, date.month, day));
 
   }
 
-  String month(DateTime date){
+  String getMonthAndYear(DateTime date){
+    String month;
 
-    if(date.month==DateTime.january) return 'Janvier';
-    if(date.month==DateTime.february) return 'Février';
-    if(date.month==DateTime.march) return 'Mars';
-    if(date.month==DateTime.april) return 'Avril';
-    if(date.month==DateTime.may) return 'Mai';
-    if(date.month==DateTime.june) return 'Juin';
-    if(date.month==DateTime.july) return 'Juillet';
-    if(date.month==DateTime.august) return 'Aout';
-    if(date.month==DateTime.september) return 'Septembre';
-    if(date.month==DateTime.october) return 'Octobre';
-    if(date.month==DateTime.november) return 'Novembre';
-
-    /*if(date.month==DateTime.december) */ return 'Décembre';
+    if(date.month==DateTime.january) {
+      month=  'Janvier';
+    } else if(date.month==DateTime.february) {
+      month=  'Février';
+    } else if(date.month==DateTime.march) {
+      month=  'Mars';
+    } else if(date.month==DateTime.april) {
+      month=  'Avril';
+    } else if(date.month==DateTime.may) {
+      month=  'Mai';
+    } else if(date.month==DateTime.june) {
+      month=  'Juin';
+    } else if(date.month==DateTime.july) {
+      month=  'Juillet';
+    } else if(date.month==DateTime.august) {
+      month=  'Aout';
+    } else if(date.month==DateTime.september) {
+      month=  'Septembre';
+    } else if(date.month==DateTime.october) {
+      month=  'Octobre';
+    } else if(date.month==DateTime.november) {
+      month=  'Novembre';
+    } else if(date.month==DateTime.december) {
+      month=  'Décembre';
+    } else {
+      month='';
+    }
+    return '$month ${date.year}';
 
   }
 

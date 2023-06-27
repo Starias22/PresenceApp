@@ -12,8 +12,8 @@ class PresenceReport{
   bool? groupByService;
   List<String>?  services;
   DateTime? end;
-  DateTime? start;
-  DateTime? selectedDate;
+  DateTime start;
+ // DateTime? selectedDate;
   //date or period
   String date;
   EStatus? status;
@@ -26,7 +26,8 @@ class PresenceReport{
 
   PresenceReport({required this.presenceRowsByService,
     this.services, required this.date,
-    this.status,required this.groupByService,required this.reportPeriodType}){
+    this.status,required this.groupByService,
+    required this.reportPeriodType,required this.start,required this.end}){
 
 
     if(status==null) {
@@ -48,14 +49,14 @@ class PresenceReport{
       x=date;
     }
     else if(reportPeriodType==ReportType.annual){
-      x=start!.year.toString();
+      x=start.year.toString();
     }
     else if(reportPeriodType==ReportType.weekly||reportPeriodType==ReportType.periodic){
       x='Du ${utils.frenchFormatDate(start)} au ${utils.frenchFormatDate(end)}';
     }
     else //if(reportPeriodType==ReportType.monthly)
     {
-      x='Mois de ${utils.month(start!)} ${start!.year}';
+      x='Mois de ${utils.getMonthAndYear(start)}';
     }
     fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 

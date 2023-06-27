@@ -337,7 +337,9 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
 
                                   var presenceReport=PresenceReport
                                     ( date: '',status: status,reportPeriodType:
-                                  reportType,services: services, presenceRowsByService: {}, groupByService: null);
+                                  reportType,services: services, presenceRowsByService: {},
+                                      groupByService: null,
+                                      start: DateTime.now(), end: null);
 
                                   await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
                                   setState(() {
