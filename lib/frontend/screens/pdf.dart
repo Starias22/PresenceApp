@@ -93,6 +93,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
   }
 
   Future<void> createPdf(PresenceReport presenceReport) async {
+  bool isPeriodic=presenceReport.reportPeriodType==ReportType.periodic;
     //Creates a new PDF document
     PdfDocument document = PdfDocument();
 
@@ -137,6 +138,64 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
         bounds: Rect.fromLTWH(250, 40, graphics.clientSize.width - 110, 50),
         format: PdfStringFormat(alignment: PdfTextAlignment.left)
     );
+
+    double logoTableMargin = 30.0; // Ajustez la valeur selon vos besoins
+
+    String rapportTypeText = "Type de Rapport: ${utils.y(presenceReport.reportPeriodType)}";
+    graphics.drawString(
+        rapportTypeText,
+        font,
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        bounds: Rect.fromLTWH(275, 50 + logoTableMargin + 10, graphics.clientSize.width, 20),
+        format: PdfStringFormat(alignment: PdfTextAlignment.left)
+    );
+
+
+    String statusText = "Status: ${presenceReport.fStatus}";
+    graphics.drawString(
+        statusText,
+        font,
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        bounds: Rect.fromLTWH(0, 100 + logoTableMargin + 10, graphics.clientSize.width, 20),
+        format: PdfStringFormat(alignment: PdfTextAlignment.left)
+    );
+
+    // );
+
+    String servicesText = "Service: ${presenceReport.services==null?'Tous':presenceReport.services?[0]}";
+    graphics.drawString(
+        servicesText,
+        font,
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        bounds: Rect.fromLTWH(500, 100 + logoTableMargin + 10, graphics.clientSize.width, 20),
+        format: PdfStringFormat(alignment: PdfTextAlignment.left)
+    );
+
+    String startDateText = presenceReport.formattedStartDate;
+    graphics.drawString(
+        startDateText,
+        font,
+        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+        bounds: Rect.fromLTWH(0, 100 + logoTableMargin + 50, graphics.clientSize.width, 20),
+        format: PdfStringFormat(alignment: PdfTextAlignment.left)
+    );
+
+
+
+    if(isPeriodic) {
+      String endDateText =presenceReport.formattedEndDate;
+      graphics.drawString(
+          endDateText,
+          font,
+          brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+          bounds: Rect.fromLTWH(500, 100 + logoTableMargin + 50,
+              graphics.clientSize.width, 20),
+          format: PdfStringFormat(alignment: PdfTextAlignment.left)
+      );
+    }
+
+
+
 
 
 
@@ -223,44 +282,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
     PdfLayoutFormat layoutFormat =
     PdfLayoutFormat(layoutType: PdfLayoutType.paginate);
 
-    double logoTableMargin = 30.0; // Ajustez la valeur selon vos besoins
 
-    String rapportTypeText = "Type de Rapport: ${utils.y(presenceReport.reportPeriodType)}";
-    graphics.drawString(
-        rapportTypeText,
-        font,
-        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(0, 100 + logoTableMargin + 10, graphics.clientSize.width, 20),
-        format: PdfStringFormat(alignment: PdfTextAlignment.left)
-    );
-
-    String servicesText = "Tous les services? ${presenceReport.status==null?'Oui':'Non'}";
-    graphics.drawString(
-        servicesText,
-        font,
-        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(500, 100 + logoTableMargin + 10, graphics.clientSize.width, 20),
-        format: PdfStringFormat(alignment: PdfTextAlignment.left)
-    );
-
-    String statusText = "Status: Tous";
-    graphics.drawString(
-        statusText,
-        font,
-        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(0, 100 + logoTableMargin + 50, graphics.clientSize.width, 20),
-        format: PdfStringFormat(alignment: PdfTextAlignment.left)
-    );
-
-    String dateText = "Date: ${utils.frenchFormatDate(presenceReport.start)}";
-    graphics.drawString(
-        dateText,
-        font,
-        brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(500, 100 + logoTableMargin + 50,
-            graphics.clientSize.width, 20),
-        format: PdfStringFormat(alignment: PdfTextAlignment.left)
-    );
 
 
     // Draws the grid to the PDF page

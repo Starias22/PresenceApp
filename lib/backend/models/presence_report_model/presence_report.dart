@@ -10,18 +10,19 @@ class PresenceReport{
 
   Map<String?,List<PresenceRecord>> presenceRowsByService;
   bool? groupByService;
+  late String formattedStartDate;
+  late String formattedEndDate;
   List<String>?  services;
   DateTime? end;
   DateTime start;
+  late String formatted;
  // DateTime? selectedDate;
-  //date or period
   String date;
   EStatus? status;
 
   ReportType reportPeriodType;
   late String fStatus;
   List<String>  fServices=[];
-  //late String fReportType;
 
 
   PresenceReport({required this.presenceRowsByService,
@@ -40,25 +41,35 @@ class PresenceReport{
      fServices.add('Tous');
     }
 
+    String x,y;
+
+     if(reportPeriodType==ReportType.annual){
+    x=start.year.toString();
+    y='Année: ';
+    }
+     else if(reportPeriodType==ReportType.monthly){
+       x=utils.getMonthAndYear(start);
+       y='Mois: ';
+     }
+     else if(reportPeriodType==ReportType.weekly){
+       x=utils.formatDateTime(start);
+       y='Semaine du: ';
+     }
+    else if(reportPeriodType==ReportType.daily){
+      x=utils.formatDateTime(start);
+      y='Date: ';
+
+    }
+    else {
+       x=utils.formatDateTime(start);
+       y='Date de début: ';
+    }
+    formattedStartDate=y+x;
+    if(end!=null){
+      formattedEndDate= 'Date de fin: ${utils.formatDateTime(end!)}';
+    }
 
 
-
-   // fReportType=utils.str(reportPeriodType);
-    String x;
-    if(reportPeriodType==ReportType.daily){
-      x=date;
-    }
-    else if(reportPeriodType==ReportType.annual){
-      x=start.year.toString();
-    }
-    else if(reportPeriodType==ReportType.weekly||reportPeriodType==ReportType.periodic){
-      x='Du ${utils.frenchFormatDate(start)} au ${utils.frenchFormatDate(end)}';
-    }
-    else //if(reportPeriodType==ReportType.monthly)
-    {
-      x='Mois de ${utils.getMonthAndYear(start)}';
-    }
-    //fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 
   }
 

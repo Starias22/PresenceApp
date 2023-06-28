@@ -247,15 +247,15 @@ void setSelectedDates({required DateTime date}){
                                       services=null;
                                     } else {
 
-                                      log.d('sjkkkgkgkkg: $services');
+                                      // services ??= [];
+                                      //
+                                      // if(!services!.contains(_valueChanged))
+                                      // {
+                                      //   services!.add(_valueChanged);
+                                      // }
 
-                                      services ??= [];
-
-                                      if(!services!.contains(_valueChanged))
-                                      {
-                                        services!.add(_valueChanged);
-                                      }
-                                      log.d('sjkkkgkgkkg: $services');
+                                      services = [];
+                                      services!.add(_valueChanged);
 
                                     }
 
@@ -426,18 +426,6 @@ void setSelectedDates({required DateTime date}){
                                   else
                                   {
                                     start=selectedDateOrNull!;
-                                    // setState(() {
-                                    //   if(reportType==ReportType.monthly) {
-                                    //     selectedStartDate=utils.getMonthAndYear(start);
-                                    //   }
-                                    //   else if(reportType==ReportType.annual) {
-                                    //     selectedStartDate=start.year.toString();
-                                    //   }
-                                    //   // else if(reportType==ReportType.daily) {
-                                    //     selectedStartDate=utils.frenchFormatDate(start);
-                                    //  // }
-                                    // });
-
                                     setSelectedDates(date: start);
                                   }
 
