@@ -10,7 +10,6 @@ import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
-import 'package:presence_app/frontend/screens/presence_statistics.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
@@ -470,7 +469,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               builder: (BuildContext context) {return const PageConges();}
                           ));
                         },
-                        child: const Text("Geston des congés"),
+                        child: const Text("Gestion des congés"),
                       ),
                     ),
                   ),
@@ -494,7 +493,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                 return const LesServices();
                               }));
                         },
-                        child: const Text("Gestions des services"),
+                        child: const Text("Gestion des services"),
                       ),
                     ),
                   ),
