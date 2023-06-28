@@ -21,7 +21,7 @@ class PresenceReport{
   ReportType reportPeriodType;
   late String fStatus;
   List<String>  fServices=[];
-  late String fReportType;
+  //late String fReportType;
 
 
   PresenceReport({required this.presenceRowsByService,
@@ -43,7 +43,7 @@ class PresenceReport{
 
 
 
-    fReportType=utils.str(reportPeriodType);
+   // fReportType=utils.str(reportPeriodType);
     String x;
     if(reportPeriodType==ReportType.daily){
       x=date;
@@ -58,7 +58,7 @@ class PresenceReport{
     {
       x='Mois de ${utils.getMonthAndYear(start)}';
     }
-    fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
+    //fReportType='Rapport de présence ${utils.str(reportPeriodType)}($x)';
 
   }
 

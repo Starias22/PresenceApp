@@ -184,6 +184,15 @@ log.d(DateTime(date.year, date.month, day));
   bool isWeekEnd(int weekday) {
     return weekday == DateTime.saturday || weekday == DateTime.sunday;
   }
+  String y(ReportType reportType){
+    if(reportType==ReportType.daily) return 'Journalier';
+    if(reportType==ReportType.weekly) return 'Hebdomadaire';
+    if(reportType==ReportType.monthly) return 'Mensuel';
+    if(reportType==ReportType.annual) return 'Annuel';
+    if(reportType==ReportType.periodic) return 'Autre période';
+    return'Unknown';
+
+  }
 
   Future<DateTime> localTime() async {
     CollectionReference timeCollection =

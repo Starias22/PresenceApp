@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:presence_app/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
@@ -224,7 +225,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
     double logoTableMargin = 30.0; // Ajustez la valeur selon vos besoins
 
-    String rapportTypeText = "Type de Rapport: Journalier";
+    String rapportTypeText = "Type de Rapport: ${utils.y(presenceReport.reportPeriodType)}";
     graphics.drawString(
         rapportTypeText,
         font,
@@ -233,7 +234,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
         format: PdfStringFormat(alignment: PdfTextAlignment.left)
     );
 
-    String servicesText = "Services: Tous";
+    String servicesText = "Tous les services? ${presenceReport.status==null?'Oui':'Non'}";
     graphics.drawString(
         servicesText,
         font,
@@ -251,7 +252,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
         format: PdfStringFormat(alignment: PdfTextAlignment.left)
     );
 
-    String dateText = "Date: 28/06/2023";
+    String dateText = "Date: ${utils.frenchFormatDate(presenceReport.start)}";
     graphics.drawString(
         dateText,
         font,
@@ -269,8 +270,6 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
           graphics.clientSize.width, graphics.clientSize.height - 50),
       format: layoutFormat,
     );
-
-
     bytes = await document.save();
   }
 }
