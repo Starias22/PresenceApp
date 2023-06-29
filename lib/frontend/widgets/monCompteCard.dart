@@ -3,10 +3,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/storage.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
-
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:presence_app/frontend/screens/employee_home_page.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -14,8 +12,7 @@ import 'package:presence_app/utils.dart';
 class CompteCard extends StatelessWidget {
   Employee employee;
    CompteCard({Key? key, required this.employee}) : super(key: key);
-  firebase_storage.FirebaseStorage storage =
-      firebase_storage.FirebaseStorage.instance;
+
 
   final ImagePicker _picker = ImagePicker();
 
@@ -61,12 +58,9 @@ class CompteCard extends StatelessWidget {
 
     if(ext==null) return unsupportedFileExtension;
     try {
-      await FirebaseStorage.instance.ref().child(fileName).putData(bytes,
-          firebase_storage.SettableMetadata(
-              contentType: contentType
-          ));
+     Storage.saveFile(fileName, contentType, bytes);
 
-      String downloadUrl=await getDownloadURL(fileName);
+      String downloadUrl=await Storage.getDownloadURL(fileName);
       EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl);
 
 

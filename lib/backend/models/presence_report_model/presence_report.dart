@@ -52,21 +52,21 @@ class PresenceReport{
        y='Mois: ';
      }
      else if(reportPeriodType==ReportType.weekly){
-       x=utils.formatDateTime(start);
+       x=utils.frenchFormatDate(start);
        y='Semaine du: ';
      }
     else if(reportPeriodType==ReportType.daily){
-      x=utils.formatDateTime(start);
+      x=utils.frenchFormatDate(start);
       y='Date: ';
 
     }
     else {
-       x=utils.formatDateTime(start);
+       x=utils.frenchFormatDate(start);
        y='Date de début: ';
     }
     formattedStartDate=y+x;
     if(end!=null){
-      formattedEndDate= 'Date de fin: ${utils.formatDateTime(end!)}';
+      formattedEndDate= 'Date de fin: ${utils.frenchFormatDate(end!)}';
     }
 
 

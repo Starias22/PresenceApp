@@ -1,8 +1,6 @@
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:presence_app/backend/firebase/storage.dart';
 import 'package:presence_app/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:io';
@@ -40,27 +38,14 @@ Future<void> saveAndOpen(String filename) async {
   OpenFile.open('$path/$filename');
 
 }
-  Future<String> getDownloadURL(String fileName) async {
-    try {
-      return await FirebaseStorage.instance
-          .ref()
-          .child(fileName)
-          .getDownloadURL();
-    } catch (e) {
-      return "";
-    }
-  }
-
 
 void saveAndOpenOrDownloadPdf(String filename) async {
   if(kIsWeb ) {
 
     Uint8List uint8List = Uint8List.fromList(bytes);
-    await FirebaseStorage.instance.ref().child(filename).putData(uint8List,
-        firebase_storage.SettableMetadata(contentType: 'application/pdf')
-    );
+    Storage.saveFile(filename, 'application/pdf', uint8List);
 
-    String pdfUrl= await getDownloadURL(filename);
+    String pdfUrl= await Storage.getDownloadURL(filename);
 
 if (await canLaunch(pdfUrl)) {
   await launch(
@@ -105,7 +90,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
     PdfPage page = document.pages.add();
     PdfGraphics graphics = page.graphics;
 
-    String url = await getDownloadURL('imsp.png');
+    String url = await Storage.getDownloadURL('imsp.png');
     var response = await get(Uri.parse(url));
     var data = response.bodyBytes;
 

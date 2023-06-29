@@ -7,6 +7,7 @@ import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/backend/firebase/storage.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
@@ -26,17 +27,6 @@ class EmployeeHomePage extends StatefulWidget {
   State<EmployeeHomePage> createState() => _EmployeeHomePageState();
 }
 
-Future<String> getDownloadURL(String fileName) async {
-  try {
-    return await FirebaseStorage.instance
-        .ref()
-        .child(fileName)
-        .getDownloadURL();
-  }
-  catch (e) {
-    return "";
-  }
-}
 
 class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
@@ -103,7 +93,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     super.initState();
 
     retrieve().then((_) {
-      img = getDownloadURL(filename!).then((url) {
+      img = Storage.getDownloadURL(filename!).then((url) {
         setState(() {
           //imageDownloadURL = url;
         });

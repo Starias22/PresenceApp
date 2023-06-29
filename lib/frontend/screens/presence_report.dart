@@ -245,7 +245,8 @@ void setSelectedDates({required DateTime date}){
 
                                     if(_valueChanged=='Tous') {
                                       services=null;
-                                    } else {
+                                    }
+                                    else {
 
                                       // services ??= [];
                                       //
@@ -265,15 +266,7 @@ void setSelectedDates({required DateTime date}){
 
                                 },
                                 validator: (String? v) {
-                                  if(v=='Tous') {
-                                    services=null;
-                                  } else {
 
-                                    services ??= [];
-                                    services?.add(v!);
-                                  }
-
-                                  log.d('Services list: $services');
                                   return null;
 
 
