@@ -12,6 +12,7 @@ class ESP32
     //http://192.168.1.172/?cmd=a //jem
 
 //http://172.16.65.1/?cmd=a //wireless ccp
+  //http://172.16.64.202/?cmd=a //wireless ccp
   Future<int> receiveData() async {
     //log.i('Receive data');
     var url = Uri.parse('http://$ipAddress/?cmd=a');

@@ -9,6 +9,7 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
+import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
@@ -54,6 +55,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   int data=espConnectionFailed;
   bool taskCompleted=true;
   bool noNetworkConnection=false;
+  bool noSuchEmployee=false;
 
   Timer?  dataFetchTimer;
   late Image employeePicture;
@@ -196,6 +198,30 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
       data=await ESP32().receiveData();
+     if (data == 151) {
+    noSuchEmployee=true;
+    message =
+    "Employé non reconnue! Veuillez reessayer!";
+    ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+    simple: true,
+    showCloseIcon: false,
+    duration: const Duration(seconds: 3) ,
+    //width: MediaQuery.of(context).size.width-2*10,
+    message:message ,
+    ));
+    log.d('33333');
+
+    // int x=await assureDataChanged(data, 150);
+    //
+    // if(x==152) {
+    //   taskCompleted=true;
+    // }
+    taskCompleted=true;
+    return;
+
+
+    }
+    noSuchEmployee=true;
 
 
     if(data==espConnectionFailed&&connectionStatusOff==false) {
@@ -329,28 +355,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
     }
 
-    else if (data == 151) {
 
-      message =
-      "Employé non reconnue! Veuillez reessayer!";
-      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-        simple: true,
-        showCloseIcon: false,
-        duration: const Duration(seconds: 3) ,
-        //width: MediaQuery.of(context).size.width-2*10,
-        message:message ,
-      ));
-      log.d('33333');
-
-      // int x=await assureDataChanged(data, 150);
-      //
-      // if(x==152) {
-      //   taskCompleted=true;
-      // }
-       taskCompleted=true;
-
-
-     }
     //log.d('The end of the function');
 
 
@@ -400,9 +405,11 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
               child: InkWell(
                 onTap: (){
                   nextPage=true;
+
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
-                   return const AdminLogin();
+                   //return const AdminLogin();
+                    return const EmployeePresenceReport();
                   }));
     },
 

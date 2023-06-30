@@ -306,11 +306,11 @@ log.d(DateTime(date.year, date.month, day));
   String day(DateTime date){
 
     if(date.weekday==DateTime.monday) return 'Lundi';
-    if(date.weekday==DateTime.tuesday) return 'Merdi';
+    if(date.weekday==DateTime.tuesday) return 'Mardi';
     if(date.weekday==DateTime.wednesday) return 'Mercredi';
     if(date.weekday==DateTime.thursday) return 'Jeudi';
     if(date.weekday==DateTime.friday) return 'Vendredi';
-    if(date.weekday==DateTime.saturday) return 'Samei';
+    if(date.weekday==DateTime.saturday) return 'Samedi';
     /*if(date.weekday==DateTime.sunday)*/ return 'Dimanche';
 
   }
