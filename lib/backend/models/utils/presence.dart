@@ -15,6 +15,11 @@ class Presence {
   Presence({this.id='',required this.date, this.entryTime, this.exitTime,
     required this.employeeId, required this.status, this.employeeService=''});
 
+  bool isInRange(List<DateTime> interval  ,{bool entry=true}){
+
+    DateTime inf=interval[0],  sup=interval[1];
+    return inf.isBefore(entryTime!)&&entryTime!.isBefore(sup);
+  }
   Map<String, dynamic> toMap() =>
       {
         'employee_service':employeeService,

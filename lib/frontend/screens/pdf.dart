@@ -20,6 +20,10 @@ import 'dart:async';
 class ReportPdf  {
 
   late List<int> bytes=[];
+  PdfDocument document = PdfDocument();
+  late PdfGraphics graphics ;
+  PdfGrid grid = PdfGrid();
+  late PdfGridRow header ;
 
 Future<void> saveAndOpen(String filename) async {
   //Get external storage directory
@@ -65,8 +69,9 @@ if (await canLaunch(pdfUrl)) {
   }
 
 }
-Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
-   await createPdf(presenceReport);
+Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDate,
+    List<DateTime> targetDates)  async {
+   await createPdf(presenceReportByDate,targetDates);
    saveAndOpenOrDownloadPdf('report.pdf');
 
 }
@@ -77,10 +82,10 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
   }
 
-  Future<void> createPdf(PresenceReport presenceReport) async {
-  bool isPeriodic=presenceReport.reportPeriodType==ReportType.periodic;
-    //Creates a new PDF document
-    PdfDocument document = PdfDocument();
+  Future<void> initPdf(List<PresenceReport> presenceReportByDate) async {
+
+    var presenceReport=presenceReportByDate[0];
+    bool isPeriodic=presenceReport.reportPeriodType==ReportType.periodic;
 
     //Adds page settings
     document.pageSettings.orientation = PdfPageOrientation.landscape;
@@ -88,7 +93,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
     //Adds a page to the document
     PdfPage page = document.pages.add();
-    PdfGraphics graphics = page.graphics;
+    graphics = page.graphics;
 
     String url = await Storage.getDownloadURL('imsp.png');
     var response = await get(Uri.parse(url));
@@ -178,31 +183,23 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
           format: PdfStringFormat(alignment: PdfTextAlignment.left)
       );
     }
+    page = document.pages.add();
+    graphics = page.graphics;
+  }
 
-
-
-
-
-
-    //Creates a PDF grid
-    PdfGrid grid = PdfGrid();
-
-    //Add the columns to the grid
+  void initGrid(){
     grid.columns.add(count: 6);
-
-    //Add header to the grid
+//
+//     //Add header to the grid
     grid.headers.add(1);
-
-    //Set values to the header cells
-    PdfGridRow header = grid.headers[0];
+    header = grid.headers[0];
     header.cells[0].value = "Nom de l'employé";
     header.cells[1].value = "Heure d'entrée";
     header.cells[2].value = 'Heure de sortie';
     header.cells[3].value = 'Durée de travail';
     header.cells[4].value = 'Ecart de ponctualité';
     header.cells[5].value = 'Ecart de départ';
-
-    //Creates the header style
+        //Creates the header style
     PdfGridCellStyle headerStyle = PdfGridCellStyle();
     headerStyle.borders.all = PdfPen(PdfColor(126, 151, 173));
     headerStyle.backgroundBrush = PdfSolidBrush(PdfColor(126, 151, 173));
@@ -212,6 +209,7 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
 
     //Adds cell customizations
     for (int i = 0; i < header.cells.count; i++) {
+
       if (i == 0 || i == 1) {
         header.cells[i].stringFormat = PdfStringFormat(
             alignment: PdfTextAlignment.left,
@@ -224,59 +222,109 @@ Future<void> createAndDownloadOrOpenPdf(PresenceReport presenceReport)  async {
       header.cells[i].style = headerStyle;
     }
 
-    PdfGridRow row;
-
-    for (var presenceRow in presenceReport.presenceRowsByService[null]!) {
-      row = grid.rows.add();
-      row.cells[0].value = presenceRow.employeeName;
-      row.cells[1].value = presenceRow.entryTime;
-      row.cells[2].value = presenceRow.exitTime;
-      row.cells[3].value = presenceRow.workDuration;
-      row.cells[4].value = presenceRow.punctualityDeviation;
-      row.cells[5].value = presenceRow.exitDeviation;
-    }
-
-    //Set padding for grid cells
-    grid.style.cellPadding = PdfPaddings(left: 2, right: 2, top: 2, bottom: 2);
-
-    //Creates the grid cell styles
-    PdfGridCellStyle cellStyle = PdfGridCellStyle();
-    cellStyle.borders.all = PdfPens.white;
-    cellStyle.borders.bottom = PdfPen(PdfColor(217, 217, 217), width: 0.70);
-    cellStyle.font = PdfStandardFont(PdfFontFamily.timesRoman, 12);
-    cellStyle.textBrush = PdfSolidBrush(PdfColor(131, 130, 136));
-
-    //Adds cell customizations
-    for (int i = 0; i < grid.rows.count; i++) {
-      PdfGridRow row = grid.rows[i];
-      for (int j = 0; j < row.cells.count; j++) {
-        row.cells[j].style = cellStyle;
-        if (j == 0 || j == 1) {
-          row.cells[j].stringFormat = PdfStringFormat(
-              alignment: PdfTextAlignment.left,
-              lineAlignment: PdfVerticalAlignment.middle);
-        } else {
-          row.cells[j].stringFormat = PdfStringFormat(
-              alignment: PdfTextAlignment.right,
-              lineAlignment: PdfVerticalAlignment.middle);
-        }
-      }
-    }
-
-    //Creates layout format settings to allow the table pagination
-    PdfLayoutFormat layoutFormat =
-    PdfLayoutFormat(layoutType: PdfLayoutType.paginate);
+  }
 
 
 
 
-    // Draws the grid to the PDF page
-    PdfLayoutResult? gridResult = grid.draw(
-      page: page,
-      bounds: Rect.fromLTWH(0, 250,
-          graphics.clientSize.width, graphics.clientSize.height - 50),
-      format: layoutFormat,
-    );
+
+  Future<void> createPdf(List<PresenceReport> presenceReportByDate,
+      List<DateTime> targetDates) async
+  {
+
+    await initPdf(presenceReportByDate);
+
+
+    initGrid();
+
+
+//     PdfGridRow row;
+//
+//     for (var presenceRow in presenceReport.presenceRowsByService[null]!) {
+//       row = grid.rows.add();
+//       row.cells[0].value = presenceRow.employeeName;
+//       row.cells[1].value = presenceRow.entryTime;
+//       row.cells[2].value = presenceRow.exitTime;
+//       row.cells[3].value = presenceRow.workDuration;
+//       row.cells[4].value = presenceRow.punctualityDeviation;
+//       row.cells[5].value = presenceRow.exitDeviation;
+//     }
+//
+//     //Set padding for grid cells
+//     grid.style.cellPadding = PdfPaddings(left: 2, right: 2, top: 2, bottom: 2);
+//
+//     //Creates the grid cell styles
+//     PdfGridCellStyle cellStyle = PdfGridCellStyle();
+//     cellStyle.borders.all = PdfPens.white;
+//     cellStyle.borders.bottom = PdfPen(PdfColor(217, 217, 217), width: 0.70);
+//     cellStyle.font = PdfStandardFont(PdfFontFamily.timesRoman, 12);
+//     cellStyle.textBrush = PdfSolidBrush(PdfColor(131, 130, 136));
+//
+//     //Adds cell customizations
+//     for (int i = 0; i < grid.rows.count; i++) {
+//       PdfGridRow row = grid.rows[i];
+//       for (int j = 0; j < row.cells.count; j++) {
+//         row.cells[j].style = cellStyle;
+//         if (j == 0 || j == 1) {
+//           row.cells[j].stringFormat = PdfStringFormat(
+//               alignment: PdfTextAlignment.left,
+//               lineAlignment: PdfVerticalAlignment.middle);
+//         } else {
+//           row.cells[j].stringFormat = PdfStringFormat(
+//               alignment: PdfTextAlignment.right,
+//               lineAlignment: PdfVerticalAlignment.middle);
+//         }
+//       }
+//     }
+//
+//     //Creates layout format settings to allow the table pagination
+//     PdfLayoutFormat layoutFormat =
+//     PdfLayoutFormat(layoutType: PdfLayoutType.paginate);
+//
+//
+//
+//
+//     PdfLayoutResult? gridResult;
+//     // Draws the grid to the PDF page
+//      gridResult = grid.draw(
+//       page: page,
+//       bounds: Rect.fromLTWH(0, 250,
+//           graphics.clientSize.width, graphics.clientSize.height - 50),
+//       format: layoutFormat,
+//     );
+//
+//     // Calculate the remaining space on the current page
+//     double remainingSpace = page.size.height - gridResult!.bounds.bottom;
+//
+// // Check if there is enough space to display the text on the current page
+//     //if (remainingSpace < 200) {
+//       // Create a new page
+//       page = document.pages.add();
+//       graphics = page.graphics;
+//     //}
+//
+// // Calculate the center position horizontally
+//     double centerX = graphics.clientSize.width / 2;
+//
+// // Calculate the bottom position vertically
+//     double bottomY = graphics.clientSize.height - 50;
+//
+// // Draw the text at the bottom center of the current or new page
+//     graphics.drawString(
+//       "Just a test",
+//       font,
+//       brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+//       bounds: const Rect.fromLTWH(
+//         300, // Horizontal position (centered)
+//         0, // Vertical position (at the bottom)
+//         200, // Width of the rectangle
+//         50, // Height of the rectangle
+//       ),
+//       format: PdfStringFormat(alignment: PdfTextAlignment.center),
+//     );
+
+
+
     bytes = await document.save();
   }
 }

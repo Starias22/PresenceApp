@@ -117,16 +117,21 @@ void setSelectedDates({required DateTime date}){
 
       setState(() {
         if( reportType==ReportType.monthly) {
+          start=today;
           selectedStartDate=utils.getMonthAndYear(date);
         }
         else if( reportType==ReportType.annual) {
+          start=date;
           selectedStartDate=date.year.toString();
         }
         else if( reportType==ReportType.weekly) {
-          selectedStartDate=utils.frenchFormatDate(utils.getWeeksMonday(date));
+          start= utils.getWeeksMonday(date);
+          selectedStartDate=utils.frenchFormatDate(start);
         }
         else //daily  periodic
             {
+
+              end=start=date;
           selectedStartDate=utils.frenchFormatDate(date);
           //for periodic
           selectedEndDate=utils.frenchFormatDate(date);
@@ -374,6 +379,7 @@ void setSelectedDates({required DateTime date}){
                                       setState(() {
                                         selectedStartDate=utils.frenchFormatDate(start);
                                       });
+                                      log.d('The selected date: $start');
 
                                     }
                                   },),
@@ -398,6 +404,8 @@ void setSelectedDates({required DateTime date}){
                                      setSelectedDates(date: end!);
                                     }
 
+                                    log.d('The selected date: $end');
+
                                   },),
                               ],
                               )
@@ -421,7 +429,7 @@ void setSelectedDates({required DateTime date}){
                                     start=selectedDateOrNull!;
                                     setSelectedDates(date: start);
                                   }
-
+                                  log.d('The selected date: $start');
                                     },
                               ),
                               const SizedBox(height: 10,),
@@ -461,11 +469,10 @@ void setSelectedDates({required DateTime date}){
                                       );
 
                                      log.d('The report: $report');
-                                      log.d('The length of the report: ${report.length}');
 
                                       Map<String?,List<PresenceRecord>>
                                       presenceRowsByService={};
-
+                                      List<DateTime> targetDates=[];
 
                                       await Future.forEach
                                         (report.entries, (entry) async {
@@ -473,20 +480,22 @@ void setSelectedDates({required DateTime date}){
                                         final presences = entry.value;
                                         final presenceRows = <PresenceRecord>[];
                                         for (var presence in presences) {
+                                          if(!targetDates.contains(presence.date)) {
+                                            targetDates.add(presence.date);
+                                          }
                                           final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
-                                          final presenceRow = PresenceRecord(employee: employee, presence: presence);
+                                          final presenceRow = PresenceRecord
+                                            (employee: employee, presence: presence);
                                           presenceRows.add(presenceRow);
                                         }
                                         presenceRowsByService[serviceNameOrNull] = presenceRows;
                                       });
-
-
                                       log.d('the Number of concerned services:${presenceRowsByService.length}');
 
 
 
                                       var presenceReport=PresenceReport
-                                        ( date: '',
+                                        ( date: utils.formatDateTime(today),
                                           status: status,
                                           reportPeriodType: reportType,
                                           services: services,
@@ -494,6 +503,7 @@ void setSelectedDates({required DateTime date}){
                                           groupByService: groupByService,
                                           start: start,
                                           end: end);
+                                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
 
                                       if(presenceReport.isEmpty()){
                                         //empty report
@@ -513,9 +523,20 @@ void setSelectedDates({required DateTime date}){
                                         return;
                                       }
 
-                                      log.d('Start PDF generating');
 
-                                      await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
+                                      List<PresenceReport> presenceReportByDate=[];
+
+                                      log.d('List of target dates: $targetDates');
+
+                                   presenceReportByDate= presenceReport.groupByDate(targetDates);
+                                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
+                                      log.d('List of report by date: $presenceReportByDate');
+
+
+
+                                   log.d('${presenceReportByDate[0].presenceRowsByService}');
+                                      log.d('Start PDF generating');
+                                      await ReportPdf().createAndDownloadOrOpenPdf( presenceReportByDate,targetDates);
                                       setState(() {
                                         operationInProcess=false;
                                       });

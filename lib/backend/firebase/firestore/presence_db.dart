@@ -406,9 +406,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     List<Presence> presences=[];
 
     Map<String?, List<double> >report={};
-
-    Map<String?, Map<Employee, List<double>> >stats={};
-
     for(var entry in presenceReport.entries){
       var service=entry.key;
       presences=presenceReport[service]!;
@@ -672,6 +669,124 @@ else if(reportType==ReportType.weekly)
 
     return presences;
   }
+
+  Future<Map<List<DateTime>, double>> getEntryStatisticsInRange(
+      {required DateTime start,required DateTime end,
+        required String employeeId
+
+      }) async {
+    QuerySnapshot querySnapshot;
+    querySnapshot= await _presence
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
+        .where('employee_id',isEqualTo: employeeId)
+        .where('status',whereIn: ['present','late'])
+        .orderBy('entry_time')
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+    DateTime? inf=presences.first.entryTime;
+    DateTime? sup=presences.last.entryTime;
+    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 6);
+    int total=presences.length;
+    Map< List<DateTime>,double> statistics={};
+
+    for(var interval in entryIntervals){
+      statistics[interval]=
+          presences.where((presence) =>
+              presence.isInRange(interval)).length/total;
+    }
+    return statistics;
+  }
+
+  Future<Map<List<DateTime>, double>> getExitStatisticsInRange(
+      {required DateTime start,required DateTime end,
+        required String employeeId
+
+      }) async {
+    QuerySnapshot querySnapshot;
+    querySnapshot= await _presence
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
+        .where('employee_id',isEqualTo: employeeId)
+        .where('exit_time',isNull: false)
+        .orderBy('exit_time')
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+    DateTime? inf=presences.first.entryTime;
+    DateTime? sup=presences.last.entryTime;
+    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 6);
+    int total=presences.length;
+    Map< List<DateTime>,double> statistics={};
+
+    for(var interval in entryIntervals){
+      statistics[interval]=
+          presences.where((presence) =>
+              presence.isInRange(interval)).length/total;
+    }
+    return statistics;
+  }
+
+
+
+  Future<List<Map<List<DateTime>, double>>> getStatisticsInRange(
+      {required DateTime start,required DateTime end,
+        required String employeeId
+
+      }) async {
+
+    return [
+      await getEntryStatisticsInRange(start: start, end: end, employeeId: employeeId),
+    await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)];
+  }
+
+  // List<DateTime> intervals
+  //     (DateTime inf, DateTime sup, int num) {
+  //   Duration interval = sup.difference(inf) ~/ num;
+  //   List<DateTime> result = [];
+  //
+  //   for (int i = 0; i < num; i++) {
+  //     DateTime dateTime = inf.add(interval * i);
+  //     result.add(dateTime);
+  //   }
+  //
+  //   return result;
+  // }
+  List<List<DateTime>> subdivideDateTimeInterval
+      (DateTime inf, DateTime sup, int num) {
+    Duration interval = sup.difference(inf) ~/ num;
+    List<DateTime> result = [];
+
+    for (int i = 0; i < num; i++) {
+      DateTime dateTime = inf.add(interval * i);
+      result.add(dateTime);
+    }
+
+    List<List<DateTime>> intervalBounds = [];
+
+    for (int i = 0; i < result.length - 1; i++) {
+      List<DateTime> bounds = [result[i], result[i + 1]];
+      intervalBounds.add(bounds);
+    }
+
+    return intervalBounds;
+  }
+
+  // var length=sup.difference(inf);
+  // var lengthInSec=length.inSeconds;
+  // var step=lengthInSec/8;
+  // List<DateTime>x=[];
+  // x.add(inf);
+  // x.add(sup);
+  //
+  // for(int i=0;i<8;i++){
+  //
+  // }
 
   Future<List<Presence>> getPeriodicPresenceReport(
       {required DateTime start,required DateTime

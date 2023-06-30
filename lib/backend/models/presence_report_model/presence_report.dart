@@ -81,5 +81,39 @@ class PresenceReport{
     }
     return  true;
   }
+  List<PresenceReport> groupByDate( List<DateTime> targetDates){
+    List<PresenceReport> z=[];
+    for(var targetDate in targetDates){
+    z.add(reduceReport(targetDate));
+    }
+    return z;
+  }
 
+
+  PresenceReport clone() {
+    PresenceReport clonedReport =
+    PresenceReport(presenceRowsByService:
+    presenceRowsByService, date: date, groupByService: groupByService,
+        reportPeriodType: reportPeriodType,
+        start: start, end: end);
+
+
+    return clonedReport;
+  }
+PresenceReport reduceReport(DateTime targetDate){
+    var reducedReport=clone();
+
+    reducedReport.presenceRowsByService={};
+    List<PresenceRecord> reducedRecords;
+
+
+  presenceRowsByService.forEach((service, records) {
+    log.d('The service: $service');
+    reducedRecords=records.where((presenceRecord) =>
+        presenceRecord.presence.date.isAtSameMomentAs(targetDate)).toList();
+
+    reducedReport.presenceRowsByService[service]=reducedRecords;
+  });
+  return reducedReport;
+}
 }

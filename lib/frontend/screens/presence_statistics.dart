@@ -341,7 +341,8 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
                                       groupByService: null,
                                       start: DateTime.now(), end: null);
 
-                                  await ReportPdf().createAndDownloadOrOpenPdf( presenceReport);
+                                  await ReportPdf().
+                                  createAndDownloadOrOpenPdf( [presenceReport],[]);
                                   setState(() {
                                     operationInProcess=false;
                                   });
