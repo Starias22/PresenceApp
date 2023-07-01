@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
@@ -30,6 +31,7 @@ Future<DateTime> getBeninTime() async {
 
 final utils = Utils();
 bool darkMode=false;
+const appBarColor=Color(0xFF0020FF);
 const success = 0,
     invalidFirstname = 1,
     invalidLastname = 2,

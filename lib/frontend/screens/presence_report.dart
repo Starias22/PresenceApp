@@ -156,7 +156,7 @@ void setSelectedDates({required DateTime date}){
         child: Scaffold(
             appBar: AppBar(
 
-              backgroundColor: const Color(0xFF0020FF),
+              backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text(
                 "Rapport de présence",

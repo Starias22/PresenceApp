@@ -53,7 +53,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              backgroundColor: const Color(0xFF0020FF),
+              backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text("Modifier les informations",
                 // style: TextStyle(

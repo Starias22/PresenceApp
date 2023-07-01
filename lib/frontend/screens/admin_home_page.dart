@@ -14,6 +14,7 @@ import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
             height: MediaQuery.of(context).size.height/13.5,
             decoration: const BoxDecoration(
               //shape: BoxShape.circle,
-              color: Color(0xFF0020FF),
+              color:appBarColor,
             ),
             child: Padding(
               padding: const EdgeInsets.all(10.0),
@@ -487,7 +488,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               borderRadius: BorderRadius.circular(20),
                             ),
                           ),
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                          backgroundColor: MaterialStateProperty.all<Color>
+                            (const Color(0xFF0020FF)),
                         ),
                         onPressed: (){
                           Navigator.push(context,

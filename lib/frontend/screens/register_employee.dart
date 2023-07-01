@@ -424,7 +424,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         child: Scaffold(
             appBar: AppBar(
 
-              backgroundColor: const Color(0xFF0020FF),
+              backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text(
                 "Création de compte employé",

@@ -104,7 +104,7 @@ Future<void> retrieve() async {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: const Color(0xFF0020FF),
+        backgroundColor: appBarColor,
         title: const Text('Gestion des congés',
         // style: TextStyle(
         //   fontSize: 23

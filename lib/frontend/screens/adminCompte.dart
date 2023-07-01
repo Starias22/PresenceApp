@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/utils.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/utils/admin.dart';
 import '../screens/pageStatistiques.dart';
@@ -39,11 +40,13 @@ Future<void> retrieve() async {
 
     return Scaffold(
         appBar: AppBar(
+          backgroundColor: appBarColor,
           centerTitle: true,
           title: const Text("Paramètres et confidentialité",
-            style: TextStyle(
-                fontSize: 18
-            ),),
+            // style: TextStyle(
+            //     fontSize: 18
+            // ),
+          ),
 
           leading: IconButton(
               onPressed: () => {

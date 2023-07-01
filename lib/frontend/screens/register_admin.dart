@@ -4,6 +4,7 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/utils.dart';
 class RegisterAdmin extends StatefulWidget {
   const RegisterAdmin({Key? key}) : super(key: key);
   void cancel() {}
@@ -48,7 +49,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0020FF),
+        backgroundColor:appBarColor,
         centerTitle: true,
         title: const Text(
           "Création de compte admin",

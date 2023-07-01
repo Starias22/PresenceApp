@@ -173,7 +173,9 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                   return CustomScrollView(
                     slivers: [
                       SliverAppBar(
-                        title: const Text("Mes statistiques"),
+
+
+                        title: const Center(child: Text("Calendrier des présences")),
                         elevation: 1,
                         floating: true,
                         forceElevated: true,

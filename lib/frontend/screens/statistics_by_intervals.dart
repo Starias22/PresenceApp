@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/data_statististics.dart';
 // import 'package:presence_app/backend/firebase/firestore/data_service.dart';
 import 'package:presence_app/frontend/widgets/StatistiquesCard.dart';
+import 'package:presence_app/utils.dart';
 import '../widgets/cardTabbar.dart';
 
 class EmployeeStatisticsPerRanges extends StatefulWidget {
@@ -55,7 +56,7 @@ State<EmployeeStatisticsPerRanges> {
       length: tabBars.length,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0020FF),
+          backgroundColor: appBarColor,
           //automaticallyImplyLeading: false,
           title: const Text(
             "Statistiques par intervalles",

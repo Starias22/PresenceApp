@@ -3,6 +3,7 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/afficheAdminCard.dart';
+import 'package:presence_app/utils.dart';
 
 class AfficherAdmins extends StatefulWidget {
   const AfficherAdmins({Key? key}) : super(key: key);
@@ -40,7 +41,7 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
     //adminsAff = admins;
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0020FF),
+        backgroundColor: appBarColor,
         centerTitle: true,
         title: const Text(
           "Liste des admins",

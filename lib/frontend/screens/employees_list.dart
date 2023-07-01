@@ -4,6 +4,7 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
 import 'package:presence_app/frontend/widgets/cardTabbar.dart';
+import 'package:presence_app/utils.dart';
 
 class AfficherEmployes extends StatefulWidget {
   const AfficherEmployes({Key? key}) : super(key: key);
@@ -30,7 +31,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
 
   Future<void> retrieve() async {
     var x = await EmployeeDB().getAllEmployees();
-    var y=
+
 
     setState((){
       employees=x;
@@ -72,7 +73,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
       length: tabBars.length,
       child: Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color(0xFF0020FF),
+          backgroundColor: appBarColor,
           centerTitle: true,
           title: const Text(
             "Liste des employés",
@@ -142,7 +143,6 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
                   }),
                   isScrollable: true,
                   onTap: (index) {
-                    print("tap");
                     setState(() {
                       _selectedIndex = index;
                       _trier(_selectedIndex);

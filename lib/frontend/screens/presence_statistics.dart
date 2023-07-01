@@ -168,7 +168,7 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
         child: Scaffold(
             appBar: AppBar(
 
-              backgroundColor: const Color(0xFF0020FF),
+              backgroundColor: appBarColor,
               centerTitle: true,
               title: Text(
                 "Statistiques de présence",

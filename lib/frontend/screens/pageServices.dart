@@ -4,6 +4,7 @@ import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/frontend/services.dart';
 
 import 'package:presence_app/frontend/widgets/servicesCard.dart';
+import 'package:presence_app/utils.dart';
 
 class LesServices extends StatefulWidget {
   const LesServices({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _LesServicesState extends State<LesServices> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        backgroundColor: const Color(0xFF0020FF),
+        backgroundColor: appBarColor,
         title: const Text("Gestion des services"),
         actions: [
           Padding(
