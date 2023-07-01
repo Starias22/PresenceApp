@@ -315,6 +315,11 @@ log.d(DateTime(date.year, date.month, day));
 
   }
 
+  String getTimeRangesAsStr(List<DateTime> times){
+
+    return '${utils.formatTime(times[0])}-${utils.formatTime(times[1])}';
+
+  }
   String getMonthAndYear(DateTime date){
     String month;
 

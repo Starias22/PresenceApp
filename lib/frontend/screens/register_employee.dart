@@ -102,11 +102,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     return await fetchData();
   }
 
-
-
-
-
-
   @override
   void dispose() {
     _controller?.dispose();
@@ -117,6 +112,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   late DateTime today;
 
   Future<void> enrolFingerprint() async {
+
     //String connectionError= 'Erreur de connexion!Veillez reessayer!';
     String networkConnectionError;
     String espConnectionError = "Vérifiez la configuration du microcontrôleur et ressayez";
@@ -146,16 +142,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       ToastUtils.showToast(context, "Aucun doigt détecté", 3);
       return;
     }
-
-
-
-
     if(data==espConnectionFailed) {
 
 
       ToastUtils.showToast(context, espConnectionError, 3);
       return;
     }
+    ToastUtils.showToast(context, "Vérification de l'existence de votre empreinte en cours!", 3);
 
 
     if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists
@@ -167,56 +160,63 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     }
 
 
-    if(data==noMatchingFingerprint)//save
+    if(data==noMatchingFingerprint)//save 151
         {
 
       await ESP32().sendData('go');
 
-      ToastUtils.showToast(context, "Empreinte en cours d'enregistrement! "
-          "Maintenez votre doigt sur le capteur", 3);
+      // ToastUtils.showToast(context, "Empreinte en cours d'enregistrement! "
+      //     "Maintenez votre doigt sur le capteur", 3);
+      ToastUtils.showToast(context, "L'enregistrement peut démarrer à présent! "
+          "Retirez votre doigt du capteur et placez à nouveau!", 3);
+
 
 
       data=await getData(151);
 
+      if(data==151){
+        ToastUtils.showToast(context,
+            "Aucun doigt détecté! Echec de l'enregistrement", 3);
+        return;
 
+      }
 
       log.d('Data:hhh $data ');
 
-      if(1<=data&&data<=127)//saved
+      if(minFingerprintId<=data&&data<=maxFingerprintId)//saved
           {
-        ToastUtils.showToast(context, "Empreinte enregistrée!"
-            " Enlevez votre doigt du capteur", 3);
+        ToastUtils.showToast(context, ""
+            "Retirez votre doigt du capteur et placez à nouveau pour vérification", 3);
 
-        if(await ESP32().sendData('update')){
-
-          
-          int y=await assureDataChanged(data,-1);
-
-          log.d('merveil bandit: $y');
-
-          if(y==152){
-            ToastUtils.showToast(context, "Vous n'avez pas enlevé votre doigt! Essayez à nouveau!", 3);
-            return;
-
-          }
-          if(y==-1){
-            ToastUtils.showToast(context, "Placez votre doigt à nouveau pour vérification!", 3);
-
-
-          }
-
-          //value updated start verification
-
-          if(await ESP32().sendData('enroll')){
-
+            log.d('merveil bandit:');
 
 
             int x=await g();
 
+            log.d('Merveil bandit: $x');
+
+        if(x==noMatchingFingerprint) {
+          ToastUtils.showToast(context,
+              "Empreintes non correspondantes! Echec de l'enregistrement", 3);
+        }
+
+        if(x== noFingerDetected){
+          ToastUtils.showToast(context,
+              "Aucun doigt détecté! Echec de l'enregistrement", 3);
 
 
-            if(x==data){
-              ToastUtils.showToast(context, "Empreinte vérifiée! Vous pouvez retirer votre doigt du capteur", 3);
+        }
+
+        if(x==espConnectionFailed){
+          ToastUtils.showToast(context, "$espConnectionError! Echec de l'enregistrement", 3);
+
+
+        }
+
+
+            if(x==1111){
+              ToastUtils.showToast(context,
+                  "Empreinte vérifiée! Vous pouvez retirer votre doigt du capteur", 3);
               //create the employee
 
               Navigator.pushReplacement(
@@ -233,35 +233,18 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
             }
 
-            if(x== noFingerDetected){
-              ToastUtils.showToast(context, "Aucun doigt détecté! Echec de l'enregistrement", 3);
-
-
-            }
-            //send the previous saved fingerprint id for delete
-
-            
-            
-            if(x==espConnectionFailed){
-              ToastUtils.showToast(context, "$espConnectionError! Echec de l'enregistrement", 3);
-              
-              
-            }
 
 
             
-            if(x==noMatchingFingerprint) {
-              ToastUtils.showToast(context, "Empreintes non correspndantes! Echec de l'enregistrement", 3);
-            }
 
             ESP32().sendData(data.toString());
            await  assureDataChanged(x,2000);
             ESP32().sendData('-1');
 
 
-          }
+          // }
 
-        }
+        // }
 
 
 
@@ -341,7 +324,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
     if((await HolidayDB().isHoliday(start))){
       disableFingerprintEnrollmentIfPreviouslyEnabled();
-      ToastUtils.showToast(context, "Cettte date de début est définie comme un jour férié ou de congés", 3);
+      ToastUtils.showToast(context, "Cette date de début est définie comme un jour férié ou de congés", 3);
       return;
     }
     setState(() {
@@ -443,11 +426,11 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
               backgroundColor: const Color(0xFF0020FF),
               centerTitle: true,
-              title: Text(
-                "PresenceApp",
-                style: GoogleFonts.arizonia(
-                  fontSize: 25,
-                ),
+              title: const Text(
+                "Création de compte employé",
+                // style: TextStyle(
+                //   fontSize: 23,
+                // ),
               ),
               actions: [
              if(canEnrollFingerprint)   Padding(
@@ -800,7 +783,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Date de début de travail',
+                                    'Date de début',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       fontSize: 18,

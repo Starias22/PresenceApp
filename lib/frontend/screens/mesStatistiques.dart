@@ -12,6 +12,7 @@ import 'package:presence_app/frontend/screens/diagrammeBandes.dart';
 import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
+import 'package:presence_app/frontend/screens/statistics_by_intervals.dart';
 import 'package:presence_app/frontend/widgets/calendrierCard.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
@@ -20,6 +21,7 @@ import 'package:provider/provider.dart';
 
 
 class MesStatistiques extends StatefulWidget {
+
   String? email;
    MesStatistiques({Key? key,this.email}) : super(key: key);
 
@@ -33,6 +35,7 @@ class _MesStatistiquesState extends State<MesStatistiques> {
   late String _valueChanged;
 
 late Presence presenceDoc;
+  late Employee employee;
   late DateTime startDate;
   String? employeeId;
   late String email;
@@ -62,9 +65,15 @@ late Presence presenceDoc;
     Map<DateTime,EStatus>x={};
 
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
-    var employee=await EmployeeDB().getEmployeeByEmail(email);
+    //email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
+    log.d('The email of the employee is : ${widget.email}');
+    log.d('The email of the employee is : $email');
+    employee=await EmployeeDB().getEmployeeByEmail(email);
+
     nEntryTime=utils.format(employee.entryTime)!;
     nExitTime=utils.format(employee.exitTime)!;
+
+
     if(employee.status==EStatus.pending){
     x[employee.startDate]=EStatus.pending;
     ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -76,16 +85,23 @@ late Presence presenceDoc;
     ));
 
     }
+
    now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
     var y=(employee).startDate;
+    log.d('Still working  ok');
     if(x.isEmpty) {
-
-      x = await PresenceDB().getMonthReport(employeeId!, today);
+      log.d('Still working  ok ok');
+      log.d('The id of the employee: ${employee.id}');
+      x = await PresenceDB().getMonthReport(employee.id, today);
+      log.d('Still working  ok ok ok');
     }
+    log.d('Still working ok ok ok ok');
 
 
     setState(() {
+
+      log.d('The events: $_events');
 
       _events = x;
       startDate=y;
@@ -110,12 +126,13 @@ late Presence presenceDoc;
         data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
     child: Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF0020FF),
         centerTitle: true,
         title: const Text(
-          "Mes statistiques",
-          style: TextStyle(
-            fontSize: 23,
-          ),
+          "Calendrier des présences",
+          // style: TextStyle(
+          //   //fontSize: 23,
+          // ),
         ),
         actions: [
           PopupMenuButton(
@@ -124,27 +141,27 @@ late Presence presenceDoc;
               // size: 30,
             ),
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              const PopupMenuItem(
+              if(widget.email!=null) const PopupMenuItem(
                 value: 1,
-                child: Text('Diagramme en bandes'),
+                child: Text('Statistiques par intervalles'),
               ),
-              if(!Login().isSignedInWithPassword()) const PopupMenuItem(
+              if(widget.email==null) const PopupMenuItem(
                 value: 2,
                 child: Text('Mon compte'),
               ),
-              if(!Login().isSignedInWithPassword()) const PopupMenuItem(
+              if(widget.email==null) const PopupMenuItem(
                 value: 3,
                 child: Text('Langue'),
               ),
-              if(!Login().isSignedInWithPassword())  PopupMenuItem(
+              if(widget.email==null)  PopupMenuItem(
                 value: 4,
                 child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
               ),
-              if(!Login().isSignedInWithPassword())  const PopupMenuItem(
+              if(widget.email==null)  const PopupMenuItem(
                 value: 5,
                 child: Text('Signaler un problème'),
               ),
-              if(!Login().isSignedInWithPassword())  const PopupMenuItem(
+              if(widget.email==null)  const PopupMenuItem(
                 value: 6,
                 child: Text('Déconnexion'),
               ),
@@ -154,11 +171,13 @@ late Presence presenceDoc;
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  DiagrammeBar(email: widget.email,)));
+                        builder: (context) =>
+                            EmployeeStatisticsPerRanges(employeeId: employee.id,)
+                    ));
 
               } else if (value == 2) {
                 Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => MonCompte()));
+                    MaterialPageRoute(builder: (context) => const MonCompte()));
               } else if (value == 3) {
               } else if (value == 4) {
 

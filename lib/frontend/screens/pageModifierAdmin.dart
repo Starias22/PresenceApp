@@ -63,7 +63,8 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-              title: const Text("Modifier les informations du compte",
+              backgroundColor: const Color(0xFF0020FF),
+              title: const Text("Modifier les informations",
                 style: TextStyle(
                   //fontSize: 15,
                 ),

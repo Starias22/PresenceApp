@@ -42,7 +42,7 @@ class CustomSnackBar extends SnackBar {
           Expanded(
             child: Align(
               child: Text(
-                message, overflow: TextOverflow.ellipsis, maxLines: 2,),
+                message, overflow: TextOverflow.ellipsis, maxLines: 3,),
 
             ),
           ),

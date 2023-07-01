@@ -158,11 +158,11 @@ void setSelectedDates({required DateTime date}){
 
               backgroundColor: const Color(0xFF0020FF),
               centerTitle: true,
-              title: Text(
+              title: const Text(
                 "Rapport de présence",
-                style: GoogleFonts.arizonia(
-                  fontSize: 25,
-                ),
+                // style: TextStyle(
+                //   fontSize: 23,
+                // ),
               ),
             ),
 

@@ -48,12 +48,13 @@ class _RegisterAdminState extends State<RegisterAdmin> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF0020FF),
         centerTitle: true,
         title: const Text(
-          "Creation compte admin",
-          style: TextStyle(
-            fontSize: 20,
-          ),
+          "Création de compte admin",
+          // style: TextStyle(
+          //   fontSize: 20,
+          // ),
         ),
         leading: IconButton(
             onPressed: () => {

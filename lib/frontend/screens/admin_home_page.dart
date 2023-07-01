@@ -34,6 +34,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
     return Theme(
         data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
     child: Scaffold(
+      //put appbar here
+
       body: ListView(
         children: [
           Container(
@@ -182,10 +184,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     },
                   ),
 
-                  Text("PresenceApp",
-                    style: GoogleFonts.arizonia(
-                      color: Colors.white,
-                      fontSize: 25
+                  const Center(
+                    child: Text("Page d'accueil admin",
+                      // style: TextStyle(
+                      //   fontSize: 23
+                      // ),
                     ),
                   ),
 

@@ -1,5 +1,4 @@
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
-import 'package:presence_app/utils.dart';
 
 class DataService{
   String service;
@@ -10,7 +9,8 @@ class DataService{
 }
 List<DataService> convertToDataService(Map<String, List<double>> inputMap) {
   return inputMap.entries.map((entry) {
-    return DataService(entry.key, [entry.value[0],
+    return DataService(entry.key, [
+      entry.value[0],
       entry.value[1],entry.value[2] ]);
   }).toList();
 }

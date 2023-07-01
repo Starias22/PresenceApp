@@ -163,6 +163,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
         showCloseIcon: true,
         duration: const Duration(days: 1) ,
         //width: MediaQuery.of(context).size.width-2*10,
@@ -408,8 +409,8 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
-                   //return const AdminLogin();
-                    return const EmployeePresenceReport();
+                   return const AdminLogin();
+                   // return const EmployeePresenceReport();
                   }));
     },
 

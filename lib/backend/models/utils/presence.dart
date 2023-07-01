@@ -15,10 +15,17 @@ class Presence {
   Presence({this.id='',required this.date, this.entryTime, this.exitTime,
     required this.employeeId, required this.status, this.employeeService=''});
 
-  bool isInRange(List<DateTime> interval  ,{bool entry=true}){
+  bool isEntryInRange(List<DateTime> interval){
 
     DateTime inf=interval[0],  sup=interval[1];
-    return inf.isBefore(entryTime!)&&entryTime!.isBefore(sup);
+    return (inf.isBefore(entryTime!)||inf.isAtSameMomentAs(entryTime!))
+        &&(entryTime!.isBefore(sup)||entryTime!.isAtSameMomentAs(sup));
+  }
+  bool isExitInRange(List<DateTime> interval){
+
+    DateTime inf=interval[0],  sup=interval[1];
+    return (inf.isBefore(exitTime!)||inf.isAtSameMomentAs(exitTime!))
+        &&(exitTime!.isBefore(sup)||exitTime!.isAtSameMomentAs(sup));
   }
   Map<String, dynamic> toMap() =>
       {

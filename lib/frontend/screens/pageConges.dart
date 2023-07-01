@@ -103,7 +103,13 @@ Future<void> retrieve() async {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        //title: Text('Liste de noms'),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0020FF),
+        title: const Text('Gestion des congés',
+        // style: TextStyle(
+        //   fontSize: 23
+        // ),
+        ),
       ),
       body: Column(
         children: [

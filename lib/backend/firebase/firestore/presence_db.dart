@@ -670,7 +670,44 @@ else if(reportType==ReportType.weekly)
     return presences;
   }
 
-  Future<Map<List<DateTime>, double>> getEntryStatisticsInRange(
+  Future<Map<String, double>> getEntryStatisticsInRange(
+      {required DateTime start,required DateTime end,
+        required String employeeId
+
+      }) async {
+    QuerySnapshot querySnapshot;
+    querySnapshot= await _presence
+        .where('employee_id',isEqualTo: employeeId)
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
+        .get()
+    ;
+    log.d('The size  ${querySnapshot.size}');
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).where((presence) => presence.entryTime!=null).toList();
+    log.d('The length  ${presences.length}');
+    presences.sort((a, b) =>
+    a.entryTime!.isBefore(b.entryTime!) ? -1 : 1);
+
+    DateTime? inf=presences.first.entryTime;
+    log.d('The inf  $inf');
+    DateTime? sup=presences.last.entryTime;
+    log.d('The sup  $sup');
+    //an issue with subdivideDateTimeInterval
+    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 4);
+    int total=presences.length;
+    Map< String,double> statistics={};
+
+    for(var interval in entryIntervals){
+      statistics[utils.getTimeRangesAsStr(interval)]=
+          presences.where((presence) =>
+              presence.isEntryInRange(interval)).length*100.0/total;
+    }
+    return statistics;
+  }
+
+  Future<Map<String, double>> getExitStatisticsInRange(
       {required DateTime start,required DateTime end,
         required String employeeId
 
@@ -680,61 +717,35 @@ else if(reportType==ReportType.weekly)
         .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .where('employee_id',isEqualTo: employeeId)
-        .where('status',whereIn: ['present','late'])
-        .orderBy('entry_time')
+        //.where('exit_time',isNull: false)
+        //.orderBy('exit_time')
         .get()
     ;
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
-    }).toList();
-    DateTime? inf=presences.first.entryTime;
-    DateTime? sup=presences.last.entryTime;
-    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 6);
+    }).where((presence) => presence.exitTime!=null).toList();
+
+    presences.sort((first, second) =>
+        first.exitTime!.compareTo(second.exitTime!));
+
+    DateTime? inf=presences.first.exitTime;
+    DateTime? sup=presences.last.exitTime;
+    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 4);
     int total=presences.length;
-    Map< List<DateTime>,double> statistics={};
+    Map< String,double> statistics={};
+
 
     for(var interval in entryIntervals){
-      statistics[interval]=
+      statistics[utils.getTimeRangesAsStr(interval)]=
           presences.where((presence) =>
-              presence.isInRange(interval)).length/total;
-    }
-    return statistics;
-  }
-
-  Future<Map<List<DateTime>, double>> getExitStatisticsInRange(
-      {required DateTime start,required DateTime end,
-        required String employeeId
-
-      }) async {
-    QuerySnapshot querySnapshot;
-    querySnapshot= await _presence
-        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
-        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
-        .where('employee_id',isEqualTo: employeeId)
-        .where('exit_time',isNull: false)
-        .orderBy('exit_time')
-        .get()
-    ;
-    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
-      return Presence.fromMap(doc.data() as Map<String,dynamic>);
-    }).toList();
-    DateTime? inf=presences.first.entryTime;
-    DateTime? sup=presences.last.entryTime;
-    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 6);
-    int total=presences.length;
-    Map< List<DateTime>,double> statistics={};
-
-    for(var interval in entryIntervals){
-      statistics[interval]=
-          presences.where((presence) =>
-              presence.isInRange(interval)).length/total;
+              presence.isExitInRange(interval)).length*100.0/total;
     }
     return statistics;
   }
 
 
 
-  Future<List<Map<List<DateTime>, double>>> getStatisticsInRange(
+  Future<List<Map<String, double>>> getStatisticsInRange(
       {required DateTime start,required DateTime end,
         required String employeeId
 
@@ -745,18 +756,7 @@ else if(reportType==ReportType.weekly)
     await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)];
   }
 
-  // List<DateTime> intervals
-  //     (DateTime inf, DateTime sup, int num) {
-  //   Duration interval = sup.difference(inf) ~/ num;
-  //   List<DateTime> result = [];
-  //
-  //   for (int i = 0; i < num; i++) {
-  //     DateTime dateTime = inf.add(interval * i);
-  //     result.add(dateTime);
-  //   }
-  //
-  //   return result;
-  // }
+
   List<List<DateTime>> subdivideDateTimeInterval
       (DateTime inf, DateTime sup, int num) {
     Duration interval = sup.difference(inf) ~/ num;
@@ -767,26 +767,19 @@ else if(reportType==ReportType.weekly)
       result.add(dateTime);
     }
 
+    log.d('The result $result');
+
     List<List<DateTime>> intervalBounds = [];
 
     for (int i = 0; i < result.length - 1; i++) {
       List<DateTime> bounds = [result[i], result[i + 1]];
       intervalBounds.add(bounds);
     }
+    log.d('The intervals $intervalBounds');
 
     return intervalBounds;
   }
 
-  // var length=sup.difference(inf);
-  // var lengthInSec=length.inSeconds;
-  // var step=lengthInSec/8;
-  // List<DateTime>x=[];
-  // x.add(inf);
-  // x.add(sup);
-  //
-  // for(int i=0;i<8;i++){
-  //
-  // }
 
   Future<List<Presence>> getPeriodicPresenceReport(
       {required DateTime start,required DateTime

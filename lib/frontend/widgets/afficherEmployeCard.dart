@@ -75,6 +75,8 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
+
+        log.d('The email of the employee is : ${widget.employee.email}');
         Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) {

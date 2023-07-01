@@ -248,14 +248,14 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
     for(int i=0;i<targetDates.length;i++ ){
       initGrid();
       drawReportGridForADay(targetDates[i],presenceReportByDate[i]);
+
+      if(i==targetDates.length-1) {
+        break;
+      }
+
       page = document.pages.add();
       graphics = page.graphics;
-
     }
-    //Adds a page to the document
-
-
-
     bytes = await document.save();
   }
 
@@ -314,14 +314,7 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
       }
     }
 
-    PdfLayoutResult? gridResult;
     // Draws the grid to the PDF page
-    gridResult = grid.draw(
-      page: page,
-      bounds: Rect.fromLTWH(0, 25,
-          graphics.clientSize.width, graphics.clientSize.height - 50),
-      format: layoutFormat,
-    );
 
 
 

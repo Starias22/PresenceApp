@@ -72,12 +72,13 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
       length: tabBars.length,
       child: Scaffold(
         appBar: AppBar(
+          backgroundColor: const Color(0xFF0020FF),
           centerTitle: true,
           title: const Text(
             "Liste des employés",
-            style: TextStyle(
-              fontSize: 23,
-            ),
+            // style: TextStyle(
+            //   fontSize: 23,
+            // ),
           ),
           leading: IconButton(
               onPressed: () => {

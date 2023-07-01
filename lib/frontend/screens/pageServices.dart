@@ -32,7 +32,9 @@ class _LesServicesState extends State<LesServices> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Services"),
+        centerTitle: true,
+        backgroundColor: const Color(0xFF0020FF),
+        title: const Text("Gestion des services"),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

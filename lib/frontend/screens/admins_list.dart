@@ -40,12 +40,13 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
     //adminsAff = admins;
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: const Color(0xFF0020FF),
         centerTitle: true,
         title: const Text(
           "Liste des admins",
-          style: TextStyle(
-            fontSize: 23,
-          ),
+          // style: TextStyle(
+          //   fontSize: 23,
+          // ),
         ),
         leading: IconButton(
             onPressed: () => {

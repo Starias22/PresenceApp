@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/firebase/firestore/data_service.dart';
+import 'package:presence_app/backend/firebase/firestore/data_statististics.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class StatistiquesCard extends StatelessWidget {
-  List<DataService> chartData;
+ // List<DataService> chartData;
   late TooltipBehavior _tooltipBehavior;
-  
-  int index;
 
-  StatistiquesCard({Key? key, required this.chartData,required this.index}) : super(key: key){
+  int index;
+  List<DataStatistics> data;
+  StatistiquesCard({Key? key,
+     required this.index,required this.data}) : super(key: key){
     _tooltipBehavior = TooltipBehavior(enable: true);
   }
 
@@ -23,10 +24,10 @@ class StatistiquesCard extends StatelessWidget {
               overflowMode: LegendItemOverflowMode.wrap),
           tooltipBehavior: _tooltipBehavior,
           series: <CircularSeries>[
-            PieSeries<DataService, String>(
-              dataSource: chartData,
-              xValueMapper: (DataService data,_) => data.service,
-              yValueMapper: (DataService data,_) => data.percentages[index],
+            PieSeries<DataStatistics, String>(
+              dataSource: data,
+              xValueMapper: (DataStatistics data,_) => data.timeRange,
+              yValueMapper: (DataStatistics data,_) => data.percentage,
 
               dataLabelSettings: const DataLabelSettings(isVisible: true),
               enableTooltip: true,
