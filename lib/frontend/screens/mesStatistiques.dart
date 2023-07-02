@@ -8,7 +8,6 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/presence.dart';
-import 'package:presence_app/frontend/screens/diagrammeBandes.dart';
 import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';

@@ -4,7 +4,6 @@ import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/utils.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/utils/admin.dart';
-import '../screens/pageStatistiques.dart';
 import '../widgets/adminCompteCard.dart';
 
 

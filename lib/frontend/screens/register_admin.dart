@@ -4,6 +4,7 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/utils.dart';
 class RegisterAdmin extends StatefulWidget {
   const RegisterAdmin({Key? key}) : super(key: key);
@@ -15,12 +16,12 @@ class RegisterAdmin extends StatefulWidget {
 
 class _RegisterAdminState extends State<RegisterAdmin> {
   late String passwd;
-  TextEditingController fnameC = TextEditingController();
-  TextEditingController lnameC = TextEditingController(),
+  TextEditingController firstnameController = TextEditingController();
+  TextEditingController lastnameController = TextEditingController(),
       emailC = TextEditingController(),
       passwordC = TextEditingController(),
       confirmC = TextEditingController();
-  late String fname, lname, email, password, confirm;
+  late String firstname, lastname, email, password, confirm;
   final _key = GlobalKey<FormState>();
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -30,16 +31,16 @@ class _RegisterAdminState extends State<RegisterAdmin> {
   }
 
   void retrieveTexts() {
-    fname = fnameC.text;
-    lname = lnameC.text;
+    firstname = firstnameController.text;
+    lastname = lastnameController.text;
     email = emailC.text;
     password = passwordC.text;
     confirm = confirmC.text;
   }
 
   void reset() {
-    fnameC.text = '';
-    lnameC.text = '';
+    firstnameController.text = '';
+    lastnameController.text = '';
     emailC.text = '';
     passwordC.text = '';
     confirmC.text = '';
@@ -81,7 +82,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                     height: 100,
                   ),
                   TextFormField(
-                      controller: lnameC,
+                      controller: lastnameController,
                       keyboardType: TextInputType.name,
                       textInputAction: TextInputAction.next,
                       validator: (String? v) {
@@ -107,7 +108,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                     height: 12,
                   ),
                   TextFormField(
-                      controller: fnameC,
+                      controller: firstnameController,
                       keyboardType: TextInputType.name,
                       textInputAction: TextInputAction.next,
                       validator: (String? v) {
@@ -195,7 +196,8 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                         }
                         if (v != passwd) {
                           return 'Confirmation incorrecte';
-                        } /*else {
+                        }
+                        return null; /*else {
                           return "Confirmez le mot de passe";
                         }*/
                       },
@@ -218,11 +220,8 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      ElevatedButton(
-                        onPressed: () => {reset()},
-                        child: const Text("Annuler"),
-                      ),
-                      ElevatedButton(
+                      CustomElevatedButton(text:"Annuler" , onPressed:(){reset();}),
+                      CustomElevatedButton(
                         onPressed: () async {
                           
                           if (_key.currentState!.validate()) {
@@ -233,8 +232,8 @@ class _RegisterAdminState extends State<RegisterAdmin> {
 
                           retrieveTexts();
                           Admin admin = Admin(
-                              firstname: fname,
-                              lastname: lname,
+                              firstname: firstname,
+                              lastname: lastname,
                               email: email,
                               password: password);
 
@@ -264,7 +263,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                           showToast(message);
                           
                         },
-                        child: const Text('Confirmer'),
+                        text: 'Confirmer',
                       ),
                     ],
                   )

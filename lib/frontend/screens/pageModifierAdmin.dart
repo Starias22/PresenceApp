@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 
 import '../../utils.dart';
@@ -204,10 +205,8 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  ElevatedButton(
-
-                                      child: const Text("Annuler"),
-
+                                  CustomElevatedButton(
+                                      text:  "Annuler",
                                       onPressed: () => {
 
                                         if(widget.himself)
@@ -226,7 +225,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 
-                                  ElevatedButton(
+                                  CustomElevatedButton(
                                     onPressed: ()  async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
@@ -286,7 +285,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
                                       }
 
                                     },
-                                    child: const Text('Confirmer'),
+                                    text: 'Confirmer',
                                   ),
                                 ],
                               )

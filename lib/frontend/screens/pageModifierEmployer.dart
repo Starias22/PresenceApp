@@ -4,6 +4,7 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
@@ -336,15 +337,16 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 children: [
-                                  ElevatedButton(
+                                  CustomElevatedButton(
                                     onPressed: ()=>  Navigator.pushReplacement(context, MaterialPageRoute(
                                         builder: (context) => const AfficherEmployes())),
-                                    child: const Text("Annuler"),
+                                    text: "Annuler",
                                   ),
 
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 
-                                  ElevatedButton(
+                                  CustomElevatedButton(
+
                                     onPressed: () async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
@@ -365,7 +367,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
                                            fingerprintId: widget.employee.fingerprintId,
                                        //uniqueCode: widget.employee.uniqueCode
                                        );
-                                      log.i('wE ARE gona update');
+                                      log.i('we are gona update');
 
                                        await EmployeeDB().update(employee);
                                         ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -379,7 +381,7 @@ class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
 
                                       }
                                     },
-                                    child: const Text('Confirmer'),
+                                   text: 'Confirmer',
                                   ),
                                 ],
                               )

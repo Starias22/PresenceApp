@@ -68,17 +68,13 @@ Future<void> retrieve() async {
   void _handleDateSelection() {
     selectedDate = DateTime(selectedYear, selectedMonth, selectedDay);
     selectedDateF = DateTime(selectedYearF, selectedMonthF, selectedDayF);
-    print('Date débuit congé : $selectedDate');
-    print('Date fin congé : $selectedDateF');
   }
 
   void _saveConge() {
     int j = 0;
 
-    print("On m'a exécuité");
     if(employesEnConge.isEmpty)
     {
-      print("Avant la boucle for la liste est vide");
     }
 
     for (int i = 0; i < employees.length; i++) {
@@ -92,10 +88,8 @@ Future<void> retrieve() async {
 
     if(employesEnConge.isEmpty)
     {
-      print("Après la boucle for la liste est toujours vide");
     }
     else {
-      print("La liste n'est pas vide après la boucle");
     }
   }
 

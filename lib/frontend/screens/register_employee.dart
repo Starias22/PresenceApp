@@ -5,10 +5,10 @@ import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/esp32.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -815,38 +815,23 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: [
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-                                    ),
-                                    onPressed: () => Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const RegisterEmployee())),
-                                    child: const Text("Annuler"),
-                                  ),
-                                  ElevatedButton(
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-                                    ),
+                                  CustomElevatedButton(text: "Annuler",
+                                      onPressed: () =>
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                  const RegisterEmployee())),),
+
+                                  CustomElevatedButton(
+                                    text: 'Confirmer',
                                     onPressed: () async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
                                       }
                                       else {
 
-                                       disableFingerprintEnrollmentIfPreviouslyEnabled();
+                                        disableFingerprintEnrollmentIfPreviouslyEnabled();
                                         return;
                                       }
                                       DateTime now=await utils.localTime();
@@ -855,10 +840,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                       selectStartDateAndAchieve(context);
 
 
-
-                                    },
-                                    child: const Text('Confirmer'),
-                                  ),
+                                    },),
                                 ],
                               )
                             ],

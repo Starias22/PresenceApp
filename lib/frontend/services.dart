@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/frontend/screens/pageServices.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
 void showServiceDialog(BuildContext context) async {
@@ -29,7 +30,8 @@ void showServiceDialog(BuildContext context) async {
                       textInputAction: TextInputAction.next,
                       onChanged: (value) => _serviceName = value,
                       validator: (value) =>
-                      _serviceName.isEmpty ? "Veuillez saisir le nom du service" : null,
+                      _serviceName.isEmpty ?
+                      "Veuillez saisir le nom du service" : null,
 
                       decoration: InputDecoration(
                           label: const Text('Nom du service:'),
@@ -58,7 +60,7 @@ void showServiceDialog(BuildContext context) async {
 
                   const SizedBox(width: 20,),
 
-                  ElevatedButton(
+                  CustomElevatedButton(
                     onPressed: () async {
                       if(createClicked) return;
                       createClicked=true;
@@ -84,7 +86,7 @@ void showServiceDialog(BuildContext context) async {
                       }
 
                     },
-                    child: const Text("Enregistrer"),
+                    text: "Enregistrer",
                   )
                 ],
               )
@@ -147,7 +149,7 @@ void showServiceDialogModifier(BuildContext context, Service service) async {
 
                   const SizedBox(width: 20,),
 
-                  ElevatedButton(
+                  CustomElevatedButton(
 
                     onPressed: () async {
 
@@ -183,7 +185,7 @@ void showServiceDialogModifier(BuildContext context, Service service) async {
                         }
                       }
                     },
-                    child: const Text("Modifier"),
+                    text: "Modifier",
                   )
                 ],
               )
