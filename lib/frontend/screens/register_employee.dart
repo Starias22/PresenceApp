@@ -9,6 +9,7 @@ import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
+import 'package:presence_app/frontend/widgets/date_action_widget.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -391,6 +392,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   Future<void> retrieveServices() async {
     items = await ServiceDB().getServicesNames();
+    DateTime now=await utils.localTime();
+    today=DateTime(now.year,now.month,now.day);
+    setState(() {
+      startDate=utils.frenchFormatDate(today);
+
+    });
   }
 
   late List<String> items = [];
@@ -779,36 +786,29 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                     )),
                               ),
                               const SizedBox(height: 12),
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Date de début',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10), // Espacement entre le titre et le champ de texte
-                                  Container(
-                                    width: 125, // Largeur du champ de texte encadré
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                        color: Colors.grey,
-                                        width: 1.0,
-                                      ),
-                                      borderRadius: BorderRadius.circular(4.0),
-                                    ),
-                                    padding: const EdgeInsets.all(10),
-                                    child: Text(
-                                      startDate,
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
+                              // Row(
+                              //   crossAxisAlignment: CrossAxisAlignment.start,
+                              //   children: [
+
+                                  // const Text(
+                                  //   'Date de début',
+                                  //   style: TextStyle(
+                                  //     fontWeight: FontWeight.bold,
+                                  //     fontSize: 18,
+                                  //   ),
+                                  // ),
+                                  // const SizedBox(width: 10), // Espacement entre le titre et le champ de texte
+                                DateActionContainer
+                                  (title: 'Date de début',
+                                    selectedDate: startDate,
+                                    onSelectDate:
+                                        (){
+
+                                        }
+                                )
+
+
+                              ,
                               const SizedBox(height: 12),
 
                               Row(
@@ -834,8 +834,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                         disableFingerprintEnrollmentIfPreviouslyEnabled();
                                         return;
                                       }
-                                      DateTime now=await utils.localTime();
-                                      today=DateTime(now.year,now.month,now.day);
+
 
                                       selectStartDateAndAchieve(context);
 

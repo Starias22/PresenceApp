@@ -14,15 +14,15 @@ import 'package:presence_app/utils.dart';
 import 'employee_home_page.dart';
 
 
-class AdminLogin extends StatefulWidget {
-  const AdminLogin({Key? key}) : super(key: key);
+class LoginMenu extends StatefulWidget {
+  const LoginMenu({Key? key}) : super(key: key);
 
 
   @override
-  State<AdminLogin> createState() => _AdminLoginState();
+  State<LoginMenu> createState() => _LoginMenuState();
 }
 
-class _AdminLoginState extends State<AdminLogin> {
+class _LoginMenuState extends State<LoginMenu> {
 
   late String login, password;
 
@@ -198,12 +198,14 @@ log.d(message);
                     backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                   ),
                   onPressed: ()  {
+                    log.d('Admin login');
 
                     if(Login().isSignedIn()) {
                       email=FirebaseAuth.instance.currentUser!.email;
 
                     }
                     else {
+
                       setState(() {
                         loginInProcess = true;
                       });
@@ -242,7 +244,7 @@ log.d(message);
                       backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                     ),
                     onPressed: (){
-
+                      log.d('Admin login');
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                             return const AdminLogin();

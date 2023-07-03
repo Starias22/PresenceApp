@@ -408,7 +408,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
-                   return const AdminLogin();
+                   return const LoginMenu();
                    // return const EmployeePresenceReport();
                   }));
     },
@@ -504,7 +504,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
                         onPressed: (){
                         nextPage=true;
                           Navigator.push(context,MaterialPageRoute(
-                              builder: (BuildContext context) {return const AdminLogin();}
+                              builder: (BuildContext context) {return const LoginMenu();}
                           ));
                         },
                         child: const Text("Commencer"),
