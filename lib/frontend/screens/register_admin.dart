@@ -78,9 +78,9 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               key: _key,
               child: Column(
                 children: [
-                  const SizedBox(
-                    height: 100,
-                  ),
+                  // const SizedBox(
+                  //   height: 100,
+                  // ),
                   TextFormField(
                       controller: lastnameController,
                       keyboardType: TextInputType.name,

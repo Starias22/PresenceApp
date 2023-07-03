@@ -675,6 +675,7 @@ else if(reportType==ReportType.weekly)
         required String employeeId
 
       }) async {
+    log.d('Id of the employee:$employeeId');
     QuerySnapshot querySnapshot;
     querySnapshot= await _presence
         .where('employee_id',isEqualTo: employeeId)
@@ -687,6 +688,7 @@ else if(reportType==ReportType.weekly)
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).where((presence) => presence.entryTime!=null).toList();
     log.d('The length  ${presences.length}');
+    if(presences.isEmpty) return {};
     presences.sort((a, b) =>
     a.entryTime!.isBefore(b.entryTime!) ? -1 : 1);
 
@@ -694,16 +696,18 @@ else if(reportType==ReportType.weekly)
     log.d('The inf  $inf');
     DateTime? sup=presences.last.entryTime;
     log.d('The sup  $sup');
-    //an issue with subdivideDateTimeInterval
     var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 4);
     int total=presences.length;
     Map< String,double> statistics={};
-
+    //log.d('Statistics: $statistics');
     for(var interval in entryIntervals){
       statistics[utils.getTimeRangesAsStr(interval)]=
-          presences.where((presence) =>
-              presence.isEntryInRange(interval)).length*100.0/total;
+      (presences.where(
+                  (presence) =>
+          presence.isEntryInRange(interval)).length*100.0/total)
+          .roundToDouble();
     }
+    log.d('Statistics: $statistics');
     return statistics;
   }
 
@@ -724,7 +728,7 @@ else if(reportType==ReportType.weekly)
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).where((presence) => presence.exitTime!=null).toList();
-
+    if(presences.isEmpty) return {};
     presences.sort((first, second) =>
         first.exitTime!.compareTo(second.exitTime!));
 
@@ -737,8 +741,9 @@ else if(reportType==ReportType.weekly)
 
     for(var interval in entryIntervals){
       statistics[utils.getTimeRangesAsStr(interval)]=
-          presences.where((presence) =>
-              presence.isExitInRange(interval)).length*100.0/total;
+      (presences.where((presence) =>
+          presence.isExitInRange(interval)).length*100.0/total).
+        roundToDouble();
     }
     return statistics;
   }
@@ -753,7 +758,8 @@ else if(reportType==ReportType.weekly)
 
     return [
       await getEntryStatisticsInRange(start: start, end: end, employeeId: employeeId),
-    await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)];
+       await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)
+    ];
   }
 
 
@@ -766,6 +772,7 @@ else if(reportType==ReportType.weekly)
       DateTime dateTime = inf.add(interval * i);
       result.add(dateTime);
     }
+    result.add(sup);
 
     log.d('The result $result');
 

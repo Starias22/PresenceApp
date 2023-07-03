@@ -6,7 +6,7 @@ import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
-import '../screens/pageModifierAdmin.dart';
+import '../screens/update_admin.dart';
 
 
 class CompteCard extends StatelessWidget {
@@ -106,7 +106,7 @@ class CompteCard extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (BuildContext context) {
-                        return FormulaireModifierAdmin(admin: admin,himself: true,);
+                        return UpdateAdmin(admin: admin,himself: true,);
                       }),
                     );
                   },

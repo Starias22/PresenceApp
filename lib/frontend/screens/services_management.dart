@@ -6,14 +6,14 @@ import 'package:presence_app/frontend/services.dart';
 import 'package:presence_app/frontend/widgets/servicesCard.dart';
 import 'package:presence_app/utils.dart';
 
-class LesServices extends StatefulWidget {
-  const LesServices({Key? key}) : super(key: key);
+class ServicesManagement extends StatefulWidget {
+  const ServicesManagement({Key? key}) : super(key: key);
 
   @override
-  State<LesServices> createState() => _LesServicesState();
+  State<ServicesManagement> createState() => _ServicesManagementState();
 }
 
-class _LesServicesState extends State<LesServices> {
+class _ServicesManagementState extends State<ServicesManagement> {
   List<Service> services=[];
 
   Future<void> retrieveServices() async {

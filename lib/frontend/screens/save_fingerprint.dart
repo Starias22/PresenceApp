@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/esp32.dart';
-import 'package:presence_app/frontend/screens/mesStatistiques.dart';
+import 'package:presence_app/frontend/screens/presence_calendar.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -111,7 +111,7 @@ class _SaveFingerprintState extends State<SaveFingerprint> {
 
       Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) {
-            return MesStatistiques(email: email!,);
+            return PresenceCalendar(email: email!,);
           }));
     }
 

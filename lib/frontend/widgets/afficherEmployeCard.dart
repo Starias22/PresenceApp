@@ -6,8 +6,8 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
-import 'package:presence_app/frontend/screens/mesStatistiques.dart';
-import 'package:presence_app/frontend/screens/pageModifierEmployer.dart';
+import 'package:presence_app/frontend/screens/presence_calendar.dart';
+import 'package:presence_app/frontend/screens/update_employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -78,7 +78,7 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
         Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) {
-            return MesStatistiques(
+            return PresenceCalendar(
               email: widget.employee.email,
             );
           }),
@@ -148,7 +148,7 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (BuildContext context) {
-                                        return FormulaireModifierEmploye(
+                                        return UpdateEmployee(
                                           employee: widget.employee,
                                         );
                                       },

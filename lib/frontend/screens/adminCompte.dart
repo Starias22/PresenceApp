@@ -7,16 +7,16 @@ import '../../backend/models/utils/admin.dart';
 import '../widgets/adminCompteCard.dart';
 
 
-class AdminCompte extends StatefulWidget {
-  const AdminCompte({Key? key,himsef=true}) : super(key: key);
+class AdminAccount extends StatefulWidget {
+  const AdminAccount({Key? key,himself=true}) : super(key: key);
 
   @override
-  State<AdminCompte> createState() => _AdminCompteState();
+  State<AdminAccount> createState() => _AdminAccountState();
 }
 
 
 
-class _AdminCompteState extends State<AdminCompte> {
+class _AdminAccountState extends State<AdminAccount> {
 String? email=FirebaseAuth.instance.currentUser?.email;
 late String id;
 late Admin admin;

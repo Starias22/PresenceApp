@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/service.dart';
-import 'package:presence_app/frontend/screens/pageServices.dart';
+import 'package:presence_app/frontend/screens/services_management.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
@@ -81,7 +81,7 @@ void showServiceDialog(BuildContext context) async {
                         if(created){
                          Navigator.pop(context);
                           Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) =>const LesServices()));
+                              MaterialPageRoute(builder: (context) =>const ServicesManagement()));
                         }
                       }
 
@@ -181,7 +181,7 @@ void showServiceDialogModifier(BuildContext context, Service service) async {
                         if(updated){
                           //Navigator.of
                           Navigator.pushReplacement(context,
-                              MaterialPageRoute(builder: (context) =>const LesServices()));
+                              MaterialPageRoute(builder: (context) =>const ServicesManagement()));
                         }
                       }
                     },

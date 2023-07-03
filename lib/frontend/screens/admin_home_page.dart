@@ -8,7 +8,7 @@ import 'package:presence_app/frontend/screens/adminCompte.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
-import 'package:presence_app/frontend/screens/pageServices.dart';
+import 'package:presence_app/frontend/screens/services_management.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
@@ -178,7 +178,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         Navigator.push(context,
                             MaterialPageRoute(builder:
                                 (BuildContext context) {
-                              return const LesServices();
+                              return const ServicesManagement();
                             })
                         );
                       }
@@ -242,7 +242,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>  const AdminCompte()));
+                                builder: (context) =>  const AdminAccount()));
                       }
 
                       else if (value == "dark") {
@@ -495,7 +495,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                           Navigator.push(context,
                               MaterialPageRoute(builder:
                                   (BuildContext context) {
-                                return const LesServices();
+                                return const ServicesManagement();
                               }));
                         },
                         child: const Text("Gestion des services"),

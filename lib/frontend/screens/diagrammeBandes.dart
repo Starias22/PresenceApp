@@ -8,7 +8,7 @@ import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import '../../backend/firebase/firestore/presence_db.dart';
 import '../../backend/models/utils/employee.dart';
 import '../../utils.dart';
-import '../screens/mesStatistiques.dart';
+import '../screens/presence_calendar.dart';
 import '../widgets/digrammeBarCard.dart';
 
 class DiagrammeBar extends StatefulWidget {
@@ -105,7 +105,7 @@ late String email;
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => MesStatistiques(email: email),
+                builder: (context) => PresenceCalendar(email: email),
               ),
             );
           },

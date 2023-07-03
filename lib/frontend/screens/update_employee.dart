@@ -9,15 +9,15 @@ import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 
-class FormulaireModifierEmploye extends StatefulWidget {
+class UpdateEmployee extends StatefulWidget {
   Employee employee;
-   FormulaireModifierEmploye({Key? key, required this.employee}) : super(key: key);
+   UpdateEmployee({Key? key, required this.employee}) : super(key: key);
 
   @override
-  State<FormulaireModifierEmploye> createState() => _FormulaireModifierEmployeState();
+  State<UpdateEmployee> createState() => _UpdateEmployeeState();
 }
 
-class _FormulaireModifierEmployeState extends State<FormulaireModifierEmploye> {
+class _UpdateEmployeeState extends State<UpdateEmployee> {
   Future<void> retrieveServices() async {
     items = await ServiceDB().getServicesNames();
   }

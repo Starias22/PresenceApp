@@ -13,16 +13,16 @@ import '../../utils.dart';
 import 'adminCompte.dart';
 
 
-class FormulaireModifierAdmin extends StatefulWidget {
+class UpdateAdmin extends StatefulWidget {
   Admin admin;
   bool himself;
-  FormulaireModifierAdmin({Key? key, required this.admin, this.himself=true}) : super(key: key);
+  UpdateAdmin({Key? key, required this.admin, this.himself=true}) : super(key: key);
 
   @override
-  State<FormulaireModifierAdmin> createState() => _FormulaireModifierAdminState();
+  State<UpdateAdmin> createState() => _UpdateAdminState();
 }
 
-class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
+class _UpdateAdminState extends State<UpdateAdmin> {
   void updateAdminData(Admin newAdmin) {
     setState(() {
       widget.admin = newAdmin;
@@ -77,7 +77,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
                     if(widget.himself)
                     Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) => const AdminCompte()))
+                      builder: (context) => const AdminAccount()))
 
                     else
                       Navigator.pushReplacement(context, MaterialPageRoute(
@@ -211,7 +211,7 @@ class _FormulaireModifierAdminState extends State<FormulaireModifierAdmin> {
 
                                         if(widget.himself)
                                           Navigator.pushReplacement(context, MaterialPageRoute(
-                                              builder: (context) => const AdminCompte()))
+                                              builder: (context) => const AdminAccount()))
 
                                         else
                                           Navigator.pushReplacement(context, MaterialPageRoute(

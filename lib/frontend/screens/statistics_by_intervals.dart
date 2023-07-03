@@ -1,15 +1,15 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/firebase/firestore/data_statististics.dart';
-// import 'package:presence_app/backend/firebase/firestore/data_service.dart';
-import 'package:presence_app/frontend/widgets/StatistiquesCard.dart';
+import 'package:presence_app/backend/firebase/firestore/statististics_data.dart';
+import 'package:presence_app/frontend/widgets/statistics_card.dart';
 import 'package:presence_app/utils.dart';
 import '../widgets/cardTabbar.dart';
 
 class EmployeeStatisticsPerRanges extends StatefulWidget {
-  const EmployeeStatisticsPerRanges({Key? key,
-    required String employeeId}) : super(key: key);
+  late String employeeId;
+   EmployeeStatisticsPerRanges({Key? key,
+    required this.employeeId}) : super(key: key);
 
   @override
   State<EmployeeStatisticsPerRanges> createState() =>
@@ -19,31 +19,35 @@ class EmployeeStatisticsPerRanges extends StatefulWidget {
 class _EmployeeStatisticsPerRangesState extends
 State<EmployeeStatisticsPerRanges> {
 
+
+
   bool dataLoading = true;
 
   int _selectedIndex = 0;
-  int ind=0;
 
   List<String> tabBars = ['Entrées', 'Sorties'];
-  List<DataStatistics> chartData = [];
-  List<DataStatistics> chartDataAff = [];
+  List< List<StatisticsData>> chartData = [];
+  List<StatisticsData> chartDataAff = [];
 
 
   void _etat(int index) async {
-    chartDataAff = chartData;
-    ind=index;
+    chartDataAff = chartData[index];
 
   }
+
+
 
   @override
   void initState() {
     super.initState();
 
-    data('y44lEHlvs9pstWORhy0D').then((x) {
+    data(widget.employeeId).then((x) {
+
 
       if(mounted) {
         setState(() {
           chartData = x;
+          chartDataAff=chartData[0];
           dataLoading = false;
         });
       }
@@ -105,8 +109,9 @@ State<EmployeeStatisticsPerRanges> {
                 children: [
                    if (dataLoading) // Show circular progress indicator if data is loading
                    const Center(child: CircularProgressIndicator())
+
                    else
-                  StatistiquesCard(index: ind,data:chartData),
+                  StatisticsCard(entryOrExitData:chartDataAff),
                 ],
               ),
             ),

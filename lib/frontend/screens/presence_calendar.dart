@@ -19,17 +19,17 @@ import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 
 
-class MesStatistiques extends StatefulWidget {
+class PresenceCalendar extends StatefulWidget {
 
   String? email;
-   MesStatistiques({Key? key,this.email}) : super(key: key);
+   PresenceCalendar({Key? key,this.email}) : super(key: key);
 
 
   @override
-  State<MesStatistiques> createState() => _MesStatistiquesState();
+  State<PresenceCalendar> createState() => _PresenceCalendarState();
 }
 
-class _MesStatistiquesState extends State<MesStatistiques> {
+class _PresenceCalendarState extends State<PresenceCalendar> {
   final _key = GlobalKey<FormState>();
   late String _valueChanged;
 
@@ -64,7 +64,6 @@ late Presence presenceDoc;
     Map<DateTime,EStatus>x={};
 
     email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
-    //email=(widget.email ?? FirebaseAuth.instance.currentUser!.email)!;
     log.d('The email of the employee is : ${widget.email}');
     log.d('The email of the employee is : $email');
     employee=await EmployeeDB().getEmployeeByEmail(email);
