@@ -179,7 +179,22 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     log.d('The presences list: ${presences.length}') ;
     return presences;
   }
-  
+
+
+
+  Future<List<Presence>> getAllPresenceRecords
+      () async {
+
+    QuerySnapshot querySnapshot = await _presence
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList();
+    return presences;
+  }
+
+
   Future<List<Presence>> getDailyPresenceRecords(
       {
     List<String> status=const['present','late' ],
@@ -894,6 +909,10 @@ else if(reportType==ReportType.weekly)
   void updateExitTime(String id,DateTime dateTime){
     String exitTime=utils.formatTime(dateTime);
     _presence.doc(id).update({'exit_time':exitTime});
+  }
+  void updateService(String id,String service){
+
+    _presence.doc(id).update({'employee_service':service});
   }
   void updateStatus(String id,EStatus status){
 

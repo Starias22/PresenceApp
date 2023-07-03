@@ -1,8 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/backend/models/utils/service.dart';
-import 'package:presence_app/utils.dart';
 
 
 class ServiceDB {
@@ -95,22 +96,33 @@ class ServiceDB {
   }
 
 
-  Future<bool> update(Service old,Service service) async {
-    if(await exists(service.name)) return false;
-    service.id=(await getServiceIdByName(old.name))!;
-    _service.doc(service.id).update(service.toMap());
- if(!await ServiceDB().hasEmployee(service.id)) {
+  Future<bool> update(Service oldService,Service newService) async {
+    if(await exists(newService.name)) return false;
+    newService.id=(await getServiceIdByName(oldService.name))!;
+    _service.doc(newService.id).update(newService.toMap());
+
+ if(!await ServiceDB().hasEmployee(newService.id)) {
    return true;
  }
-    log.d('////////////////');
+
     List<Employee> employees=
     (await EmployeeDB().getAllEmployees()).
-    where((employee) => employee.serviceId==service.id).toList();
+    where((employee) => employee.serviceId==newService.id).toList();
 
     for(var employee in employees){
 
-     await EmployeeDB().updateService(employee,service);
+     await EmployeeDB().updateService(employee,newService);
     }
+
+    List<Presence> presences=
+    (await PresenceDB().getAllPresenceRecords()).
+    where((presence) => presence.employeeService==oldService.name).toList();
+
+    for(var presence in presences){
+
+      PresenceDB().updateService(presence.id,newService.name);
+    }
+
     return true;
   }
 

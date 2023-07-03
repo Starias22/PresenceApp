@@ -9,9 +9,9 @@ import 'package:presence_app/frontend/services.dart';
 import 'package:presence_app/frontend/screens/services_management.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
-class ServicesCard extends StatelessWidget {
+class ServiceCard extends StatelessWidget {
   final Service service;
-  ServicesCard({Key? key, required this.service}) : super(key: key);
+  ServiceCard({Key? key, required this.service}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -51,7 +51,7 @@ class ServicesCard extends StatelessWidget {
 
                                 onChanged: (String? v){
                                   if(v == "modifier"){
-                                    showServiceDialogModifier(context, service);
+                                    showServiceUpdateDialog(context, service);
                                   }
                                   else if(v == "supprimer"){
 

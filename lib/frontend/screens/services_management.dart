@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/frontend/services.dart';
-
-import 'package:presence_app/frontend/widgets/servicesCard.dart';
+import 'package:presence_app/frontend/widgets/service_card.dart';
 import 'package:presence_app/utils.dart';
 
 class ServicesManagement extends StatefulWidget {
@@ -25,7 +24,6 @@ class _ServicesManagementState extends State<ServicesManagement> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     retrieveServices();
   }
@@ -67,7 +65,7 @@ class _ServicesManagementState extends State<ServicesManagement> {
                 List.generate(services.length, (int index) {
                   return Column(
                     children: [
-                      ServicesCard(service: services[index]),
+                      ServiceCard(service: services[index]),
                       const Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 8.0, vertical: 0.0),

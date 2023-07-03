@@ -98,7 +98,7 @@ void showServiceDialog(BuildContext context) async {
   });
 }
 
-void showServiceDialogModifier(BuildContext context, Service service) async {
+void showServiceUpdateDialog(BuildContext context, Service service) async {
   bool updateClicked=false;
   String _serviceName = "";
 
@@ -164,7 +164,8 @@ void showServiceDialogModifier(BuildContext context, Service service) async {
 
 
                         String message;
-                        bool updated=await ServiceDB().update(Service(name: initialServiceName)
+                        bool updated=
+                        await ServiceDB().update(Service(name: initialServiceName)
                             ,Service(name: _serviceName));
                         Navigator.pop(context);
                         if(updated)
