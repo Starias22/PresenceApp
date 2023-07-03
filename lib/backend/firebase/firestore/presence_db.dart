@@ -591,12 +591,14 @@ Future<List<String>> getPresenceIds(String employeeId) async {
     if(reportType==ReportType.monthly){
 
   start=DateTime(d.year,d.month,1);
+  log.d('The start is the following :$start');
 
 
 
       if(!date.isAtSameMomentAs(today)) {
 
-        end=DateTime(date.year,DateTime.december ,utils.lengthOfMonth(date));
+        end=DateTime(date.year,date.month ,utils.lengthOfMonth(date));
+        log.d('The end is the following :$end');
       }
 
     }

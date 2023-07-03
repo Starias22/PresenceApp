@@ -116,7 +116,7 @@ void setSelectedDates({required DateTime date}){
 
       setState(() {
         if( reportType==ReportType.monthly) {
-          start=today;
+          start=date;
           selectedStartDate=utils.getMonthAndYear(date);
         }
         else if( reportType==ReportType.annual) {
@@ -154,7 +154,6 @@ void setSelectedDates({required DateTime date}){
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
-
               backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text(
@@ -200,11 +199,15 @@ void setSelectedDates({required DateTime date}){
                                   setState(() {
                                     _valueChanged = val!;
 
+
                                     if(_valueChanged=='all') {
                                       status=null;
                                     } else {
                                       status=utils.convertES(_valueChanged);
                                     }
+
+                                    log.d('The status: $status');
+
 
                                   });
                                 },
@@ -426,6 +429,8 @@ void setSelectedDates({required DateTime date}){
                                   else
                                   {
                                     start=selectedDateOrNull!;
+
+                                    log.d('The start: $start');
                                     setSelectedDates(date: start);
                                   }
                                   log.d('The selected date: $start');
@@ -467,6 +472,8 @@ void setSelectedDates({required DateTime date}){
                                           services: services
                                       );
 
+                                     log.d('The status :$status');
+
                                      log.d('The report: $report');
 
                                       Map<String?,List<PresenceRecord>>
@@ -504,6 +511,7 @@ void setSelectedDates({required DateTime date}){
                                           end: end);
                                       log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
 
+                                      log.d('The status: $status');
                                       if(presenceReport.isEmpty()){
                                         //empty report
 

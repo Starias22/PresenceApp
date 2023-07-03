@@ -236,17 +236,17 @@ class CompteCard extends StatelessWidget {
 
         ),
 
-        Padding(padding: const EdgeInsets.all(8.0),
+        Padding(padding: const EdgeInsets.all(5.0),
           child: Column(
             children: [
               const Row(
                 children: [
                   Icon(Icons.contacts),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
+                    padding: EdgeInsets.all(2.0),
                     child: Text("Coordonnées",
                       style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 10,
                           fontWeight: FontWeight.bold
                       ),
                     ),

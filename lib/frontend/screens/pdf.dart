@@ -158,7 +158,8 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
 
     // );
 
-    String servicesText = "Service: ${presenceReport.services==null?'Tous':presenceReport.services?[0]}";
+    String servicesText = "Service:"
+        " ${presenceReport.services==null?'Tous':presenceReport.services?[0]}";
     graphics.drawString(
         servicesText,
         font,
@@ -243,18 +244,20 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
     await initPdf(presenceReportByDate);
 
 
-    initGrid();
+    //initGrid();
 
     for(int i=0;i<targetDates.length;i++ ){
       initGrid();
       drawReportGridForADay(targetDates[i],presenceReportByDate[i]);
-
+      // Add the following line to draw the grid on each page
+      grid.draw(page: page, bounds: const Rect.fromLTWH(0, 50, 0, 0));
       if(i==targetDates.length-1) {
         break;
       }
 
       page = document.pages.add();
       graphics = page.graphics;
+
     }
     bytes = await document.save();
   }

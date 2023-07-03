@@ -16,7 +16,7 @@ class DateActionContainer extends Row {
         title,
         style: const TextStyle(
           fontWeight: FontWeight.bold,
-          fontSize: 18,
+          fontSize: 16,
         ),
       ),
       const SizedBox(width: 10),

@@ -26,8 +26,8 @@ class PresenceReport{
 
 
   PresenceReport({required this.presenceRowsByService,
-    this.services, required this.date,
-    this.status,required this.groupByService,
+    required this.services, required this.date,
+    required this.status,required this.groupByService,
     required this.reportPeriodType,required this.start,required this.end}){
 
 
@@ -95,7 +95,7 @@ class PresenceReport{
     PresenceReport(presenceRowsByService:
     presenceRowsByService, date: date, groupByService: groupByService,
         reportPeriodType: reportPeriodType,
-        start: start, end: end);
+        start: start, end: end,status: status,services: services);
 
 
     return clonedReport;

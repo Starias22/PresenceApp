@@ -240,13 +240,7 @@ late Presence presenceDoc;
   }
 
   onDayLongPressed(DateTime date) async {
-    ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-      simple: true,
-      showCloseIcon: false,
-      duration: const Duration(seconds: 5) ,
-      //width: MediaQuery.of(context).size.width-2*10,
-      message:'Vous êtes déconnecté' ,
-    ));
+
 
 
     if(utils.isWeekend(date)){
@@ -260,7 +254,9 @@ late Presence presenceDoc;
 
     }
 
-    if((!utils.isWeekend(date))&&(date.isBefore(today)||date.isAtSameMomentAs(today))) {
+     if((!utils.isWeekend(date))&&
+        (date.isBefore(today)||date.isAtSameMomentAs(today))
+    ) {
       String? presenceId = await PresenceDB().getPresenceId(date, employeeId!);
 
       Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
