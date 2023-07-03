@@ -15,6 +15,7 @@ class RegisterAdmin extends StatefulWidget {
 }
 
 class _RegisterAdminState extends State<RegisterAdmin> {
+  bool _isPasswordSecret = true,isConfirmSecret=true;
   late String passwd;
   TextEditingController firstnameController = TextEditingController();
   TextEditingController lastnameController = TextEditingController(),
@@ -70,7 +71,12 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               Icons.arrow_back,
             )),
       ),
-      body: ListView(scrollDirection: Axis.vertical, children: [
+      body: ListView(
+          scrollDirection: Axis.vertical,
+          children: [
+            const SizedBox(
+              height: 25,
+            ),
         Center(
           child: Padding(
             padding: const EdgeInsets.all(10.0),
@@ -78,9 +84,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
               key: _key,
               child: Column(
                 children: [
-                  // const SizedBox(
-                  //   height: 100,
-                  // ),
+
                   TextFormField(
                       controller: lastnameController,
                       keyboardType: TextInputType.name,
@@ -163,16 +167,25 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       controller: passwordC,
                       keyboardType: TextInputType.visiblePassword,
                       textInputAction: TextInputAction.next,
+                      obscureText:_isPasswordSecret ,
                       validator: (String? v) {
                         if (v!.isNotEmpty && v.length >= 6) {
                           passwd = v;
                           return null;
-                        } else {
-                          return "Entrez un mot de passe";
                         }
+                          return "Entrez un mot de passe";
+
                       },
                       onSaved: (String? v) {},
                       decoration: InputDecoration(
+                          suffixIcon: InkWell(
+                            onTap: () => setState(() {
+                              _isPasswordSecret = !_isPasswordSecret;
+                            }),
+                            child: Icon(!_isPasswordSecret
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                          ),
                           label: const Text('Password:'),
                           hintText: "Ex: ...........",
                           border: OutlineInputBorder(
@@ -182,11 +195,13 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(20.0),
                             borderSide: const BorderSide(color: Colors.green),
-                          ))),
+                          ))
+                  ),
                   const SizedBox(
                     height: 12,
                   ),
                   TextFormField(
+                    obscureText: isConfirmSecret,
                       controller: confirmC,
                       keyboardType: TextInputType.visiblePassword,
                       textInputAction: TextInputAction.next,
@@ -203,6 +218,14 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                       },
                       onSaved: (String? v) {},
                       decoration: InputDecoration(
+                          suffixIcon: InkWell(
+                            onTap: () => setState(() {
+                              isConfirmSecret = !isConfirmSecret;
+                            }),
+                            child: Icon(!isConfirmSecret
+                                ? Icons.visibility
+                                : Icons.visibility_off),
+                          ),
                           label: const Text(
                               'Confirmez le mot de passe'), //hintText: "Ex: John",
 

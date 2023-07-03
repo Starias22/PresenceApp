@@ -12,15 +12,15 @@ import 'package:presence_app/utils.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/firebase/login_service.dart';
 
-class Authentification extends StatefulWidget {
-  const Authentification({Key? key}) : super(key: key);
+class AdminLogin extends StatefulWidget {
+  const AdminLogin({Key? key}) : super(key: key);
 
   @override
-  State<Authentification> createState() => _AuthentificationState();
+  State<AdminLogin> createState() => _AdminLoginState();
 }
 
-class _AuthentificationState extends State<Authentification> {
-  bool inLoginProcess = false;
+class _AdminLoginState extends State<AdminLogin> {
+  bool loginInProcess = false;
   final _key = GlobalKey<FormState>();
   bool _isSecret = true;
 
@@ -178,7 +178,7 @@ class _AuthentificationState extends State<Authentification> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                             if(!inLoginProcess) ElevatedButton(
+                             if(!loginInProcess) ElevatedButton(
                                 style: ButtonStyle(
                                   shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                     RoundedRectangleBorder(
@@ -198,7 +198,7 @@ class _AuthentificationState extends State<Authentification> {
                                   ),
                                 ),
                               ),
-                              inLoginProcess ? const Center(child: CircularProgressIndicator(),) :   ElevatedButton(
+                              loginInProcess ? const Center(child: CircularProgressIndicator(),) :   ElevatedButton(
                                   style: ButtonStyle(
                                     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                                       RoundedRectangleBorder(
@@ -214,7 +214,7 @@ class _AuthentificationState extends State<Authentification> {
                                       return;
                                     }
                                     setState(() {
-                                      inLoginProcess=true;
+                                      loginInProcess=true;
                                     });
                                     retrieveTexts();
                                     
@@ -297,7 +297,7 @@ class _AuthentificationState extends State<Authentification> {
 
       if (await Connectivity().checkConnectivity()== ConnectivityResult.none) {
         setState(() {
-          inLoginProcess = false;
+          loginInProcess = false;
         });
 
         ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -354,17 +354,17 @@ class _AuthentificationState extends State<Authentification> {
               loginCode=accountDeleted;
             }
             log.d('message: $message');
-            inLoginProcess = false;
+            loginInProcess = false;
 
             break;
 
           default:
-            inLoginProcess = false;
+            loginInProcess = false;
             message = '****Erreur inconnue';
             break;
         }
       setState(() {
-        inLoginProcess=false;
+        loginInProcess=false;
       });
 
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -379,7 +379,7 @@ class _AuthentificationState extends State<Authentification> {
 
 
       if (loginCode == success) {
-          inLoginProcess = false;
+          loginInProcess = false;
           Future.delayed(const Duration(seconds: 5),
                   () {
                 Navigator.push(context,
