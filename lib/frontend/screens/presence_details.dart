@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/frontend/widgets/presence_details.dart';
+import 'package:presence_app/utils.dart';
 
 class PresenceDetails extends StatelessWidget {
 
 
   final Presence presence;
-  final DateTime nEntryTime;
-  final DateTime nExitTime;
+  final String nEntryTime;
+  final String nExitTime;
 
 
 
@@ -18,6 +19,8 @@ class PresenceDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        centerTitle: true,
+        backgroundColor: appBarColor,
         title: const Text('Détails de présence '),
       ),
       body: Padding(

@@ -27,51 +27,53 @@ class PresenceRecord{
      workDuration=utils.abs(presence.entryTime!, presence.exitTime!);
     }
 
-    if(presence.entryTime!=null){
-
-      String deviation=utils.abs(presence.entryTime!, utils.format(employee.entryTime)!  );
-
-        if(deviation=='00:00'){
-          punctualityDeviation=deviation;
-
-        }
-        else if(presence.status==EStatus.late){
-          punctualityDeviation='-$deviation';
-        }
-        else{
-          punctualityDeviation='+$deviation';
-        }
-
-
-    }
-    else{
-      punctualityDeviation='-';
-    }
-
-
-
-    if(presence.exitTime!=null){
-
-      String deviation= utils.abs(presence.exitTime!, utils.format(employee.exitTime)!  );
-
-      if(deviation=='00:00'){
-        exitDeviation=deviation;
-
-      }
-      else if(presence.exitTime!.isBefore(utils.format(employee.exitTime)!)){
-        exitDeviation='-$deviation';
-      }
-
-      else{
-        exitDeviation='+$deviation';
-      }
+    // if(presence.entryTime!=null){
+    //
+    //   String deviation=utils.abs(presence.entryTime!,
+    //       utils.format(employee.entryTime)!  );
+    //
+    //     if(deviation=='00:00'){
+    //       punctualityDeviation=deviation;
+    //
+    //     }
+    //     else if(presence.status==EStatus.late){
+    //       punctualityDeviation='-$deviation';
+    //     }
+    //     else{
+    //       punctualityDeviation='+$deviation';
+    //     }
+    //
+    //
+    // }
+    // else{
+    //   punctualityDeviation='-';
+    // }
+    punctualityDeviation=presence.punctualityDeviation(employee.entryTime);
 
 
-    }
-    else{
-      exitDeviation='-';
-    }
-
+    //
+    // if(presence.exitTime!=null){
+    //
+    //   String deviation= utils.abs(presence.exitTime!, utils.format(employee.exitTime)!  );
+    //
+    //   if(deviation=='00:00'){
+    //     exitDeviation=deviation;
+    //
+    //   }
+    //   else if(presence.exitTime!.isBefore(utils.format(employee.exitTime)!)){
+    //     exitDeviation='-$deviation';
+    //   }
+    //
+    //   else{
+    //     exitDeviation='+$deviation';
+    //   }
+    //
+    //
+    // }
+    // else{
+    //   exitDeviation='-';
+    // }
+exitDeviation=presence.exitDeviation(employee.exitTime);
 
   }
 

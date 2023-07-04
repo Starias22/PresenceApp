@@ -1,6 +1,7 @@
 import 'package:presence_app/utils.dart';
 
 import 'employee.dart' as emp;
+import 'employee.dart';
 
 class Presence {
   late String id;
@@ -47,5 +48,46 @@ class Presence {
         entryTime:map['entry_time']==null?null: utils.format(map['entry_time']),
         exitTime:map['exit_time']==null?null: utils.format(map['exit_time']),
     );
+  }
+  String punctualityDeviation(String normalEntryTime){
+
+    if(exitTime==null) return '';
+    String pd;
+    String deviation=utils.abs(entryTime!,
+        utils.format(normalEntryTime)!  );
+
+    if(deviation=='00:00'){
+      pd=deviation;
+
+    }
+    else if(status==EStatus.late){
+      pd='-$deviation';
+    }
+    else{
+      pd='+$deviation';
+    }
+    return pd;
+  }
+  String exitDeviation(String normalExitTime){
+
+
+    if(exitTime==null) return '';
+    String ed;
+
+      String deviation= utils.abs(exitTime!, utils.format(normalExitTime)!  );
+
+      if(deviation=='00:00'){
+        ed=deviation;
+
+      }
+      else if(exitTime!.isBefore(utils.format(normalExitTime)!)){
+        ed='-$deviation';
+      }
+
+      else{
+        ed='+$deviation';
+      }
+
+      return ed;
   }
 }

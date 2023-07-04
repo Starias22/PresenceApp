@@ -153,6 +153,15 @@ log.d(DateTime(date.year, date.month, day));
 
   }
 
+  DateTime roundToPreviousHour(DateTime dateTime) {
+
+    return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour, 0);
+  }
+  DateTime roundToNextHour(DateTime dateTime) {
+    return DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour+1, 0);
+  }
+
+
   DateTime getWeeksMonday(DateTime aDateInTheWeek) {
     // Calculate the number of days to subtract to get to the previous Monday
     int daysToMonday = aDateInTheWeek.weekday - DateTime.monday;

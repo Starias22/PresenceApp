@@ -689,13 +689,53 @@ else if(reportType==ReportType.weekly)
 
   Future<Map<String, double>> getEntryStatisticsInRange(
       {required DateTime start,required DateTime end,
-        required String employeeId
+        required String employeeId,int num=4
 
       }) async {
-    log.d('Id of the employee:$employeeId');
     QuerySnapshot querySnapshot;
     querySnapshot= await _presence
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .where('employee_id',isEqualTo: employeeId)
+        .get()
+    ;
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).where((presence) => presence.entryTime!=null).toList();
+    if(presences.isEmpty) return {};
+    presences.sort((first, second) =>
+        first.entryTime!.compareTo(second.entryTime!));
+
+    var limits=await getEntryTimeLimits(start, end);
+    if(limits.isEmpty) return {};
+
+
+    DateTime inf=limits[0];
+    DateTime sup=limits[1];
+    inf=utils.roundToPreviousHour(inf);
+    sup=utils.roundToNextHour(sup);
+
+    var entryIntervals=subdivideDateTimeInterval(inf, sup, num);
+    int total=presences.length;
+    Map< String,double> statistics={};
+
+
+    for(var interval in entryIntervals){
+      statistics[utils.getTimeRangesAsStr(interval)]=
+          (presences.where((presence) =>
+              presence.isEntryInRange(interval)).length*100.0/total).
+          roundToDouble();
+    }
+    return statistics;
+  }
+
+
+  Future<List<DateTime>> getEntryTimeLimits(
+       DateTime start, DateTime end,
+         ) async {
+
+    QuerySnapshot querySnapshot;
+    querySnapshot= await _presence
         .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .get()
@@ -705,7 +745,7 @@ else if(reportType==ReportType.weekly)
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).where((presence) => presence.entryTime!=null).toList();
     log.d('The length  ${presences.length}');
-    if(presences.isEmpty) return {};
+    if(presences.isEmpty) return [];
     presences.sort((a, b) =>
     a.entryTime!.isBefore(b.entryTime!) ? -1 : 1);
 
@@ -713,24 +753,40 @@ else if(reportType==ReportType.weekly)
     log.d('The inf  $inf');
     DateTime? sup=presences.last.entryTime;
     log.d('The sup  $sup');
-    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 4);
-    int total=presences.length;
-    Map< String,double> statistics={};
-    //log.d('Statistics: $statistics');
-    for(var interval in entryIntervals){
-      statistics[utils.getTimeRangesAsStr(interval)]=
-      (presences.where(
-                  (presence) =>
-          presence.isEntryInRange(interval)).length*100.0/total)
-          .roundToDouble();
-    }
-    log.d('Statistics: $statistics');
-    return statistics;
+    return [inf!,sup!];
   }
+
+  Future<List<DateTime>> getExitTimeLimits(
+      DateTime start, DateTime end,
+      ) async {
+
+    QuerySnapshot querySnapshot;
+    querySnapshot= await _presence
+        .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
+        .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
+        .get()
+    ;
+    log.d('The size  ${querySnapshot.size}');
+    List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Presence.fromMap(doc.data() as Map<String,dynamic>);
+    }).where((presence) => presence.exitTime!=null).toList();
+
+    if(presences.isEmpty) return [];
+    log.d('The length  ${presences.length}');
+    presences.sort((a, b) =>
+    a.exitTime!.isBefore(b.exitTime!) ? -1 : 1);
+
+    DateTime? inf=presences.first.exitTime;
+    log.d('The inf  $inf');
+    DateTime? sup=presences.last.exitTime;
+    log.d('The sup  $sup');
+    return [inf!,sup!];
+  }
+
 
   Future<Map<String, double>> getExitStatisticsInRange(
       {required DateTime start,required DateTime end,
-        required String employeeId
+        required String employeeId,int num=4
 
       }) async {
     QuerySnapshot querySnapshot;
@@ -738,8 +794,6 @@ else if(reportType==ReportType.weekly)
         .where('date',isGreaterThanOrEqualTo: utils.formatDateTime(start))
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .where('employee_id',isEqualTo: employeeId)
-        //.where('exit_time',isNull: false)
-        //.orderBy('exit_time')
         .get()
     ;
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
@@ -749,14 +803,23 @@ else if(reportType==ReportType.weekly)
     presences.sort((first, second) =>
         first.exitTime!.compareTo(second.exitTime!));
 
-    DateTime? inf=presences.first.exitTime;
-    DateTime? sup=presences.last.exitTime;
-    var entryIntervals=subdivideDateTimeInterval(inf!, sup!, 4);
+    var limits=await getExitTimeLimits(start, end);
+    if(limits.isEmpty) return {};
+
+
+
+     DateTime inf=limits[0];
+     DateTime sup=limits[1];
+
+     inf=utils.roundToPreviousHour(inf);
+     sup=utils.roundToNextHour(sup);
+
+    var exitIntervals=subdivideDateTimeInterval(inf, sup, num);
     int total=presences.length;
     Map< String,double> statistics={};
 
 
-    for(var interval in entryIntervals){
+    for(var interval in exitIntervals){
       statistics[utils.getTimeRangesAsStr(interval)]=
       (presences.where((presence) =>
           presence.isExitInRange(interval)).length*100.0/total).
@@ -1228,9 +1291,12 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
 
 
-  Future<Map<DateTime, EStatus>> getMonthReport(String employeeId, DateTime date) async {
+  Future<Map<DateTime, EStatus>> getMonthReport
+      (String employeeId, DateTime date) async {
 
-  List<Presence> presenceDocuments= await getMonthPresenceRecords(employeeId, date);
+  List<Presence> presenceDocuments=
+  await getMonthPresenceRecords(employeeId, date);
+  log.d('The length of the list: ${presenceDocuments.length}');
 
    Map<DateTime, EStatus> report = {};
    for(Presence presence in presenceDocuments){

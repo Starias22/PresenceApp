@@ -36,17 +36,15 @@ class _PresenceCalendarState extends State<PresenceCalendar> {
 late Presence presenceDoc;
   late Employee employee;
   late DateTime startDate;
-  String? employeeId;
   late String email;
   bool isLoading = true;
   late DateTime now,today;
-  late DateTime nEntryTime,nExitTime;
   Future<void> onCalendarChanged(DateTime newMonth) async {
     setState(() {
       isLoading = true;
     });
 
-      var newEventsData = await PresenceDB().getMonthReport(employeeId!, newMonth);
+      var newEventsData = await PresenceDB().getMonthReport(employee.id, newMonth);
       log.i('new events: $newEventsData');
       setState(() {
         _events = newEventsData;
@@ -67,9 +65,6 @@ late Presence presenceDoc;
     log.d('The email of the employee is : ${widget.email}');
     log.d('The email of the employee is : $email');
     employee=await EmployeeDB().getEmployeeByEmail(email);
-
-    nEntryTime=utils.format(employee.entryTime)!;
-    nExitTime=utils.format(employee.exitTime)!;
 
 
     if(employee.status==EStatus.pending){
@@ -241,7 +236,7 @@ late Presence presenceDoc;
 
   onDayLongPressed(DateTime date) async {
 
-
+log.d('The day is long pressed');
 
     if(utils.isWeekend(date)){
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
@@ -254,11 +249,16 @@ late Presence presenceDoc;
 
     }
 
-     if((!utils.isWeekend(date))&&
+     if(
+     (!utils.isWeekend(date))&&
         (date.isBefore(today)||date.isAtSameMomentAs(today))
     ) {
-      String? presenceId = await PresenceDB().getPresenceId(date, employeeId!);
 
+       log.d('Yes inside');
+
+       log.d('The employee id is: ${employee.id}');
+      String? presenceId = await PresenceDB().getPresenceId(date, employee.id);
+log.d('Presence id retrieved successfully');
       Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
 
 
@@ -278,8 +278,8 @@ else {
         context,
         MaterialPageRoute(
           builder: (BuildContext context) =>
-              PresenceDetails(presence: myPresence, nEntryTime: nEntryTime,
-                nExitTime: nExitTime,),
+              PresenceDetails(presence: myPresence, nEntryTime: employee.entryTime,
+                nExitTime: employee.exitTime,),
         ),
       );
 }

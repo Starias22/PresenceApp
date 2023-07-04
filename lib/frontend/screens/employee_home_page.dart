@@ -131,8 +131,8 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) =>
-                PresenceDetails(presence: myPresence, nEntryTime: nEntryTime,
-                  nExitTime: nExitTime,),
+                PresenceDetails(presence: myPresence, nEntryTime: employee.entryTime,
+                  nExitTime: employee.exitTime,),
           ),
         );
       }
