@@ -68,10 +68,10 @@ String getTitle(){
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CustomDialog
+        return CustomAlertDialog
           (title: "Sélection de date",
             message: "Continuer pour sélectionner la date",
-            context: context);
+            context: context, positiveOption: 'Continuer',);
       },
     );
 

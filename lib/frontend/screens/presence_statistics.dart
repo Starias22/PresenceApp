@@ -9,6 +9,7 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
+import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
@@ -51,22 +52,12 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sélection de date"),
-          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Continuer'),
-              onPressed: () async {
-
-
-                Navigator.of(context).pop();
-
-
-              },
-            ),
-
-          ],
+        return CustomAlertDialog(
+          title:  "Sélection de date",
+          message: "Continuer pour sélectionner la date de"
+              " début de travail de l'employé",
+          positiveOption: 'Continuer',
+          context: context,
         );
       },
     );

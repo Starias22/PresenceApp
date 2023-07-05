@@ -9,6 +9,7 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
+import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
@@ -55,6 +56,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   bool taskCompleted=true;
   bool noNetworkConnection=false;
   bool noSuchEmployee=false;
+  bool confirmed=false;
 
   Timer?  dataFetchTimer;
   late Image employeePicture;
@@ -105,153 +107,115 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     });
 
   }
-  //
-  // Future<int> assureDataChanged(int fingerprintId,int val ) async {
-  //   int data = fingerprintId ;
-  //   int cpt = 0;
-  //
-  //   Future<int> fetchData() async {
-  //     data = await ESP32().receiveData();
-  //
-  //     if (cpt == 10) {
-  //
-  //       return 152;
-  //     }
-  //
-  //     if (data ==val) {
-  //       log.d('Data changed');
-  //       return data;
-  //     }
-  //     else {
-  //       cpt++;
-  //       await Future.delayed(const Duration(seconds: 1));
-  //       return await fetchData();
-  //     }
-  //
-  //   }
-  //
-  //   return await fetchData();
-  // }
-  //
+
 
   Future<void> getData()
   async {
     log.d('Getting data');
 
-     String message;
+    String message;
 
     //there is no internet connection
     if (await Connectivity().checkConnectivity()
 
         == ConnectivityResult.none) {
-
-      connectionStatusOff=false;
+      connectionStatusOff = false;
       //if there were no internet connection
-      if(noNetworkConnection) {
-        taskCompleted=true;
-        return ;
+      if (noNetworkConnection) {
+        taskCompleted = true;
+        return;
       }
 
       //else there were network connection
 
 
-        message = "Aucune connexion internet";
+      message = "Aucune connexion internet";
 
-        if(nextPage) return;
+      if (nextPage) return;
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
 
 
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         simple: true,
         showCloseIcon: true,
-        duration: const Duration(days: 1) ,
+        duration: const Duration(days: 1),
         //width: MediaQuery.of(context).size.width-2*10,
-        message:message ,
+        message: message,
       ));
 
 
-
-
-        noNetworkConnection=true;
-        taskCompleted=true;
-        return;
-
+      noNetworkConnection = true;
+      taskCompleted = true;
+      return;
     }
 
     //if there were no internet connection
-    if(noNetworkConnection) {
+    if (noNetworkConnection) {
       message = "Connexion internet rétablie!";
-      noNetworkConnection=false;
+      noNetworkConnection = false;
 
-      if(nextPage) return;
+      if (nextPage) return;
 
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         simple: true,
         showCloseIcon: false,
-        duration: const Duration(seconds: 3) ,
+        duration: const Duration(seconds: 3),
         //width: MediaQuery.of(context).size.width-2*10,
-        message:message ,
+        message: message,
       ));
-
     }
 
 
-      data=await ESP32().receiveData();
-     if (data == 151) {
-    noSuchEmployee=true;
-    message =
-    "Employé non reconnue! Veuillez reessayer!";
-    ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-    simple: true,
-    showCloseIcon: false,
-    duration: const Duration(seconds: 3) ,
-    //width: MediaQuery.of(context).size.width-2*10,
-    message:message ,
-    ));
-    log.d('33333');
+    data = await ESP32().receiveData();
+    if (data == 151) {
+      noSuchEmployee = true;
+      message =
+      "Employé non reconnue! Veuillez reessayer!";
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        simple: true,
+        showCloseIcon: false,
+        duration: const Duration(seconds: 3),
+        //width: MediaQuery.of(context).size.width-2*10,
+        message: message,
+      ));
+      log.d('33333');
 
-    // int x=await assureDataChanged(data, 150);
-    //
-    // if(x==152) {
-    //   taskCompleted=true;
-    // }
-    taskCompleted=true;
-    return;
-
-
+      taskCompleted = true;
+      return;
     }
-    noSuchEmployee=true;
+    noSuchEmployee = true;
 
 
-    if(data==espConnectionFailed&&connectionStatusOff==false) {
-
+    if (data == espConnectionFailed && connectionStatusOff == false) {
       log.d('esp failed');
-      connected=false;
+      connected = false;
       message = "Connexion non reussie avec le micrôtrolleur!";
 
-      if(nextPage) return;
+      if (nextPage) return;
 
 
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         simple: true,
         showCloseIcon: true,
-        duration: const Duration(days: 1) ,
+        duration: const Duration(days: 1),
         //width: MediaQuery.of(context).size.width-2*10,
-        message:message ,
+        message: message,
       ));
 
 
-      connectionStatusOff=true;
-      taskCompleted=true;
+      connectionStatusOff = true;
+      taskCompleted = true;
       return;
-
     }
 
-     if (1 <= data && data <= 127) {
+    if (1 <= data && data <= 127) {
+      //notify the esp to wait for the task to complete
 
-       log.d('That is a fingerprint id');
-       Employee? nullableEmployee = await EmployeeDB()
+      ESP32().sendData('wait');
+
+      log.d('That is a fingerprint id');
+      Employee? nullableEmployee = await EmployeeDB()
           .getEmployeeByFingerprintId(data);
 
 
@@ -260,76 +224,93 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
           simple: true,
           showCloseIcon: true,
-          duration: const Duration(seconds: 1) ,
+          duration: const Duration(seconds: 1),
           //width: MediaQuery.of(context).size.width-2*10,
-          message:'Vous êtes un intru' ,
+          message: 'Vous êtes un intru',
         ));
 
-        // log.d('11111');
-        // int x=await assureDataChanged(data, 150);
-        // if(x==152) {
-        //   taskCompleted=true;
-        // }
-        //
-        return;
+
+
       }
 
-       now=await utils.localTime();
-      employee=nullableEmployee;
+else{
+      now = await utils.localTime();
+      employee = nullableEmployee;
 
-      int code = await PresenceDB().handleEmployeeAction(data,now);
+      int code = await PresenceDB().handleEmployeeAction(data, now);
       //int code=entryMarkedSuccessfully;
 
+      if(code==desireToExitBeforeEntryTime||code==desireToExitEarly)
+      {
+        String message="Êtes-vous sûr de vouloir quitter avant l'heure?";
+        if(code==desireToExitBeforeEntryTime){
+          message+="d'entrée ";
+        }
+        if(code==desireToExitEarly){
+          message+="de sortie ";
+        }
+        message+= 'officielle?';
+        showConfirmationDialog(context, message);
 
-       employeePicture=
-       employee.pictureDownloadUrl==null?Image.asset('assets/images/imsp1.png') :
-       Image.network(
-         employee.pictureDownloadUrl!,
-         loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
-           if (loadingProgress == null) {
+        if(!confirmed){
+          taskCompleted=true;
+          ESP32().sendData('-1');
+          return;
 
-             return child;
-           }
+        }
 
-           final totalBytes = loadingProgress.expectedTotalBytes;
-           final bytesLoaded = loadingProgress.cumulativeBytesLoaded;
-
-           // Calculate the download progress as a percentage
-           final progress = (totalBytes != null)
-               ? (bytesLoaded / totalBytes * 100).toInt()
-               : null;
-
-           // Display the progress or any other custom widget
-           return Center(
-             child: CircularProgressIndicator(
-               value: progress != null ? progress / 100 : null,
-             ),
-           );
-         },
-       );
+      }
 
 
+      employeePicture =
+      employee.pictureDownloadUrl == null ? Image.asset(
+          'assets/images/imsp1.png') :
+      Image.network(
+        employee.pictureDownloadUrl!,
+        loadingBuilder: (BuildContext context, Widget child,
+            ImageChunkEvent? loadingProgress) {
+          if (loadingProgress == null) {
+            return child;
+          }
 
-       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-         showCloseIcon: true,
-         //width: MediaQuery.of(context).size.width-2*10,
-         message:'${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
-             ' ${employee.firstname}'
-             ' ${employee.lastname}: ${getMessage(code)}' ,
-         image: employeePicture  ,
-       ));
+          final totalBytes = loadingProgress.expectedTotalBytes;
+          final bytesLoaded = loadingProgress.cumulativeBytesLoaded;
+
+          // Calculate the download progress as a percentage
+          final progress = (totalBytes != null)
+              ? (bytesLoaded / totalBytes * 100).toInt()
+              : null;
+
+          // Display the progress or any other custom widget
+          return Center(
+            child: CircularProgressIndicator(
+              value: progress != null ? progress / 100 : null,
+            ),
+          );
+        },
+      );
+
+
+
+      ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+        showCloseIcon: true,
+        //width: MediaQuery.of(context).size.width-2*10,
+        message: '${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
+            ' ${employee.firstname}'
+            ' ${employee.lastname}: ${getMessage(code)}',
+        image: employeePicture,
+      ));
 //
 // log.d('22222');
 //   int x=await assureDataChanged(data, 150);
 //   if(x==150) {
-    taskCompleted=true;
-  // }
-      return;
+      taskCompleted = true;
+      // }
+      //return;
 
     }
 
-    else if(data==150)  {
-
+     if (data == 150) {
       log.d('data... $data');
       //if not already connected
       if (!connected) {
@@ -341,20 +322,21 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
         ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
           simple: true,
           showCloseIcon: false,
-          duration: const Duration(seconds: 5) ,
+          duration: const Duration(seconds: 5),
           //width: MediaQuery.of(context).size.width-2*10,
-          message:message ,
+          message: message,
         ));
 
         connected = true;
-
       }
 
       //log.d('The end');
-      taskCompleted=true;
-
+      taskCompleted = true;
     }
 
+      ESP32().sendData('-1');
+  }
+    taskCompleted=true;
 
     //log.d('The end of the function');
 
@@ -389,6 +371,28 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     return 'Inconnu';
 
   }
+  // Ajoutez cette méthode à votre classe StatefulWidget ou StatelessWidget
+
+  Future<void> showConfirmationDialog(BuildContext context,String message) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return CustomAlertDialog
+          (
+          title: "Confirmation de sortie",
+          message: message,
+          context: context,
+          positiveOption: 'Oui',
+          negativeOption: 'Annnuler',
+          onConfirm: (){
+            confirmed=true;
+          },
+        );
+      },
+    );
+
+  }
+
 
 
   @override
@@ -483,7 +487,8 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
                 Padding(
                   padding: const EdgeInsets.only(top: 35),
                   child: Center(
-                    child: Image.asset('assets/images/people.jpg', fit: BoxFit.cover,
+                    child: Image.asset('assets/images/people.jpg',
+                      fit: BoxFit.cover,
                       //width: MediaQuery.of(context).size.width*0.75,
                     ),
                   ),

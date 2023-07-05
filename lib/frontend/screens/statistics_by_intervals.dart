@@ -1,14 +1,13 @@
 import 'dart:typed_data';
-import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/statististics_data.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/widgets/statistics_card.dart';
 import 'package:presence_app/utils.dart';
 import '../widgets/cardTabbar.dart';
-import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 
 
@@ -32,6 +31,8 @@ class _EmployeeStatisticsPerRangesState
   List<String> tabBars = ['Entrées', 'Sorties'];
   List<List<StatisticsData>> chartData = [];
   List<StatisticsData> chartDataAff = [];
+  bool downloadInProgress=false;
+  late Employee employee;
 
   void _etat(int index) async {
     chartDataAff = chartData[index];
@@ -52,63 +53,6 @@ class _EmployeeStatisticsPerRangesState
     });
   }
 
-  // Future<void> _saveDiagramAsPdf(Uint8List bytes) async {
-  //   final pdf = pw.Document();
-  //   final imageProvider = pw.MemoryImage(bytes);
-  //   final image = pw.Image(imageProvider);
-  //   pdf.addPage(pw.Page(build: (pw.Context context) {
-  //     return pw.Center(child: image);
-  //   }));
-  //
-  //   final directory = await getExternalStorageDirectory();
-  //   final file = File('${directory.path}/diagram.pdf');
-  //   await file.writeAsBytes(await pdf.save());
-  //
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(content: Text('Diagram saved as PDF successfully')),
-  //   );
-  // }
-
-  Future<void> _saveDiagramAsPdf(Uint8List bytes) async {
-    final pdf = pw.Document();
-    final imageProvider = pw.MemoryImage(bytes);
-    final image = pw.Image(imageProvider);
-    pdf.addPage(pw.Page(build: (pw.Context context) {
-      return pw.Center(child: image);
-    }));
-var data=await pdf.save();
-
-   ReportPdf().saveAndOpenOrDownloadPdf('stat.pdf');
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Diagram saved as PDF successfully')),
-    );
-  }
-
-  //
-  // Future<Uint8List> _captureImage() async {
-  //   try {
-  //     RenderRepaintBoundary boundary =
-  //     _globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-  //     var image = await boundary.toImage(pixelRatio: 5.0);
-  //     ByteData? byteData = await image.toByteData(format: ImageByteFormat.png);
-  //     return byteData!.buffer.asUint8List();
-  //   } catch (e) {
-  //     print('Error capturing image: $e');
-  //     return Uint8List(0);
-  //   }
-  // }
-  //
-  // Future<void> _saveImage(Uint8List bytes) async {
-  //   // Directory? directory = await getExternalStorageDirectory();
-  //   // File file = File('${directory!.path}/diagram.png');
-  //   // await file.writeAsBytes(bytes);
-  //   log.d('Saving image to pdf');
-  //   ReportPdf().saveImgToPdf(bytes);
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     const SnackBar(content: Text('Image saved successfully')),
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -125,11 +69,21 @@ var data=await pdf.save();
             if (!dataLoading)
               IconButton(
                 tooltip: 'Enregistrer comme PDF',
-                icon: const Icon(Icons.download, color: Colors.black),
+                icon: downloadInProgress? const CircularProgressIndicator() :
+                const Icon(Icons.download, color: Colors.black),
                 onPressed: () async {
-                  // Uint8List bytes = await _captureImage();
-                  // await _saveImage(bytes);
-                },
+                  setState(() {
+                    downloadInProgress=true;
+                  });
+
+                    var employee=await EmployeeDB().
+                    getEmployeeById(widget.employeeId);
+                  await ReportPdf().statisticsPerRanges(
+                      '${employee.lastname} ${employee.firstname}', chartData);
+                  setState(() {
+                    downloadInProgress=false;
+                  });
+                    },
               ),
           ],
         ),

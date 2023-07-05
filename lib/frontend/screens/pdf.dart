@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart';
+import 'package:presence_app/backend/firebase/firestore/statististics_data.dart';
 import 'package:presence_app/backend/firebase/storage.dart';
 import 'package:presence_app/utils.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +16,8 @@ import 'dart:async';
 
 class ReportPdf  {
   late PdfPage page ;
-  PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 17);
+  PdfFont font = PdfStandardFont(PdfFontFamily.helvetica, 17),
+       font2 = PdfStandardFont(PdfFontFamily.helvetica, 15) ;
 
   late List<int> bytes=[];
   PdfDocument document = PdfDocument();
@@ -111,15 +113,54 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
 
 
 
+Future<void> setPdfHeader(bool portrait) async {
+  //Adds page settings
+  document.pageSettings.orientation =
+  portrait? PdfPageOrientation.portrait: PdfPageOrientation.landscape;
+  document.pageSettings.margins.all = 50;
 
-  Future<void> initPdf(List<PresenceReport> presenceReportByDate) async {
+  //Adds a page to the document
+  page = document.pages.add();
+  graphics = page.graphics;
 
-    var presenceReport=presenceReportByDate[0];
-    bool isPeriodic=presenceReport.reportPeriodType==ReportType.periodic;
+  String url = await Storage.getDownloadURL('imsp.png');
+  var response = await get(Uri.parse(url));
+  var data = response.bodyBytes;
 
+  //Create a bitmap object.
+  PdfImage image = PdfBitmap(data);
+
+  //Draws the image to the PDF page
+  page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 100, 100));
+
+  ByteData byteData = await
+  rootBundle.load('assets/images/app1.png');
+
+  data = byteData.buffer.asUint8List();
+  image = PdfBitmap(data);
+  page.graphics.drawImage(image, const Rect.fromLTWH(600, 0, 120, 100));
+
+
+// Définit la police et la taille pour les textes
+
+
+// Dessine le texte ite du logo
+  String texte1 = "Institut de Mathématiques et de Sciences Physiques";
+  graphics.drawString(
+      texte1,
+      font,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(200, 0, graphics.clientSize.width - 110, 50),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+}
+
+
+
+  Future<void> setPortraitPdfHeader() async {
     //Adds page settings
-    document.pageSettings.orientation = PdfPageOrientation.landscape;
-    document.pageSettings.margins.all = 50;
+    document.pageSettings.orientation = PdfPageOrientation.portrait;
+    document.pageSettings.margins.all = 20;
 
     //Adds a page to the document
     page = document.pages.add();
@@ -133,29 +174,153 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
     PdfImage image = PdfBitmap(data);
 
     //Draws the image to the PDF page
-    page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 500, 100));
+    page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 60, 60));
+
     ByteData byteData = await
     rootBundle.load('assets/images/app1.png');
 
     data = byteData.buffer.asUint8List();
     image = PdfBitmap(data);
-    page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 100, 100));
-
+    page.graphics.drawImage(image, const Rect.fromLTWH(500, 0, 60, 60));
 
 
 // Définit la police et la taille pour les textes
 
 
-// Dessine le texte "Institut de Mathematiques et de Sciences Physiques" à droite du logo
+// Dessine le texteSciences Physiques" à droite du logo
     String texte1 = "Institut de Mathématiques et de Sciences Physiques";
     graphics.drawString(
         texte1,
-        font,
+        font2,
         brush: PdfSolidBrush(PdfColor(0, 0, 0)),
-        bounds: Rect.fromLTWH(200, 0, graphics.clientSize.width - 110, 50),
+        bounds: Rect.fromLTWH(100, 0, graphics.clientSize.width - 110, 50),
         format: PdfStringFormat(alignment: PdfTextAlignment.left)
     );
+  }
 
+void initGridForStatistics(){
+  grid = PdfGrid();
+  grid.columns.add(count: 2);
+//
+//     //Add header to the grid
+  grid.headers.add(1);
+  header = grid.headers[0];
+  header.cells[0].value = "Intervalles";
+  header.cells[1].value = "Pourcentages";
+  //Creates the header style
+  PdfGridCellStyle headerStyle = PdfGridCellStyle();
+  headerStyle.borders.all = PdfPen(PdfColor(126, 151, 173));
+  headerStyle.backgroundBrush = PdfSolidBrush(PdfColor(126, 151, 173));
+  headerStyle.textBrush = PdfBrushes.white;
+  headerStyle.font =
+      PdfStandardFont(PdfFontFamily.timesRoman, 14, style: PdfFontStyle.regular);
+
+  //Adds cell customizations
+  for (int i = 0; i < header.cells.count; i++) {
+
+    if (i == 0 || i == 1) {
+      header.cells[i].stringFormat = PdfStringFormat(
+          alignment: PdfTextAlignment.left,
+          lineAlignment: PdfVerticalAlignment.middle);
+    } else {
+      header.cells[i].stringFormat = PdfStringFormat(
+          alignment: PdfTextAlignment.right,
+          lineAlignment: PdfVerticalAlignment.middle);
+    }
+    header.cells[i].style = headerStyle;
+  }
+
+}
+
+Future<void> statisticsPerRanges(String employeeName,
+    List<List<StatisticsData>> chartData) async {
+
+  await setPortraitPdfHeader();
+  // Dessine le texte "Rapport de presence des employes" à droite du logo
+  String texte2 = "Statistiques de présence par intervalles";
+  graphics.drawString(
+      texte2,
+      font2,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(150, 30, graphics.clientSize.width - 110, 50),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+
+  String monthText = "Mois: Juin 2023";
+  graphics.drawString(
+      monthText,
+      font2,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(200, 50, graphics.clientSize.width, 20),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+
+
+  // Ajustez la valeur selon vos besoins
+
+  String rapportTypeText = "Employé concerné: $employeeName";
+  graphics.drawString(
+      rapportTypeText,
+      font2,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(100, 80, graphics.clientSize.width, 20),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+
+  String entry = "Statistiques des entrées";
+  graphics.drawString(
+      entry,
+      font2,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(200,110, graphics.clientSize.width, 20),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+   initGridForStatistics();
+  List<StatisticsData> entries=chartData[0],
+  exits=chartData[1];
+
+  PdfGridRow row;
+  for (var data in entries){
+    row=grid.rows.add();
+    row.cells[0].value=data.timeRange;
+    row.cells[1].value=data.percentage.toString();
+
+  }
+  grid.draw(page: page, bounds: const Rect.fromLTWH(100, 140, 0, 0));
+
+  String exit = "Statistiques des sorties";
+  graphics.drawString(
+      exit,
+      font2,
+      brush: PdfSolidBrush(PdfColor(0, 0, 0)),
+      bounds: Rect.fromLTWH(200,230, graphics.clientSize.width, 20),
+      format: PdfStringFormat(alignment: PdfTextAlignment.left)
+  );
+  initGridForStatistics();
+
+
+  for (var data in exits){
+    row=grid.rows.add();
+    row.cells[0].value=data.timeRange;
+    row.cells[1].value=data.percentage.toString();
+
+  }
+  grid.draw(page: page, bounds: const Rect.fromLTWH(100, 270, 0, 0));
+  bytes = await document.save();
+  saveAndOpenOrDownloadPdf('statis.pdf');
+
+
+
+
+}
+
+  Future<void> initPdf(List<PresenceReport> presenceReportByDate) async {
+
+    await setPdfHeader(false);
+
+    var presenceReport=presenceReportByDate[0];
+
+    bool isPeriodic=presenceReport.reportPeriodType==ReportType.periodic;
 // Dessine le texte "Rapport de presence des employes" à droite du logo
     String texte2 = "Rapport de présence des employés";
     graphics.drawString(
@@ -275,7 +440,7 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
     await initPdf(presenceReportByDate);
 
 
-    //initGrid();
+
 
     for(int i=0;i<targetDates.length;i++ ){
       initGrid();

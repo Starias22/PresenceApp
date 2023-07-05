@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/esp32.dart';
+import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/date_action_widget.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -275,21 +276,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text("Sélection de date"),
-          content: const Text("Continuer pour sélectionner la date de début de travail de l'employé"),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('Continuer'),
-              onPressed: () async {
+        return CustomAlertDialog(
+          title: "Sélection de date",
+          message: "Continuer pour sélectionner la date de début de travail de l'employé",
+          positiveOption: 'Continuer',
+          context: context,
 
-                Navigator.of(context).pop();
-
-
-              },
-            ),
-
-          ],
         );
       },
     );
@@ -458,18 +450,11 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                        await  showDialog(
                           context: context,
                           builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text("Enregisterer l'empreinte"),
-                              content: const Text("Continuer pour enregistrer l'empreinte de l'employé"),
-                              actions: <Widget>[
-                                TextButton(
-                                  child: const Text('Continuer'),
-                                  onPressed: () {
-
-                                    Navigator.of(context).pop();
-                                  },
-                                ),
-                              ],
+                            return CustomAlertDialog(
+                              title: "Enregistrer l'empreinte",
+                              message: "Continuer pour enregistrer l'empreinte de l'employé",
+                              positiveOption: 'Continuer',
+                              context: context,
                             );
                           },
                         );

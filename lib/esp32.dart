@@ -3,10 +3,10 @@ import 'package:presence_app/utils.dart';
 class ESP32
 {
   //final String ipAddress='172.16.65.1';//wireless cpp
-  //final String ipAddress='172.16.64.202';//wireless cpp
+  final String ipAddress='172.16.64.202';//wireless cpp
     //final String ipAddress='172.18.0.59';
   //final String ipAddress='172.18.0.72';
-    final String ipAddress='192.168.1.172';//jem
+    //final String ipAddress='192.168.1.172';//jem
 
     //final String ipAddress='192.168.1.172';//madame
 
@@ -31,6 +31,8 @@ class ESP32
         //log.i('response status code:${response.statusCode}');
 
         //return 0;
+        log.d('response: $responseData');
+
         return int.parse(responseData);
       }
     }
