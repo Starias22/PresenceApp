@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart';
 import 'package:presence_app/backend/firebase/storage.dart';
 import 'package:presence_app/utils.dart';
@@ -11,11 +12,6 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 import 'dart:async';
-
-
-
-
-
 
 class ReportPdf  {
   late PdfPage page ;
@@ -50,6 +46,8 @@ Future<void> saveAndOpen(String filename) async {
 void saveAndOpenOrDownloadPdf(String filename) async {
   if(kIsWeb ) {
 
+    log.d('Of course on web');
+
     Uint8List uint8List = Uint8List.fromList(bytes);
     Storage.saveFile(filename, 'application/pdf', uint8List);
 
@@ -75,6 +73,32 @@ if (await canLaunch(pdfUrl)) {
 }
   void createATable(
       MapEntry<String?,List<PresenceRecord>> table){
+
+  }
+
+  Future<void> saveImgToPdf(Uint8List  data) async {
+    PdfPage page ;
+
+    PdfDocument document = PdfDocument();
+
+    document.pageSettings.orientation = PdfPageOrientation.portrait;
+    document.pageSettings.margins.all = 50;
+
+    //Adds a page to the document
+    page = document.pages.add();
+    graphics = page.graphics;
+
+    log.d('Going to draw image in PDF file');
+
+    //Create a bitmap object.
+    PdfImage image = PdfBitmap(data);
+
+    //Draws the image to the PDF page
+    page.graphics.drawImage(image,  const Rect.fromLTWH(0, 0,
+        600,
+        600));
+    bytes = await document.save();
+    saveAndOpenOrDownloadPdf('statistics.pdf');
 
   }
 
@@ -109,7 +133,14 @@ Future<void> createAndDownloadOrOpenPdf(List<PresenceReport> presenceReportByDat
     PdfImage image = PdfBitmap(data);
 
     //Draws the image to the PDF page
+    page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 500, 100));
+    ByteData byteData = await
+    rootBundle.load('assets/images/app1.png');
+
+    data = byteData.buffer.asUint8List();
+    image = PdfBitmap(data);
     page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 100, 100));
+
 
 
 // Définit la police et la taille pour les textes

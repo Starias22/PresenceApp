@@ -3,6 +3,7 @@ import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
 
 
+
 class PresenceCard extends StatelessWidget {
   final Presence presence;
   final String nEntryTime;
@@ -14,6 +15,7 @@ class PresenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
 
     return Card(
       elevation: 4,
