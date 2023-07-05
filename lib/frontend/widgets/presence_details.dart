@@ -25,7 +25,7 @@ class PresenceCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Date: ${utils.formatDateTime(presence.date)}',
+              'Date: ${utils.frenchFormatDate(presence.date)}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -33,7 +33,8 @@ class PresenceCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text("Heure d'entrée:  ${utils.formatTime(presence.entryTime!)} "),
-            Text('Heure de sortie: ${presence.exitTime==null?'Non marquée':utils.formatTime(presence.exitTime!)}'),
+            Text('Heure de sortie: ${presence.exitTime==null?
+            'Non marquée':utils.formatTime(presence.exitTime!)}'),
             const SizedBox(height: 8),
             Text('Ecart de ponctualité: ${presence.punctualityDeviation(nEntryTime)}'),
             Text('Ecart de sortie: ${presence.exitDeviation(nExitTime)}'),

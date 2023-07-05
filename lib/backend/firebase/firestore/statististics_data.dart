@@ -7,7 +7,7 @@ class StatisticsData{
 
 }
 
-List<List<StatisticsData>> convertToDataStatistics(List<Map<String, double>>
+ List<List<StatisticsData>> convertToDataStatistics(List<Map<String, double>>
 inputMapsList) {
   List<StatisticsData> entryStatistics=[],exitStatistics=[];
   inputMapsList[0].forEach((timeRange, percentage) {
@@ -19,11 +19,9 @@ inputMapsList) {
 
   return [entryStatistics,exitStatistics];
 }
-Future<List<List<StatisticsData>>> data(String employeeId) async {
+Future<List<List<StatisticsData>>> data(String employeeId,DateTime month) async {
 
-  var x=await  PresenceDB().getStatisticsInRange
-    (start: DateTime(2023,6,1), end: DateTime(2023,6,30),
-      employeeId: employeeId);
+  var x=await  PresenceDB().getMonthlyStatisticsInRange(month, employeeId);
   var pie = convertToDataStatistics(x);
 
   return pie;

@@ -233,7 +233,7 @@ void initGridForStatistics(){
 }
 
 Future<void> statisticsPerRanges(String employeeName,
-    List<List<StatisticsData>> chartData) async {
+    List<List<StatisticsData>> chartData, String month) async {
 
   await setPortraitPdfHeader();
   // Dessine le texte "Rapport de presence des employes" à droite du logo
@@ -246,7 +246,7 @@ Future<void> statisticsPerRanges(String employeeName,
       format: PdfStringFormat(alignment: PdfTextAlignment.left)
   );
 
-  String monthText = "Mois: Juin 2023";
+  String monthText = "Mois: $month";
   graphics.drawString(
       monthText,
       font2,
@@ -283,7 +283,7 @@ Future<void> statisticsPerRanges(String employeeName,
   for (var data in entries){
     row=grid.rows.add();
     row.cells[0].value=data.timeRange;
-    row.cells[1].value=data.percentage.toString();
+    row.cells[1].value='${data.percentage}%';
 
   }
   grid.draw(page: page, bounds: const Rect.fromLTWH(100, 140, 0, 0));
@@ -302,7 +302,7 @@ Future<void> statisticsPerRanges(String employeeName,
   for (var data in exits){
     row=grid.rows.add();
     row.cells[0].value=data.timeRange;
-    row.cells[1].value=data.percentage.toString();
+    row.cells[1].value='${data.percentage}%';
 
   }
   grid.draw(page: page, bounds: const Rect.fromLTWH(100, 270, 0, 0));

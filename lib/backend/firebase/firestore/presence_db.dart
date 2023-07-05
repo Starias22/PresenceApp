@@ -830,6 +830,17 @@ else if(reportType==ReportType.weekly)
 
 
 
+  Future<List<Map<String, double>>> getMonthlyStatisticsInRange(
+      DateTime month,String employeeId) async {
+
+    DateTime
+        start=DateTime(month.year,month.month,1),
+        end=DateTime(month.year,month.month,utils.lengthOfMonth(month));
+
+    return getStatisticsInRange(start: start, end: end, employeeId: employeeId);
+  }
+
+
   Future<List<Map<String, double>>> getStatisticsInRange(
       {required DateTime start,required DateTime end,
         required String employeeId
@@ -838,7 +849,7 @@ else if(reportType==ReportType.weekly)
 
     return [
       await getEntryStatisticsInRange(start: start, end: end, employeeId: employeeId),
-       await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)
+      await getExitStatisticsInRange(start: start, end: end, employeeId: employeeId)
     ];
   }
 

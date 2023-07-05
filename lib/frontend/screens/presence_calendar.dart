@@ -165,7 +165,12 @@ late Presence presenceDoc;
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                            EmployeeStatisticsPerRanges(employeeId: employee.id,)
+                            EmployeeStatisticsPerRanges(
+                              employeeId: employee.id,
+                              employeeName: '${employee.lastname} '
+                                  '${employee.firstname}',
+                              startDate: employee.startDate,
+                            )
                     ));
 
               } else if (value == 2) {

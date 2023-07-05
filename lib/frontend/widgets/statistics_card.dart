@@ -27,7 +27,12 @@ class StatisticsCard extends StatelessWidget {
               dataSource: entryOrExitData,
               xValueMapper: (StatisticsData data,_) => data.timeRange,
               yValueMapper: (StatisticsData data,_) => data.percentage,
-
+              // dataLabelSettings: const DataLabelSettings(
+              //   isVisible: true,
+              //   labelPosition: ChartDataLabelPosition.outside,
+              //   labelIntersectAction: LabelIntersectAction.none,
+              //
+              // ),
               dataLabelSettings: const DataLabelSettings(isVisible: true),
               enableTooltip: true,
             )
