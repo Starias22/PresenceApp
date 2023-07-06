@@ -49,17 +49,17 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
           //   fontSize: 23,
           // ),
         ),
-        leading: IconButton(
-            onPressed: () => {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const AdminHomePage()))
-                },
-            icon: const Icon(
-              Icons.arrow_back,
-            )),
+        // leading: IconButton(
+        //     onPressed: () => {
+        //           Navigator.pushReplacement(
+        //               context,
+        //               MaterialPageRoute(
+        //                   builder: (context) =>
+        //                       const AdminHomePage()))
+        //         },
+        //     icon: const Icon(
+        //       Icons.arrow_back,
+        //     )),
       ),
       body: CustomScrollView(
         slivers: [

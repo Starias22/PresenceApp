@@ -22,6 +22,7 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
     items = await ServiceDB().getServicesNames();
   }
   late String firstname,lastname,gender,email,service,startTime,endTime;
+  bool updateInProgress=false;
 
   late List<String> items = [];
 
@@ -345,11 +346,15 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
 
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 
-                                  CustomElevatedButton(
+                                 updateInProgress?
+                                 const CircularProgressIndicator(): CustomElevatedButton(
 
                                     onPressed: () async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
+                                        setState(() {
+                                          updateInProgress=true;
+                                        });
                                         String? id=await EmployeeDB().getEmployeeIdByEmail(widget.employee.email);
                                       log.d('id of the employee:$id');
                                        Employee employee=
@@ -377,7 +382,9 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
                                           //width: MediaQuery.of(context).size.width-2*10,
                                           message:'Employé modifié avec succès' ,
                                         ));
-
+                                        setState(() {
+                                            updateInProgress=false;
+                                        });
 
                                       }
                                     },

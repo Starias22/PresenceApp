@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/frontend/screens/bottom_nav_bar.dart';
 import 'package:presence_app/utils.dart';
 import '../../backend/firebase/firestore/admin_db.dart';
 import '../../backend/models/utils/admin.dart';
@@ -39,24 +40,27 @@ Future<void> retrieve() async {
 
     return Scaffold(
         appBar: AppBar(
+        leading: IconButton(
+            onPressed: () => {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              const AppBarExample()))
+                },
+            icon: const Icon(
+              Icons.arrow_back,
+            )),
+
+          // automaticallyImplyLeading: false,
           backgroundColor: appBarColor,
           centerTitle: true,
           title: const Text("Paramètres et confidentialité",
-            // style: TextStyle(
-            //     fontSize: 18
-            // ),
+            style: TextStyle(
+                fontSize: 17
+            ),
           ),
 
-          leading: IconButton(
-              onPressed: () => {
-
-
-                 Navigator.pushReplacement(context, MaterialPageRoute(
-                  builder: (context) => const AdminHomePage()))
-
-              },
-              icon: const Icon(Icons.arrow_back,)
-          ),
         ),
 
     body: FutureBuilder<void>(

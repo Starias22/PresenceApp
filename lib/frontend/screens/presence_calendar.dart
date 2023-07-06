@@ -37,6 +37,7 @@ late Presence presenceDoc;
   late String email;
   bool isLoading = true;
   late DateTime now,today;
+  bool showMenu=false;
   Future<void> onCalendarChanged(DateTime newMonth) async {
     setState(() {
       isLoading = true;
@@ -63,6 +64,9 @@ late Presence presenceDoc;
     log.d('The email of the employee is : ${widget.email}');
     log.d('The email of the employee is : $email');
     employee=await EmployeeDB().getEmployeeByEmail(email);
+    setState(() {
+      showMenu=true;
+    });
 
 
     if(employee.status==EStatus.pending){
@@ -126,36 +130,19 @@ late Presence presenceDoc;
           // ),
         ),
         actions: [
-          PopupMenuButton(
+          if(showMenu)
+            PopupMenuButton(
             icon: const Icon(
               Icons.more_vert,
               // size: 30,
             ),
             itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-              if(widget.email!=null) const PopupMenuItem(
+              // if(widget.email!=null)
+                const PopupMenuItem(
                 value: 1,
                 child: Text('Statistiques par intervalles'),
               ),
-              if(widget.email==null) const PopupMenuItem(
-                value: 2,
-                child: Text('Mon compte'),
-              ),
-              if(widget.email==null) const PopupMenuItem(
-                value: 3,
-                child: Text('Langue'),
-              ),
-              if(widget.email==null)  PopupMenuItem(
-                value: 4,
-                child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
-              ),
-              if(widget.email==null)  const PopupMenuItem(
-                value: 5,
-                child: Text('Signaler un problème'),
-              ),
-              if(widget.email==null)  const PopupMenuItem(
-                value: 6,
-                child: Text('Déconnexion'),
-              ),
+
             ],
             onSelected: (value) async {
               if (value == 1) {
@@ -171,40 +158,8 @@ late Presence presenceDoc;
                             )
                     ));
 
-              } else if (value == 2) {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const MonCompte()));
-              } else if (value == 3) {
-              } else if (value == 4) {
+               }
 
-                await Provider.of<AppSettings>(context, listen: false).setDarkMode(
-                  !Provider.of<AppSettings>(context, listen: false).isDarkMode,
-                );
-
-              } else if (value == 5) {
-                // action pour l'option 5
-              } else if (value == 6) {
-                // action pour l'option 6
-
-                Login().googleSingOut();
-                ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-                  simple: true,
-                  showCloseIcon: false,
-                  duration: const Duration(seconds: 5) ,
-                  //width: MediaQuery.of(context).size.width-2*10,
-                  message:'Vous êtes déconnecté' ,
-                ));
-
-
-                Future.delayed(const Duration(seconds: 3),
-                        () {
-                      Navigator.push(context, MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return const LoginMenu();
-                          }));
-                    });
-
-              }
             },
           )
         ],

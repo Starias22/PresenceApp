@@ -77,21 +77,22 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
           centerTitle: true,
           title: const Text(
             "Liste des employés",
-            // style: TextStyle(
-            //   fontSize: 23,
-            // ),
+            style: TextStyle(
+              fontSize: 17,
+            ),
+
           ),
-          leading: IconButton(
-              onPressed: () => {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const AdminHomePage()))
-                  },
-              icon: const Icon(
-                Icons.arrow_back,
-              )),
+          // leading: IconButton(
+          //     onPressed: () => {
+          //           Navigator.pushReplacement(
+          //               context,
+          //               MaterialPageRoute(
+          //                   builder: (context) =>
+          //                       const AdminHomePage()))
+          //         },
+          //     icon: const Icon(
+          //       Icons.arrow_back,
+          //     )),
         ),
         body: CustomScrollView(
           slivers: [

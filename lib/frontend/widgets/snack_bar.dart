@@ -10,7 +10,7 @@ class CustomSnackBar extends SnackBar {
     bool simple=false,
     bool showCloseIcon=false,
     double width = 600,
-    Duration duration = const Duration(seconds: 60),
+    Duration duration = const Duration(seconds: 10),
 
   }) : super(
 
@@ -42,7 +42,7 @@ class CustomSnackBar extends SnackBar {
           Expanded(
             child: Align(
               child: Text(
-                message, overflow: TextOverflow.ellipsis, maxLines: 3,),
+                message, overflow: TextOverflow.ellipsis, maxLines: 4,),
 
             ),
           ),

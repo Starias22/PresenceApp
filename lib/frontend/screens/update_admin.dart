@@ -29,12 +29,10 @@ class _UpdateAdminState extends State<UpdateAdmin> {
     });
   }
 
-  //final key = GlobalKey<DropdownSearchState>();
-
   late String _nom;
   late String _prenom;
   late String _email;
-
+  bool updateInProgress=false;
   final _key = GlobalKey<FormState>();
 
   TextEditingController? _controller;
@@ -225,17 +223,16 @@ class _UpdateAdminState extends State<UpdateAdmin> {
 
                                   //SizedBox(width: MediaQuery.of(context).size.width/3,),
 
-                                  CustomElevatedButton(
+                                updateInProgress?
+                                const CircularProgressIndicator():  CustomElevatedButton(
                                     onPressed: ()  async {
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
 
-
-
-                                       /* widget.admin.lastname= _nom;
-                                        widget.admin.firstname=_prenom;
-                                        widget.admin.email=_email;*/
                                        }
+                                      setState(() {
+                                        updateInProgress=true;
+                                      });
                                       String message;
                                       Admin admin=Admin(firstname: _prenom, lastname:_nom, email: _email,isSuper:widget.admin.isSuper );
 
@@ -264,6 +261,7 @@ class _UpdateAdminState extends State<UpdateAdmin> {
                                      log.d(message);
 
                                      updateAdminData(admin);
+
                                       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
                                         simple: true,
                                         showCloseIcon: false,
@@ -283,6 +281,9 @@ class _UpdateAdminState extends State<UpdateAdmin> {
                                         ));
 
                                       }
+                                      setState(() {
+                                        updateInProgress=false;
+                                      });
 
                                     },
                                     text: 'Confirmer',

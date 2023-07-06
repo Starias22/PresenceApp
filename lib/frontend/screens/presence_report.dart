@@ -267,7 +267,8 @@ void setSelectedDates({required DateTime date}){
 
                     },
 
-                    icon: const Icon(Icons.download, color: Colors.black)
+                    icon: const Icon(Icons.download, color: Colors.white,
+                    size: 30,)
                 )
               ],
             ),
@@ -275,6 +276,24 @@ void setSelectedDates({required DateTime date}){
             body: ListView(
               scrollDirection: Axis.vertical,
               children: [
+                const SizedBox(
+                  height: 25,
+                ),
+
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Image.asset(
+
+
+                    'assets/images/rapport.jpg',
+                    width:MediaQuery.of(context).size.width ,
+                    height:MediaQuery.of(context).size.height*0.35 ,
+                    fit: BoxFit.cover,
+                    //width: MediaQuery.of(context).size.width*0.75,
+                  ),
+
+                ),
+
                 const SizedBox(
                   height: 25,
                 ),

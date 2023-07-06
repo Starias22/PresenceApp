@@ -427,9 +427,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
               centerTitle: true,
               title: const Text(
                 "Création de compte employé",
-                // style: TextStyle(
-                //   fontSize: 23,
-                // ),
+                style: TextStyle(
+                  fontSize:17,
+                 ),
               ),
               actions: [
              if(canEnrollFingerprint)   Padding(

@@ -15,6 +15,7 @@ class RegisterAdmin extends StatefulWidget {
 }
 
 class _RegisterAdminState extends State<RegisterAdmin> {
+  bool creationInProgress=false;
   bool _isPasswordSecret = true,isConfirmSecret=true;
   late String passwd;
   TextEditingController firstnameController = TextEditingController();
@@ -55,27 +56,18 @@ class _RegisterAdminState extends State<RegisterAdmin> {
         centerTitle: true,
         title: const Text(
           "Création de compte admin",
-          // style: TextStyle(
-          //   fontSize: 20,
-          // ),
+          style: TextStyle(
+            fontSize: 17,
+          ),
         ),
-        leading: IconButton(
-            onPressed: () => {
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) =>
-                              const AdminHomePage()))
-                },
-            icon: const Icon(
-              Icons.arrow_back,
-            )),
+
+
       ),
       body: ListView(
           scrollDirection: Axis.vertical,
           children: [
-            const SizedBox(
-              height: 25,
+             SizedBox(
+              height: MediaQuery.of(context).size.height/6,
             ),
         Center(
           child: Padding(
@@ -244,7 +236,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       CustomElevatedButton(text:"Annuler" , onPressed:(){reset();}),
-                      CustomElevatedButton(
+                     creationInProgress? const CircularProgressIndicator(): CustomElevatedButton(
                         onPressed: () async {
                           
                           if (_key.currentState!.validate()) {
@@ -252,6 +244,9 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                           } else {
                             return;
                           }
+                          setState(() {
+                            creationInProgress=true;
+                          });
 
                           retrieveTexts();
                           Admin admin = Admin(
@@ -284,6 +279,9 @@ class _RegisterAdminState extends State<RegisterAdmin> {
                   
 
                           showToast(message);
+        setState(() {
+          creationInProgress=false;
+        });
                           
                         },
                         text: 'Confirmer',

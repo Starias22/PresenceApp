@@ -21,18 +21,19 @@ class CompteCard extends StatelessWidget {
     admin.email=email!;
     return ListView(
       children: [
-        const Center(
+         Center(
           child: Padding(
             padding: EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Card(
-                  elevation: 10,
-                  child: Text(
-                    "Compte",
-                    style: TextStyle(fontSize: 45),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Image.asset('assets/images/app2.png',
+                    fit: BoxFit.cover,
+                    //width: MediaQuery.of(context).size.width*0.75,
                   ),
+
                 ),
                 SizedBox(
                   height: 5,
@@ -96,7 +97,7 @@ class CompteCard extends StatelessWidget {
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           "Modifier le nom",
-                          style: TextStyle(fontSize: 20, color: Colors.blue),
+                          style: TextStyle(fontSize:17, color: Colors.blue),
                         ),
                       )
                     ],
@@ -145,7 +146,7 @@ class CompteCard extends StatelessWidget {
 
                         admin.email,
                         style:
-                            const TextStyle(fontSize: 20, color: Colors.blue),
+                            const TextStyle(fontSize: 17, color: Colors.blue),
                       ),
                     ),
                   ],
@@ -183,7 +184,7 @@ class CompteCard extends StatelessWidget {
                         padding: EdgeInsets.all(8.0),
                         child: Text(
                           "Changer le mot de passe",
-                          style: TextStyle(fontSize: 20, color: Colors.blue),
+                          style: TextStyle(fontSize: 17, color: Colors.blue),
                         ),
                       ),
                     ],

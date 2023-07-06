@@ -123,6 +123,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         child: Row(
                           children: [
                             const Text('Admins'),
+
                             PopupMenuButton(
                                 itemBuilder: (BuildContext context) => <PopupMenuEntry>[
                                   const PopupMenuItem(
@@ -148,12 +149,13 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
-                                        return const AfficherAdmins();
+                                        return  AfficherAdmins();
                                       })
                                   );
                                 }
                               },
                             )
+
                           ],
                         ),
                       ),
@@ -187,27 +189,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
                   const Center(
                     child: Text("Page d'accueil admin",
-                      // style: TextStyle(
-                      //   fontSize: 23
-                      // ),
                     ),
                   ),
 
                   GestureDetector(
                     onTap: (){
-
-                      // Navigator.push(context,
-                      //     MaterialPageRoute(builder:
-                      //         (BuildContext context) {
-                      //       return const StatistiquesForServices();
-                      //     })
-                      // );
                     },
                     child: const CircleAvatar(
 
                       backgroundImage: AssetImage("assets/images/profile.png"),
                     ),
                   ),
+
                   PopupMenuButton<String>(
                     onSelected: (value) async {
                       if (value == "logout") {
@@ -228,7 +221,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   context,
                                   MaterialPageRoute(
 
-                                      builder: (context) => const WelcomeImsp()));
+                                      builder: (context) =>
+                                      const WelcomeImsp()));
                               Navigator.push(context, MaterialPageRoute(
                                   builder: (BuildContext context) {
                                     return const WelcomeImsp();
@@ -242,7 +236,8 @@ class _AdminHomePageState extends State<AdminHomePage> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (context) =>  const AdminAccount()));
+                                builder: (context) =>
+                                const AdminAccount()));
                       }
 
                       else if (value == "dark") {
@@ -255,11 +250,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
                       }
                       else if (value == "language") {
-
-                        // Navigator.pushReplacement(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: (context) =>  const MonCompte()));
                       }
                     },
                     itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
@@ -344,13 +334,16 @@ class _AdminHomePageState extends State<AdminHomePage> {
                             ],
                             elevation: 10,
                           ).then((value){
+
                             if(value == 1){
+
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
                                     return const RegisterEmployee();
                                   })
                               );
+
                             } else
                             if(value == 2){
                               Navigator.push(context,

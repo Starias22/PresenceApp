@@ -14,6 +14,8 @@ import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 
+import 'bottom_nav_bar.dart';
+
 class WelcomeImsp extends StatefulWidget {
 
   const WelcomeImsp({Key? key}) : super(key: key);
@@ -47,7 +49,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   both esp32 and the device are not connected to the same network
   wrong ip address provided in the code for the esp32
   */
-  final connectionError="Erreur de connexion! Veillez reessayer";
+  final connectionError="Erreur de connexion! Veuillez reessayer";
 
   bool nextPage=false;
   bool connected=false;
@@ -57,6 +59,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   bool noNetworkConnection=false;
   bool noSuchEmployee=false;
   bool confirmed=false;
+  bool inProgress=false;
 
   Timer?  dataFetchTimer;
   late Image employeePicture;
@@ -168,6 +171,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
     data = await ESP32().receiveData();
+
     if (data == 151) {
       noSuchEmployee = true;
       message =
@@ -210,6 +214,9 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     }
 
     if (1 <= data && data <= 127) {
+      setState(() {
+        inProgress=true;
+      });
       //notify the esp to wait for the task to complete
 
       ESP32().sendData('wait');
@@ -255,6 +262,9 @@ else{
         if(!confirmed){
           taskCompleted=true;
           ESP32().sendData('-1');
+          setState(() {
+            inProgress=false;
+          });
           return;
 
         }
@@ -336,6 +346,9 @@ else{
 
       ESP32().sendData('-1');
   }
+    setState(() {
+      inProgress=false;
+    });
     taskCompleted=true;
 
     //log.d('The end of the function');
@@ -356,10 +369,10 @@ else{
       return "Sortie déjà marquée";
     }
     if(code==exitMarkedSuccessfully){
-      return "Sortie marquée avec succès(${utils.formatTime(now)})! Veuillez enlever votre doigt du capteur!";
+      return "Sortie marquée avec succès(${utils.formatTime(now)})!";
     }
     if(code==entryMarkedSuccessfully){
-      return "Entrée marquée avec succès(${utils.formatTime(now)})! Veuillez enlever votre doigt du capteur!";
+      return "Entrée marquée avec succès(${utils.formatTime(now)})!";
     }
 
     if(code==desireToExitBeforeEntryTime){
@@ -413,11 +426,10 @@ else{
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
                    return const LoginMenu();
-                   // return const EmployeePresenceReport();
+                  // return const AppBarExample();
+
                   }));
     },
-
-
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(35),
@@ -443,37 +455,13 @@ else{
                   ),
                   textAlign: TextAlign.center,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("IMSP",
-                      style: GoogleFonts.tangerine(
-                        color: const Color(0xFF0020FF),
-                        fontSize: 30,
-                        fontWeight: FontWeight.w900
-                      ),
-                    ),
-
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(" Dangbo",
-                        style: GoogleFonts.smokum(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Text("PresenceApp",
-                    style: GoogleFonts.alexBrush(
-                      color: const Color(0xFF0020FF),
-                      fontSize: 35,
-                      //fontWeight: FontWeight.bold
-                    ),
-                  ),
+                   child: Image.asset('assets/images/app2.png',
+                     fit: BoxFit.cover,
+                     //width: MediaQuery.of(context).size.width*0.75,
+                   ),
+
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -497,7 +485,9 @@ else{
                   padding: const EdgeInsets.only(top: 25),
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width*4/5,
-                    child: ElevatedButton(
+                    child:
+                    inProgress?const CircularProgressIndicator():
+                    ElevatedButton(
                       style: ButtonStyle(
                         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                           RoundedRectangleBorder(
@@ -515,7 +505,21 @@ else{
                         child: const Text("Commencer"),
                     ),
                   ),
-                )
+                ),
+                const SizedBox(height: 15,),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text("Institut de Mathématiques et de Sciences Physiques",
+                      style: GoogleFonts.tangerine(
+                          color: Colors.blue.shade500,
+                          fontSize: 20,
+                          fontWeight: FontWeight.w900
+                      ),
+                    ),
+                  ],
+                ),
+
               ],
             ),
           )

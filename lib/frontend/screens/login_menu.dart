@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/frontend/screens/bottom_nav_bar.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/frontend/screens/admin_login.dart';
 import 'package:presence_app/utils.dart';
@@ -139,7 +140,9 @@ log.d(message);
 
       Navigator.push(context,
           MaterialPageRoute(builder: (BuildContext context) {
-        return const EmployeeHomePage();
+         return const EmployeeHomePage();
+
+
       }));
     }
 

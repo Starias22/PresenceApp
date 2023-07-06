@@ -109,6 +109,7 @@ class AfficherAdminCard extends StatelessWidget {
 
 
                                                 Navigator.of(context).pop();
+
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
