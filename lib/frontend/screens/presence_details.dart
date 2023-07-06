@@ -9,10 +9,17 @@ class PresenceDetails extends StatelessWidget {
   final Presence presence;
   final String nEntryTime;
   final String nExitTime;
+  final bool isAdmin;
 
 
 
-  const PresenceDetails({Key? key, required this.presence, required this.nEntryTime, required this.nExitTime}) : super(key: key);
+  const PresenceDetails({Key? key,
+    required this.presence,
+    required this.nEntryTime,
+    required this.nExitTime,
+    this.isAdmin=true
+
+  }) : super(key: key);
 
 
   @override
@@ -25,7 +32,12 @@ class PresenceDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: PresenceCard(presence: presence, nEntryTime: nEntryTime, nExitTime: nExitTime,),
+        child: PresenceCard(
+          isAdmin: isAdmin,
+          presence: presence,
+          nEntryTime: nEntryTime,
+          nExitTime: nExitTime,
+        ),
       ),
     );
   }

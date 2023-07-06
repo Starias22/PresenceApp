@@ -162,6 +162,114 @@ void setSelectedDates({required DateTime date}){
                 //   fontSize: 23,
                 // ),
               ),
+              actions: [
+                operationInProcess?
+                const CircularProgressIndicator()
+                    : IconButton(
+                    onPressed: () async {
+
+                      if (_key.currentState!.validate()) {
+                        _key.currentState!.save();
+                      }
+                      else {
+                        return;
+                      }
+                      setState(() {
+                        operationInProcess=true;
+                      });
+
+                      var report=
+                      await PresenceDB().getPresenceReport
+                        (reportType: reportType,
+                          status:
+                          status==null?['late','present']
+                              :[utils.str(status)],
+                          groupByService: groupByService,
+                          start:  start,end: end,
+                          services: services
+                      );
+
+                      log.d('The status :$status');
+
+                      log.d('The report: $report');
+
+                      Map<String?,List<PresenceRecord>>
+                      presenceRowsByService={};
+                      List<DateTime> targetDates=[];
+
+                      await Future.forEach
+                        (report.entries, (entry) async {
+                        final serviceNameOrNull = entry.key;
+                        final presences = entry.value;
+                        final presenceRows = <PresenceRecord>[];
+                        for (var presence in presences) {
+                          if(!targetDates.contains(presence.date)) {
+                            targetDates.add(presence.date);
+                          }
+                          final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
+                          final presenceRow = PresenceRecord
+                            (employee: employee, presence: presence);
+                          presenceRows.add(presenceRow);
+                        }
+                        presenceRowsByService[serviceNameOrNull] = presenceRows;
+                      });
+                      log.d('the Number of concerned services:${presenceRowsByService.length}');
+
+
+
+                      var presenceReport=PresenceReport
+                        ( date: utils.formatDateTime(today),
+                          status: status,
+                          reportPeriodType: reportType,
+                          services: services,
+                          presenceRowsByService: presenceRowsByService,
+                          groupByService: groupByService,
+                          start: start,
+                          end: end);
+                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
+
+                      log.d('The status: $status');
+                      if(presenceReport.isEmpty()){
+                        //empty report
+
+                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                          simple: true,
+                          showCloseIcon: true,
+                          duration: const Duration(seconds: 3) ,
+                          //width: MediaQuery.of(context).size.width-2*10,
+                          message:'Rapport de présence vide' ,
+                        ));
+
+                        setState(() {
+                          operationInProcess=false;
+                        });
+
+                        return;
+                      }
+
+
+                      List<PresenceReport> presenceReportByDate=[];
+
+                      log.d('List of target dates: $targetDates');
+
+                      presenceReportByDate= presenceReport.groupByDate(targetDates);
+                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
+                      log.d('List of report by date: $presenceReportByDate');
+
+
+
+                      log.d('${presenceReportByDate[0].presenceRowsByService}');
+                      log.d('Start PDF generating');
+                      await ReportPdf().createAndDownloadOrOpenPdf( presenceReportByDate,targetDates);
+                      setState(() {
+                        operationInProcess=false;
+                      });
+
+                    },
+
+                    icon: const Icon(Icons.download, color: Colors.black)
+                )
+              ],
             ),
 
             body: ListView(
@@ -437,120 +545,120 @@ void setSelectedDates({required DateTime date}){
                                     },
                               ),
                               const SizedBox(height: 10,),
-
-                              operationInProcess?
-                              const CircularProgressIndicator()
-                                  :   ElevatedButton(
-                                    style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                                        RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                      ),
-                                      backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-                                    ),
-                                    onPressed: () async {
-
-                                      if (_key.currentState!.validate()) {
-                                        _key.currentState!.save();
-                                      }
-                                      else {
-                                        return;
-                                      }
-                                      setState(() {
-                                        operationInProcess=true;
-                                      });
-
-                                     var report=
-                                      await PresenceDB().getPresenceReport
-                                        (reportType: reportType,
-                                          status:
-                                          status==null?['late','present']
-                                              :[utils.str(status)],
-                                          groupByService: groupByService,
-                                          start:  start,end: end,
-                                          services: services
-                                      );
-
-                                     log.d('The status :$status');
-
-                                     log.d('The report: $report');
-
-                                      Map<String?,List<PresenceRecord>>
-                                      presenceRowsByService={};
-                                      List<DateTime> targetDates=[];
-
-                                      await Future.forEach
-                                        (report.entries, (entry) async {
-                                        final serviceNameOrNull = entry.key;
-                                        final presences = entry.value;
-                                        final presenceRows = <PresenceRecord>[];
-                                        for (var presence in presences) {
-                                          if(!targetDates.contains(presence.date)) {
-                                            targetDates.add(presence.date);
-                                          }
-                                          final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
-                                          final presenceRow = PresenceRecord
-                                            (employee: employee, presence: presence);
-                                          presenceRows.add(presenceRow);
-                                        }
-                                        presenceRowsByService[serviceNameOrNull] = presenceRows;
-                                      });
-                                      log.d('the Number of concerned services:${presenceRowsByService.length}');
-
-
-
-                                      var presenceReport=PresenceReport
-                                        ( date: utils.formatDateTime(today),
-                                          status: status,
-                                          reportPeriodType: reportType,
-                                          services: services,
-                                          presenceRowsByService: presenceRowsByService,
-                                          groupByService: groupByService,
-                                          start: start,
-                                          end: end);
-                                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
-
-                                      log.d('The status: $status');
-                                      if(presenceReport.isEmpty()){
-                                        //empty report
-
-                                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-                                          simple: true,
-                                          showCloseIcon: true,
-                                          duration: const Duration(seconds: 3) ,
-                                          //width: MediaQuery.of(context).size.width-2*10,
-                                          message:'Rapport de présence vide' ,
-                                        ));
-
-                                        setState(() {
-                                          operationInProcess=false;
-                                        });
-
-                                        return;
-                                      }
-
-
-                                      List<PresenceReport> presenceReportByDate=[];
-
-                                      log.d('List of target dates: $targetDates');
-
-                                   presenceReportByDate= presenceReport.groupByDate(targetDates);
-                                      log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
-                                      log.d('List of report by date: $presenceReportByDate');
-
-
-
-                                   log.d('${presenceReportByDate[0].presenceRowsByService}');
-                                      log.d('Start PDF generating');
-                                      await ReportPdf().createAndDownloadOrOpenPdf( presenceReportByDate,targetDates);
-                                      setState(() {
-                                        operationInProcess=false;
-                                      });
-
-                                    },
-                                    child:const Text('Générer'),
-                                  ),
+                              //
+                              // operationInProcess?
+                              // const CircularProgressIndicator()
+                              //     :   ElevatedButton(
+                              //       style: ButtonStyle(
+                              //         shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                              //           RoundedRectangleBorder(
+                              //             borderRadius: BorderRadius.circular(20),
+                              //           ),
+                              //         ),
+                              //         backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
+                              //       ),
+                              //       onPressed: () async {
+                              //
+                              //         if (_key.currentState!.validate()) {
+                              //           _key.currentState!.save();
+                              //         }
+                              //         else {
+                              //           return;
+                              //         }
+                              //         setState(() {
+                              //           operationInProcess=true;
+                              //         });
+                              //
+                              //        var report=
+                              //         await PresenceDB().getPresenceReport
+                              //           (reportType: reportType,
+                              //             status:
+                              //             status==null?['late','present']
+                              //                 :[utils.str(status)],
+                              //             groupByService: groupByService,
+                              //             start:  start,end: end,
+                              //             services: services
+                              //         );
+                              //
+                              //        log.d('The status :$status');
+                              //
+                              //        log.d('The report: $report');
+                              //
+                              //         Map<String?,List<PresenceRecord>>
+                              //         presenceRowsByService={};
+                              //         List<DateTime> targetDates=[];
+                              //
+                              //         await Future.forEach
+                              //           (report.entries, (entry) async {
+                              //           final serviceNameOrNull = entry.key;
+                              //           final presences = entry.value;
+                              //           final presenceRows = <PresenceRecord>[];
+                              //           for (var presence in presences) {
+                              //             if(!targetDates.contains(presence.date)) {
+                              //               targetDates.add(presence.date);
+                              //             }
+                              //             final employee = await EmployeeDB().getEmployeeById(presence.employeeId);
+                              //             final presenceRow = PresenceRecord
+                              //               (employee: employee, presence: presence);
+                              //             presenceRows.add(presenceRow);
+                              //           }
+                              //           presenceRowsByService[serviceNameOrNull] = presenceRows;
+                              //         });
+                              //         log.d('the Number of concerned services:${presenceRowsByService.length}');
+                              //
+                              //
+                              //
+                              //         var presenceReport=PresenceReport
+                              //           ( date: utils.formatDateTime(today),
+                              //             status: status,
+                              //             reportPeriodType: reportType,
+                              //             services: services,
+                              //             presenceRowsByService: presenceRowsByService,
+                              //             groupByService: groupByService,
+                              //             start: start,
+                              //             end: end);
+                              //         log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
+                              //
+                              //         log.d('The status: $status');
+                              //         if(presenceReport.isEmpty()){
+                              //           //empty report
+                              //
+                              //           ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                              //             simple: true,
+                              //             showCloseIcon: true,
+                              //             duration: const Duration(seconds: 3) ,
+                              //             //width: MediaQuery.of(context).size.width-2*10,
+                              //             message:'Rapport de présence vide' ,
+                              //           ));
+                              //
+                              //           setState(() {
+                              //             operationInProcess=false;
+                              //           });
+                              //
+                              //           return;
+                              //         }
+                              //
+                              //
+                              //         List<PresenceReport> presenceReportByDate=[];
+                              //
+                              //         log.d('List of target dates: $targetDates');
+                              //
+                              //      presenceReportByDate= presenceReport.groupByDate(targetDates);
+                              //         log.d('the Number of concerned services:${presenceReport.presenceRowsByService.length}');
+                              //         log.d('List of report by date: $presenceReportByDate');
+                              //
+                              //
+                              //
+                              //      log.d('${presenceReportByDate[0].presenceRowsByService}');
+                              //         log.d('Start PDF generating');
+                              //         await ReportPdf().createAndDownloadOrOpenPdf( presenceReportByDate,targetDates);
+                              //         setState(() {
+                              //           operationInProcess=false;
+                              //         });
+                              //
+                              //       },
+                              //       child:const Text('Générer'),
+                              //     ),
 
                             ],
                           ),

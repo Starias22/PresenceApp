@@ -117,7 +117,7 @@ class CompteCard extends StatelessWidget {
 
                 Center(
                     child: Text("")
-                    // child: Text("Mettez à jour vos informations")
+
                 )
               ],
             ),
@@ -213,7 +213,7 @@ class CompteCard extends StatelessWidget {
                         child: Text(
                           "Modifier ma photo",
                           style: TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: Colors.blue,
                           ),
                         ),
@@ -246,7 +246,7 @@ class CompteCard extends StatelessWidget {
                     padding: EdgeInsets.all(2.0),
                     child: Text("Coordonnées",
                       style: TextStyle(
-                          fontSize: 10,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold
                       ),
                     ),
@@ -263,7 +263,7 @@ class CompteCard extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(employee.email,
                         style: const TextStyle(
-                            fontSize: 20,
+                            fontSize: 18,
                             color: Colors.blue
                         ),),
                     ),

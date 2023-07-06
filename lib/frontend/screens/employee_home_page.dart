@@ -131,8 +131,11 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
           context,
           MaterialPageRoute(
             builder: (BuildContext context) =>
-                PresenceDetails(presence: myPresence, nEntryTime: employee.entryTime,
-                  nExitTime: employee.exitTime,),
+                PresenceDetails(
+                  presence: myPresence, nEntryTime: employee.entryTime,
+                  nExitTime: employee.exitTime,
+                  isAdmin: false,
+                ),
           ),
         );
       }
@@ -298,6 +301,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                                 child: SizedBox(
                                   height: 500, // Replace 500 with the desired height
                                   child: CalendrierCard(
+                                    colorCalendar: false,
                                     events: _events,
                                     onDayLongPressed: onDayLongPressed,
                                     onCalendarChanged: onCalendarChanged,

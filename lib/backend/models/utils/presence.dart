@@ -51,7 +51,7 @@ class Presence {
   }
   String punctualityDeviation(String normalEntryTime){
 
-    if(exitTime==null) return '';
+    if(entryTime==null) return '-';
     String pd;
     String deviation=utils.abs(entryTime!,
         utils.format(normalEntryTime)!  );
@@ -71,7 +71,7 @@ class Presence {
   String exitDeviation(String normalExitTime){
 
 
-    if(exitTime==null) return '';
+    if(exitTime==null) return '-';
     String ed;
 
       String deviation= utils.abs(exitTime!, utils.format(normalExitTime)!  );

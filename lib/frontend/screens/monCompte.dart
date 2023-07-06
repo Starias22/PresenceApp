@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/employee_home_page.dart';
+import 'package:presence_app/utils.dart';
 import '../widgets/monCompteCard.dart';
 
 
@@ -39,6 +40,7 @@ class _MonCompteState extends State<MonCompte> {
     return Scaffold(
 
       appBar: AppBar(
+        backgroundColor: appBarColor,
         centerTitle: true,
         title: const Text("Mon compte",
         style: TextStyle(

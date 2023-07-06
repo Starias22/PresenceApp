@@ -8,9 +8,14 @@ class PresenceCard extends StatelessWidget {
   final Presence presence;
   final String nEntryTime;
   final String nExitTime;
+  final bool isAdmin;
 
-  const PresenceCard({Key? key, required this.presence,
-    required this.nEntryTime,required this.nExitTime}) : super(key: key);
+  const PresenceCard({Key? key,
+    required this.presence,
+    required this.nEntryTime,
+    required this.nExitTime,
+    this.isAdmin=true
+  }) : super(key: key);
 
 
   @override
@@ -35,11 +40,12 @@ class PresenceCard extends StatelessWidget {
             Text("Heure d'entrée:  ${utils.formatTime(presence.entryTime!)} "),
             Text('Heure de sortie: ${presence.exitTime==null?
             'Non marquée':utils.formatTime(presence.exitTime!)}'),
-            const SizedBox(height: 8),
-            Text('Ecart de ponctualité: ${presence.punctualityDeviation(nEntryTime)}'),
-            Text('Ecart de sortie: ${presence.exitDeviation(nExitTime)}'),
-            const SizedBox(height: 8),
-            Text(
+            if(isAdmin) const SizedBox(height: 8),
+
+            if(isAdmin) Text('Ecart de ponctualité: ${presence.punctualityDeviation(nEntryTime)}'),
+            if(isAdmin)  Text('Ecart de sortie: ${presence.exitDeviation(nExitTime)}'),
+            if(isAdmin) const SizedBox(height: 8),
+            if(isAdmin) Text(
               'Statut: ${utils.str(presence.status)}',
               style: const TextStyle(
                 fontWeight: FontWeight.bold,

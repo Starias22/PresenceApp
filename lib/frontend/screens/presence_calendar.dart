@@ -30,8 +30,6 @@ class PresenceCalendar extends StatefulWidget {
 }
 
 class _PresenceCalendarState extends State<PresenceCalendar> {
-  final _key = GlobalKey<FormState>();
-  late String _valueChanged;
 
 late Presence presenceDoc;
   late Employee employee;

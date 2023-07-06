@@ -9,10 +9,16 @@ class CalendrierCard extends StatelessWidget {
   Function(DateTime) onCalendarChanged;
   DateTime minSelectedDate;
   Function(DateTime)? onDayLongPressed;
+  bool colorCalendar;
 
 
-  CalendrierCard({Key? key, required this.events, required this.onCalendarChanged,
-    required this.minSelectedDate, required this.onDayLongPressed}) : super(key: key);
+  CalendrierCard({Key? key,
+    required this.events,
+    required this.onCalendarChanged,
+    required this.minSelectedDate,
+    required this.onDayLongPressed,
+    this.colorCalendar=true
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,24 +44,26 @@ class CalendrierCard extends StatelessWidget {
       ) {
         // Récupérer l'état correspondant à la date du jour
         EStatus? event = events[day];
+        Color color = Colors.white;
 
+        if(colorCalendar) {
 
-        Color color;
-        if (utils.isWeekend(day)) {}
+          if (utils.isWeekend(day)) {}
 
-        if (event == EStatus.present) {
-          color = Colors.green;
-        } else if (event == EStatus.late) {
-          color = Colors.yellow;
-        } else if (event == EStatus.absent) {
-          color = Colors.red;
-        }
-        else if (event == EStatus.inHoliday) {
-          color = Colors.blue;
-        }
+          if (event == EStatus.present) {
+            color = Colors.green;
+          } else if (event == EStatus.late) {
+            color = Colors.yellow;
+          } else if (event == EStatus.absent) {
+            color = Colors.red;
+          }
+          else if (event == EStatus.inHoliday) {
+            color = Colors.blue;
+          }
 
-        else {
-          color = Colors.white;
+          else {
+            color = Colors.white;
+          }
         }
 
         // Retourner le widget personnalisé
