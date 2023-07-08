@@ -209,7 +209,7 @@ class AppBarExample extends StatelessWidget {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder:
                                         (BuildContext context) {
-                                      return const RegisterEmployee();
+                                      return RegisterEmployee();
                                     })
                                 );
                               },
@@ -346,10 +346,7 @@ class AppBarExample extends StatelessWidget {
                             ),
                             const Text("PresenceApp à votre service...",
                               style: TextStyle(fontSize: 20),
-                              // style:
-                              // GoogleFonts.pinyonScript(
-                              //   fontSize: 30,
-                              // ),
+
                             ),
                             Padding(
                               padding: const EdgeInsets.only(top: 10),

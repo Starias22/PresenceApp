@@ -201,8 +201,8 @@ class EmployeeDB{
 
   }
 
-  void updatePictureDownloadUrl(String employeeId,String url){
-    _employee.doc(employeeId).update({'picture_download_url':url});
+  Future<void> updatePictureDownloadUrl(String employeeId,String url) async {
+    await _employee.doc(employeeId).update({'picture_download_url':url});
 
   }
   void updateFingerprintId(String id,int fingerprintId){

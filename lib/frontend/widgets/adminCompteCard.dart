@@ -23,7 +23,7 @@ class CompteCard extends StatelessWidget {
       children: [
          Center(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -35,7 +35,7 @@ class CompteCard extends StatelessWidget {
                   ),
 
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 5,
                 ),
                 Center(

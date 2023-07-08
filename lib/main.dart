@@ -36,10 +36,6 @@ void main() async {
     log.i('******${appSettings.isDarkMode}');
   }
 
-
-
-
-
   runApp(
       MultiProvider(
         providers: [

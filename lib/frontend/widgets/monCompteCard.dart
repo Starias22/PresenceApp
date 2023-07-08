@@ -54,14 +54,21 @@ class CompteCard extends StatelessWidget {
 
     var ext=getImageExtensionFromMimeType(contentType!);
 
+    log.d('The extension is: $ext');
+
     var fileName ='${employee.id}.$ext';
 
     if(ext==null) return unsupportedFileExtension;
     try {
+
+      log.d('The filename is :$fileName');
+      log.d('The filename content type is :$contentType');
      Storage.saveFile(fileName, contentType, bytes);
 
       String downloadUrl=await Storage.getDownloadURL(fileName);
-      EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl);
+      log.d('The new download URL is : $downloadUrl');
+      await EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl);
+
 
 
       return success;
@@ -98,19 +105,19 @@ class CompteCard extends StatelessWidget {
 
     return ListView(
       children: [
-        const Center(
+
+        Center(
           child: Padding(
-            padding: EdgeInsets.all(15.0),
+            padding: const EdgeInsets.all(15.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Card(
-                  elevation: 10,
-                  child: Text("Compte",
-                    style: TextStyle(
-                        fontSize: 45
-                    ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Image.asset('assets/images/app2.png',
+                    fit: BoxFit.cover,
                   ),
+
                 ),
 
                 SizedBox(height: 5,),

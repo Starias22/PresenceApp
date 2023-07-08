@@ -177,11 +177,11 @@ Future<void> setPdfHeader(bool portrait) async {
     page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 60, 60));
 
     ByteData byteData = await
-    rootBundle.load('assets/images/app1.png');
+    rootBundle.load('assets/images/app2.png');
 
     data = byteData.buffer.asUint8List();
     image = PdfBitmap(data);
-    page.graphics.drawImage(image, const Rect.fromLTWH(500, 0, 60, 60));
+    page.graphics.drawImage(image, const Rect.fromLTWH(495, 0, 60, 60));
 
 
 // Définit la police et la taille pour les textes

@@ -142,9 +142,13 @@ class _EmployeeStatisticsPerRangesState
                 tooltip: 'Enregistrer comme PDF',
                 icon: downloadInProgress?
                 const CircularProgressIndicator() :
-                const Icon(Icons.download, color: Colors.black),
+                 const Icon(Icons.download, color: Colors.white,
+        size: 30,),
                 onPressed: () async {
 
+                  setState(() {
+                    downloadInProgress=true;
+                  });
 
                   await ReportPdf().statisticsPerRanges(
                       widget.employeeName, chartData,month);

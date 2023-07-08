@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:presence_app/utils.dart';
 
 class Storage{
 
@@ -11,6 +12,7 @@ class Storage{
           .child(fileName)
           .getDownloadURL();
     } catch (e) {
+      log.d('An error occurred during get of the download URl');
       return "";
     }
   }

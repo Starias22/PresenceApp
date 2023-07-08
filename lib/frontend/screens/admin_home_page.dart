@@ -73,10 +73,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                     value: 3,
                                     child: Text('Rapport de présence'),
                                   ),
-                                  // const PopupMenuItem(
-                                  //   value: 4,
-                                  //   child: Text('Statistiques de présence'),
-                                  // ),
                                 ],
                               onSelected: (value){
                                 if(value == 1){
@@ -84,7 +80,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   Navigator.push(context,
                                       MaterialPageRoute(builder:
                                           (BuildContext context) {
-                                        return const RegisterEmployee();
+                                        return  RegisterEmployee();
                                       })
                                   );
                                 }
@@ -105,14 +101,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                       })
                                   );
                                 }
-                                // else if(value == 4){
-                                //   Navigator.push(context,
-                                //       MaterialPageRoute(builder:
-                                //           (BuildContext context) {
-                                //         return const EmployeePresenceStatistics();
-                                //       })
-                                //   );
-                                // }
                               },
                             )
                           ],
@@ -340,7 +328,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
-                                    return const RegisterEmployee();
+                                    return RegisterEmployee();
                                   })
                               );
 

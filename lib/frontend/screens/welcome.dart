@@ -13,9 +13,6 @@ import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
-
-import 'bottom_nav_bar.dart';
-
 class WelcomeImsp extends StatefulWidget {
 
   const WelcomeImsp({Key? key}) : super(key: key);
@@ -60,6 +57,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   bool noSuchEmployee=false;
   bool confirmed=false;
   bool inProgress=false;
+  bool dateChanging=false;
 
   Timer?  dataFetchTimer;
   late Image employeePicture;
@@ -171,6 +169,7 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 
     data = await ESP32().receiveData();
+    log.d('Received data: $data');
 
     if (data == 151) {
       noSuchEmployee = true;
@@ -213,7 +212,34 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
       return;
     }
 
+
+    if (data == 150) {
+      log.d('data... $data');
+      //if not already connected
+      if (!connected) {
+        connectionStatusOff = false;
+        ScaffoldMessenger.of(context).removeCurrentSnackBar();
+        message = "Connexion reussie avec le micrôtrolleur!";
+
+
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 5),
+          //width: MediaQuery.of(context).size.width-2*10,
+          message: message,
+        ));
+
+        connected = true;
+      }
+
+      //log.d('The end');
+      taskCompleted = true;
+    }
+
+
     if (1 <= data && data <= 127) {
+
       setState(() {
         inProgress=true;
       });
@@ -320,29 +346,6 @@ else{
 
     }
 
-     if (data == 150) {
-      log.d('data... $data');
-      //if not already connected
-      if (!connected) {
-        connectionStatusOff = false;
-        ScaffoldMessenger.of(context).removeCurrentSnackBar();
-        message = "Connexion reussie avec le micrôtrolleur!";
-
-
-        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-          simple: true,
-          showCloseIcon: false,
-          duration: const Duration(seconds: 5),
-          //width: MediaQuery.of(context).size.width-2*10,
-          message: message,
-        ));
-
-        connected = true;
-      }
-
-      //log.d('The end');
-      taskCompleted = true;
-    }
 
       ESP32().sendData('-1');
   }
@@ -363,7 +366,7 @@ else{
 
     }
     if(code==inHoliday){
-      return "Congé, permission ou jour férié auparavent activé";
+      return "Congé, permission ou jour férié auparavent accordé";
     }
     if(code==exitAlreadyMarked){
       return "Sortie déjà marquée";
@@ -426,8 +429,6 @@ else{
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
                    return const LoginMenu();
-                  // return const AppBarExample();
-
                   }));
     },
                 child: Container(
@@ -499,7 +500,8 @@ else{
                         onPressed: (){
                         nextPage=true;
                           Navigator.push(context,MaterialPageRoute(
-                              builder: (BuildContext context) {return const LoginMenu();}
+                              builder: (BuildContext context)
+                              {return const LoginMenu();}
                           ));
                         },
                         child: const Text("Commencer"),

@@ -57,7 +57,7 @@ Future<void> retrieve() async {
           centerTitle: true,
           title: const Text("Paramètres et confidentialité",
             style: TextStyle(
-                fontSize: 17
+                fontSize: appBarTextFontSize
             ),
           ),
 

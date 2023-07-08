@@ -32,6 +32,7 @@ Future<DateTime> getBeninTime() async {
 final utils = Utils();
 bool darkMode=false;
 const appBarColor=Color(0xFF0020FF);
+ const double appBarTextFontSize=17;
 const success = 0,
     invalidFirstname = 1,
     invalidLastname = 2,

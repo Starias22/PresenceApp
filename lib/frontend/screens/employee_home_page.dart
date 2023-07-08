@@ -94,9 +94,7 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
 
     retrieve().then((_) {
       img = Storage.getDownloadURL(filename!).then((url) {
-        setState(() {
-          //imageDownloadURL = url;
-        });
+        log.d('The download URL is: $url');
         return url;
       });
     });
@@ -109,6 +107,8 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
     filename = items.where((item) =>
         item.name.
         startsWith(RegExp('^${employee.id}'))).toList()[0].name;
+
+    log.d('The name of the image: $filename');
   }
 
   onDayLongPressed(DateTime date) async {
@@ -213,8 +213,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                 ).image
                     : NetworkImage(employee.pictureDownloadUrl!),
 
-
-
                                     ),
                                   ),
                                 ),
@@ -222,59 +220,6 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                             ),
                           ),
                           if (showMenu)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                             PopupMenuButton<String>(
                               onSelected: (value) async {
                                 if (value == "logout") {

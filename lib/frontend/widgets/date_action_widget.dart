@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'custom_button.dart';
+
 class DateActionContainer extends Row {
   DateActionContainer({
     super.key,
     required String title,
     required String selectedDate,
     required void Function() onSelectDate,
+    bool? dateChanging
   }) : super(
     crossAxisAlignment: CrossAxisAlignment.start,
     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -38,20 +41,14 @@ class DateActionContainer extends Row {
           ),
         ),
       ),
-      ElevatedButton(
-        style: ButtonStyle(
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
-          ),
-          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-        ),
+
+      dateChanging==null||dateChanging==false?
+      CustomElevatedButton(
         onPressed: () async {
           onSelectDate();
         },
-        child: const Text('Modifier'),
-      ),
+       text: 'Modifier',
+      ):const CircularProgressIndicator(),
 
     ],
 
