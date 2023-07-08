@@ -296,8 +296,6 @@ else{
         }
 
       }
-
-
       employeePicture =
       employee.pictureDownloadUrl == null ? Image.asset(
           'assets/images/imsp1.png') :

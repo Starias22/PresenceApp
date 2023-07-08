@@ -164,8 +164,7 @@ log.d(message);
           Column(
             children: [
               SizedBox(height: MediaQuery.of(context).size.height/10,),
-
-              const Text("Connectez-vous !",
+              const Text("Connectez-vous!",
                 style: TextStyle(
                   fontSize: 25,
                   fontWeight: FontWeight.bold,
