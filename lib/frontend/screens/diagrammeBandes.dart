@@ -97,7 +97,7 @@ late String email;
         title: const Text(
           "Statistiques du mois",
           style: TextStyle(
-            fontSize: 23,
+            fontSize: appBarTextFontSize,
           ),
         ),
         leading: IconButton(

@@ -57,7 +57,7 @@ class _RegisterAdminState extends State<RegisterAdmin> {
         title: const Text(
           "Création de compte admin",
           style: TextStyle(
-            fontSize: 17,
+            fontSize: appBarTextFontSize,
           ),
         ),
 

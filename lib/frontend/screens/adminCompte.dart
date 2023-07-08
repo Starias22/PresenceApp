@@ -51,8 +51,6 @@ Future<void> retrieve() async {
             icon: const Icon(
               Icons.arrow_back,
             )),
-
-          // automaticallyImplyLeading: false,
           backgroundColor: appBarColor,
           centerTitle: true,
           title: const Text("Paramètres et confidentialité",

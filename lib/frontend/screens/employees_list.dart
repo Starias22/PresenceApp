@@ -78,7 +78,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
           title: const Text(
             "Liste des employés",
             style: TextStyle(
-              fontSize: 17,
+              fontSize: appBarTextFontSize,
             ),
 
           ),

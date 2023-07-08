@@ -28,7 +28,8 @@ class PresenceDetails extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: appBarColor,
-        title: const Text('Détails de présence '),
+        title: const Text('Détails de présence ',
+        style: TextStyle(fontSize: appBarTextFontSize),),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

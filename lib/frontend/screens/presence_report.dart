@@ -158,9 +158,9 @@ void setSelectedDates({required DateTime date}){
               centerTitle: true,
               title: const Text(
                 "Rapport de présence",
-                // style: TextStyle(
-                //   fontSize: 23,
-                // ),
+                style: TextStyle(
+                  fontSize: appBarTextFontSize,
+                ),
               ),
               actions: [
                 operationInProcess?

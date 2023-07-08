@@ -58,9 +58,9 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
               backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text("Modifier les informations",
-                // style: TextStyle(
-                //   fontSize: 15,
-                // ),
+                style: TextStyle(
+                  fontSize: appBarTextFontSize,
+                ),
               ),
 
               leading: IconButton(

@@ -45,9 +45,9 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
         centerTitle: true,
         title: const Text(
           "Liste des admins",
-          // style: TextStyle(
-          //   fontSize: 23,
-          // ),
+           style: TextStyle(
+           fontSize: appBarTextFontSize,
+          ),
         ),
         // leading: IconButton(
         //     onPressed: () => {

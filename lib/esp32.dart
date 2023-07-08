@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:presence_app/utils.dart';
 class ESP32
@@ -17,7 +18,10 @@ class ESP32
 //http://172.16.65.1/?cmd=a //wireless ccp
   //http://172.16.64.202/?cmd=a //wireless ccp
   Future<int> receiveData() async {
-    //log.i('Receive data');
+    if ( await Connectivity().checkConnectivity() == ConnectivityResult.none) {
+
+      return noInternetConnection;
+    }
     var url = Uri.parse('http://$ipAddress/?cmd=a');
     log.i('Receive data');
 

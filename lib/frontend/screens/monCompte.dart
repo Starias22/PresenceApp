@@ -44,7 +44,7 @@ class _MonCompteState extends State<MonCompte> {
         centerTitle: true,
         title: const Text("Mon compte",
         style: TextStyle(
-          fontSize: 18
+          fontSize: appBarTextFontSize
         ),),
 
         leading: IconButton(

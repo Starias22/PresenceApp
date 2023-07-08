@@ -93,7 +93,8 @@ const success = 0,
     noFingerDetected=150,
     noMatchingFingerprint=151,
     minFingerprintId=1,
-    maxFingerprintId=127
+    maxFingerprintId=127,
+noInternetConnection=800
 
 
 

@@ -66,7 +66,7 @@ class _UpdateAdminState extends State<UpdateAdmin> {
               backgroundColor: appBarColor,
               title: const Text("Modifier les informations",
                 style: TextStyle(
-                  //fontSize: 15,
+                  fontSize: appBarTextFontSize,
                 ),
               ),
 

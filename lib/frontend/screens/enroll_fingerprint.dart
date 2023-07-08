@@ -1,12 +1,10 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 class EnrollFingerprint extends StatefulWidget {
@@ -242,6 +240,11 @@ updateMessage('Vérification de la configuration du microcontrôleur');
       return null;
     }
 
+if(data==noInternetConnection) {
+  updateMessage(networkConnectionError);
+  return null;
+}
+
     if(data==espConnectionFailed) {
       updateMessage(espConnectionError);
       return null;
@@ -315,6 +318,11 @@ log.d('Merveil le Cornard****');
           if (x == noMatchingFingerprint) {
             updateMessage("Empreintes non correspondantes! Echec de l'enregistrement");
 
+          }
+
+
+          if (x == noInternetConnection) {
+            updateMessage(networkConnectionError);
           }
 
           if (x == espConnectionFailed) {

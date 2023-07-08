@@ -161,10 +161,10 @@ class _EmployeePresenceStatisticsState extends State<EmployeePresenceStatistics>
 
               backgroundColor: appBarColor,
               centerTitle: true,
-              title: Text(
+              title: const Text(
                 "Statistiques de présence",
-                style: GoogleFonts.arizonia(
-                  fontSize: 25,
+                style: TextStyle(
+                  fontSize: appBarTextFontSize,
                 ),
               ),
             ),

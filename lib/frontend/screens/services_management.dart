@@ -33,7 +33,10 @@ class _ServicesManagementState extends State<ServicesManagement> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: appBarColor,
-        title: const Text("Gestion des services"),
+        title: const Text("Gestion des services",
+        style: TextStyle(
+          fontSize: appBarTextFontSize
+        ),),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),

@@ -131,6 +131,9 @@ class _EmployeeStatisticsPerRangesState
           backgroundColor: appBarColor,
           title: const Text(
             "Statistiques par intervalles",
+            style: TextStyle(
+              fontSize: appBarTextFontSize
+            ),
           ),
           centerTitle: true,
           actions: [

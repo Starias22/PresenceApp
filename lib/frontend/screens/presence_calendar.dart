@@ -125,9 +125,9 @@ late Presence presenceDoc;
         centerTitle: true,
         title: const Text(
           "Calendrier des présences",
-          // style: TextStyle(
-          //   //fontSize: 23,
-          // ),
+          style: TextStyle(
+            fontSize: appBarTextFontSize,
+          ),
         ),
         actions: [
           if(showMenu)
