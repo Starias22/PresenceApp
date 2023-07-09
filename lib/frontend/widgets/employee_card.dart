@@ -11,18 +11,23 @@ import 'package:presence_app/frontend/screens/update_employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
-class AfficherEmployeCard extends StatefulWidget {
+class EmployeeCard extends StatefulWidget {
   final Employee employee;
+  bool showCheckBox;
+  bool isChecked;
 
-  const AfficherEmployeCard({Key? key, required this.employee})
+   EmployeeCard({Key? key, required this.employee,
+   this.showCheckBox=false,
+   this.isChecked=false})
       : super(key: key);
 
   @override
-  _AfficherEmployeCardState createState() => _AfficherEmployeCardState();
+  _EmployeeCardState createState() => _EmployeeCardState();
 }
 
-class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
+class _EmployeeCardState extends State<EmployeeCard> {
   String imageDownloadUrl = '';
+  bool isChecked = false;
 
   @override
   void initState() {
@@ -37,34 +42,6 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
 
   Future<String> getDownloadURL() async {
     return '';
-  }
-
-  Future<int> assureDataChanged(int fingerprintId,int val ) async {
-    int data = fingerprintId ;
-    int cpt = 0;
-
-    Future<int> fetchData() async {
-      data = await ESP32().receiveData();
-
-      if (cpt == 10) {
-
-        return 152;
-      }
-
-
-      if (data ==val) {
-        log.d('Data changed');
-        return data;
-      }
-      else {
-        cpt++;
-        await Future.delayed(const Duration(seconds: 1));
-        return await fetchData();
-      }
-
-    }
-
-    return await fetchData();
   }
 
   String connectionError = "Erreur de connexion! Veillez reessayer";
@@ -140,7 +117,15 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
                               ],
                             ),
                           ),
-                          DropdownButtonHideUnderline(
+               if(widget.showCheckBox) Checkbox(
+                  value: widget.isChecked,
+                  onChanged: (bool? value) {
+                    setState(() {
+                      widget.isChecked = value ?? false;
+                    });
+                  },
+                ),
+                                DropdownButtonHideUnderline(
                             child: DropdownButton(
                               onChanged: (String? v) async {
                                 if (v == "modifier") {
@@ -229,7 +214,7 @@ class _AfficherEmployeCardState extends State<AfficherEmployeCard> {
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) =>
-                                                    const AfficherEmployes(),
+                                                    EmployeesList(),
                                                   ),
                                                 );
                                                 return;

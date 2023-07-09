@@ -247,7 +247,7 @@ log.d(message);
                     ),
                     onPressed: (){
                       log.d('Admin login');
-                      Navigator.push(context,
+                      Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (BuildContext context) {
                             return const AdminLogin();
                           }));

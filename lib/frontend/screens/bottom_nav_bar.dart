@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/frontend/screens/handle_holidays.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
@@ -233,7 +234,7 @@ class AppBarExample extends StatelessWidget {
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
-                                    return const AfficherEmployes();
+                                    return EmployeesList();
                                   })
                               );
                             },
@@ -379,7 +380,8 @@ class AppBarExample extends StatelessWidget {
                               text: 'Gérer les congés',
                               onPressed: (){
                                 Navigator.push(context,MaterialPageRoute(
-                                    builder: (BuildContext context) {return const PageConges();}
+                                    builder: (BuildContext context) {
+                                      return HandleHolidays();}
                                 ));
                               },
                               width: MediaQuery.of(context).size.width*4/5,

@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
-import 'package:presence_app/frontend/screens/admin_home_page.dart';
-import 'package:presence_app/frontend/widgets/afficherEmployeCard.dart';
+import 'package:presence_app/frontend/widgets/employee_card.dart';
 import 'package:presence_app/frontend/widgets/cardTabbar.dart';
 import 'package:presence_app/utils.dart';
 
-class AfficherEmployes extends StatefulWidget {
-  const AfficherEmployes({Key? key}) : super(key: key);
+class EmployeesList extends StatefulWidget {
+  bool showCheckBoxes;
+   EmployeesList({Key? key,
+     this.showCheckBoxes=false
+  }) : super(key: key);
 
   @override
-  State<AfficherEmployes> createState() => _AfficherEmployesState();
+  State<EmployeesList> createState() => _EmployeesListState();
 }
 
-class _AfficherEmployesState extends State<AfficherEmployes> {
+class _EmployeesListState extends State<EmployeesList> {
   List<String> tabBars = ["Tous", 'Présents', 'Retards', 'Absents', 'Sorties'];
   int _selectedIndex = 0;
   late String pictureDownloadUrl;
@@ -82,19 +84,9 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
             ),
 
           ),
-          // leading: IconButton(
-          //     onPressed: () => {
-          //           Navigator.pushReplacement(
-          //               context,
-          //               MaterialPageRoute(
-          //                   builder: (context) =>
-          //                       const AdminHomePage()))
-          //         },
-          //     icon: const Icon(
-          //       Icons.arrow_back,
-          //     )),
         ),
-        body: CustomScrollView(
+        body:
+        CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
@@ -162,7 +154,7 @@ class _AfficherEmployesState extends State<AfficherEmployes> {
                       onTap: () {
                         },
                       child:
-                          AfficherEmployeCard(employee: employeesAff[index])
+                          EmployeeCard(employee: employeesAff[index])
                   ),
                   const Padding(
                     padding:
