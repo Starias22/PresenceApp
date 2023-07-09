@@ -22,6 +22,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
   bool creationInProgress=false;
   String message ="Cliquez sur démarrer ...";
   String buttonText='Démarrer';
+  bool cancelled=false;
 
   @override
   void initState() {
@@ -50,9 +51,9 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
               centerTitle: true,
               title: const Text(
                 "Enregistrement d'empreinte",
-                // style: TextStyle(
-                //   fontSize: 23,
-                // ),
+                style: TextStyle(
+                  fontSize: appBarTextFontSize,
+                ),
               ),
             ),
           body:
@@ -156,15 +157,17 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   }
                   else if(buttonText=='Annuler'){
                     //cancel the fingerprint enrollment process
-                    setState(() {
-                      creationInProgress=true;
-                    });
+                    // setState(() {
+                    //   creationInProgress=true;
+                    // });
                     //I should stop reading and update the
                     // text--placer votre doigt sur le capteur
-                    ESP32().sendData('-1');
+                    cancelled=true;
+                    await ESP32().sendData('-1');
+
                     setState(() {
-                      buttonText='Reprendre';
-                      creationInProgress=false;
+                      buttonText='Reessayer';
+                      // creationInProgress=false;
                     });
 
 
@@ -200,6 +203,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
         log.d('Condition satisfied');
         return data;
       } else {
+        if(cancelled) return -1000;
         cpt++;
         await Future.delayed(const Duration(seconds: 1));
         return await fetchData();
@@ -251,8 +255,14 @@ if(data==noInternetConnection) {
       updateMessage(espConnectionError);
       return null;
     }
+if(data==-1000) {
+  updateMessage('Opération annulée');
+  cancelled=false;
+  return null;
+}
 
-    updateMessage("Vérification de l'existence de votre empreinte en cours!");
+
+updateMessage("Vérification de l'existence de votre empreinte en cours!");
 
 
     if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists

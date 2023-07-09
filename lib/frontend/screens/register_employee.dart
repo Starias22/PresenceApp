@@ -28,9 +28,9 @@ class RegisterEmployee extends StatefulWidget {
 class _RegisterEmployeeState extends State<RegisterEmployee> {
   DateTime? selectedDate;
   late DateTime today;
-  DateTime start=DateTime.now();
+   late DateTime start;
   bool dateChanging=false;
-   String startDate='JJ/MM/AAAA';
+  DateTime initialDate=DateTime(1970,1,1);
 
   @override
   void dispose() {
@@ -54,14 +54,11 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       );
 
       DateTime lastDate=utils.add30Days(today);
-      DateTime nextWorkDate=utils.getNextWorkDate(today);
-
-
       selectedDate = await  showDatePicker(context: context,
 
         locale: const Locale('fr'),
-        initialDate:nextWorkDate ,
-        firstDate: utils.isWeekend(today)?nextWorkDate:today ,
+        initialDate:initialDate ,
+        firstDate: initialDate ,
         lastDate:lastDate,
         currentDate: today,
       );
@@ -99,11 +96,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       return;
       }
 
-      log.d('before The start date is :$startDate');
-      setState(() {
-      startDate=utils.frenchFormatDate(start);
-      });
-      log.d('after The start date is :$startDate');
       setState(() {
         dateChanging=false;
       });
@@ -162,6 +154,12 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     items = await ServiceDB().getServicesNames();
     DateTime now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
+    initialDate= utils.isWeekend(today)?utils.getNextWorkDate(today):today;
+
+    setState(() {
+      start= initialDate;
+
+    });
 
   }
 
@@ -183,9 +181,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   @override
   void initState() {
     super.initState();
-    setState(() {
-      startDate=utils.frenchFormatDate(start);
-    });
+    retrieveServices();
+    
+
 
     _getValue();
   }
@@ -193,7 +191,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   @override
   Widget build(BuildContext context) {
 
-    retrieveServices();
 
     return SafeArea(
         child: Scaffold(
@@ -209,9 +206,11 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
               ),
                           ),
 
-            body: ListView(
+            body: initialDate.isAtSameMomentAs(DateTime(1970,1,1))?
+            const Center(child: CircularProgressIndicator()):  ListView(
               scrollDirection: Axis.vertical,
-              children: [
+              children:  [
+
                 const SizedBox(
                   height: 25,
                 ),
@@ -532,9 +531,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   dateChanging: dateChanging,
                                     title: 'Date de début',
                                     selectedDate:
-                                    widget.employee==null?startDate
-
-                                        : utils.frenchFormatDate(widget.employee?.startDate),
+                                    utils.frenchFormatDate(
+                                         widget.employee==null?
+                                         start:widget.employee?.startDate),
                                     onSelectDate:
                                         () async {
                                           await  selectDate();

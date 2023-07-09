@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pageConges.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
@@ -210,6 +211,13 @@ class AppBarExample extends StatelessWidget {
                                     MaterialPageRoute(builder:
                                         (BuildContext context) {
                                       return RegisterEmployee(
+                                    employee:
+                                         Employee
+                                          ( firstname: 'John',
+                                            gender: 'M', lastname: 'LOLA',
+                                            email: 'email@gmail.com', service:'Direction',
+                                            startDate: DateTime(2023,7,10), entryTime: '08:00',
+                                            exitTime: '17:00'),
 
                                       );
                                     })
