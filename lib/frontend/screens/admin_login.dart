@@ -349,6 +349,7 @@ class _AdminLoginState extends State<AdminLogin> {
               message = 'Connexion réussie !';
 
               reset();
+
             }
             else{
               message="Votre compte admin vient d'être supprimé car vous n'êtes plus admin";
@@ -381,14 +382,22 @@ class _AdminLoginState extends State<AdminLogin> {
 
       if (loginCode == success) {
           loginInProcess = false;
-          Future.delayed(const Duration(seconds: 5),
-                  () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder:
-                        (BuildContext context) {
-                          return const AppBarExample();
-                    }));
-              });
+
+          // Future.delayed(const Duration(seconds: 5),
+          //         () {
+          //       Navigator.push(context,
+          //           MaterialPageRoute(builder:
+          //               (BuildContext context) {
+          //                 return const AppBarExample();
+          //           }));
+          //     });
+
+          // Utilisez Navigator.pushReplacement pour afficher la page de l'administrateur
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => AppBarExample()),
+          );
+
         }
 
 
