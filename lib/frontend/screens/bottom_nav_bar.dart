@@ -209,7 +209,9 @@ class AppBarExample extends StatelessWidget {
                                 Navigator.push(context,
                                     MaterialPageRoute(builder:
                                         (BuildContext context) {
-                                      return RegisterEmployee();
+                                      return RegisterEmployee(
+
+                                      );
                                     })
                                 );
                               },

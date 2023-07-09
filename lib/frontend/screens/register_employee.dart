@@ -2,7 +2,6 @@
 
 import 'dart:async';
 
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
-import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/enroll_fingerprint.dart';
 import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
@@ -29,95 +27,10 @@ class RegisterEmployee extends StatefulWidget {
 
 class _RegisterEmployeeState extends State<RegisterEmployee> {
   DateTime? selectedDate;
-  bool canEnrollFingerprint=false;
   late DateTime today;
   DateTime start=DateTime.now();
-  bool dataChanging=false;
+  bool dateChanging=false;
    String startDate='JJ/MM/AAAA';
-   bool fingerprintEnrolled = false;
-   late int fingerprintId;
-   Employee? employee;
-
-
-
-
-  void disableFingerprintEnrollmentIfPreviouslyEnabled(){
-
-    if(canEnrollFingerprint) {
-      setState(() {
-      canEnrollFingerprint=false;
-
-    });
-    }
-
-  }
-
-  Future<int> assureDataChanged(int fingerprintId,int val ) async {
-    int data = fingerprintId ;
-    int cpt = 0;
-
-    Future<int> fetchData() async {
-      data = await ESP32().receiveData();
-
-      if (cpt == 10) {
-
-        return 152;
-      }
-
-
-      if (data ==val) {
-        log.d('Data changed');
-        return data;
-      }
-      else {
-        cpt++;
-        await Future.delayed(const Duration(seconds: 1));
-        return await fetchData();
-      }
-
-    }
-
-    return await fetchData();
-  }
-
-
-  Future<int> getData(int val) async {
-    int data = val;
-    int cpt = 0;
-
-    Future<int> fetchData() async {
-      data = await ESP32().receiveData();
-      if (cpt == 10 ||( data != val && data!=-1)) {
-        log.d('Condition satisfied');
-        return data;
-      } else {
-        cpt++;
-        await Future.delayed(const Duration(seconds: 1));
-        return await fetchData();
-      }
-    }
-
-    return await fetchData();
-  }
-
-  Future<int> g() async {
-    int data = 150;
-    int cpt = 0;
-
-    Future<int> fetchData() async {
-      data = await ESP32().receiveData();
-      if (cpt == 10 ||(  data!=-1&&data!=150)) {
-        log.d('Condition satisfied');
-        return data;
-      } else {
-        cpt++;
-        await Future.delayed(const Duration(seconds: 1));
-        return await fetchData();
-      }
-    }
-
-    return await fetchData();
-  }
 
   @override
   void dispose() {
@@ -125,158 +38,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     super.dispose();
   }
 
-
-  Future<void> enrolFingerprint() async {
-
-
-    String networkConnectionError;
-    String espConnectionError = "Vérifiez la configuration du microcontrôleur et ressayez";
-    if ( await Connectivity().checkConnectivity() == ConnectivityResult.none) {
-
-
-       networkConnectionError = "Vérifiez votre connexion internet et reessayez";
-
-      ToastUtils.showToast(context, networkConnectionError,3);
-      return;
-    }
-
-    if (!(await ESP32().sendData('enroll'))){
-      ToastUtils.showToast(context, espConnectionError, 3);
-      return;
-    }
-
-    ToastUtils.showToast(context, ""
-        "Placez votre doigt sur le capteur pour démarrer", 3);
-
-
-    int  data=await getData(150);
-
-    log.d(data);
-
-    if(data==150) {
-
-
-      ToastUtils.showToast(context, "Aucun doigt détecté", 3);
-      return;
-    }
-    if(data==espConnectionFailed) {
-
-
-      ToastUtils.showToast(context, espConnectionError, 3);
-      return;
-    }
-    ToastUtils.showToast(context, "Vérification de l'existence de votre empreinte en cours!", 3);
-
-
-    if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists
-        {
-      ToastUtils.showToast(context, "Une empreinte correspondante a été "
-          "déjà enregistrée au sein du capteur", 3);
-      return;
-
-    }
-
-
-    if(data==noMatchingFingerprint)//save 151
-        {
-      ToastUtils.showToast(context, "Retirez votre doigt du capteur", 3);
-      await ESP32().sendData('go');
-
-      // ToastUtils.showToast(context, "Empreinte en cours d'enregistrement! "
-      //     "Maintenez votre doigt sur le capteur", 3);
-      ToastUtils.showToast(context, "L'enregistrement peut démarrer à présent! "
-          "Placez à nouveau!", 3);
-
-
- //merveil bandit
-      data = await getData(151);
-
-      if (data == 151) {
-        ToastUtils.showToast(context,
-            "Aucun doigt détecté! Echec de l'enregistrement", 3);
-        return;
-      }
-
-      log.d('Data1:hhh $data ');
-      if (data == -15) {
-        ToastUtils.showToast(context, ""
-            "Retirez votre doigt du capteur, pour passer à la vérification"
-            "de la correspondance", 3);
-
-        data = await getData(-15);
-        log.d('Data1222:hhh $data ');
-
-        if (minFingerprintId <= data && data <= maxFingerprintId) //saved
-            {
-
-
-          log.d('merveil bandit:');
-          ToastUtils.showToast(context, ""
-              "Placez à nouveau votre doigt pour la vérification de correspondance", 3);
-
-
-          int x = await getData(data);
-
-          log.d('ezechiel bandit: $x');
-
-          if (x == noMatchingFingerprint) {
-            ToastUtils.showToast(context,
-                "Empreintes non correspondantes! Echec de l'enregistrement", 3);
-
-          }
-
-          if (x == espConnectionFailed) {
-            ToastUtils.showToast(
-                context, "$espConnectionError! Echec de l'enregistrement", 3);
-          }
-
-
-          if (x == 255) {
-            log.d('The data is:$x');
-              fingerprintId = data;
-              setState(() {
-                fingerprintEnrolled = true;
-              });
-            ToastUtils.showToast(context,
-                "Enregistrement terminé! Vous pouvez retirer votre doigt du capteur",
-                3);
-            //create the employee
-
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                    RegisterEmployee()));
-            await assureDataChanged(x, 2000);
-            ESP32().sendData('-1');
-
-
-            return;
-          }
-
-          if(x==data){
-            ToastUtils.showToast(context,
-                "Aucun doigt détecté! Echec de l'enregistrement", 3);
-
-          }
-
-
-        }
-
-        else if (data == -15) {
-          ToastUtils.showToast(context, "Aucun doigt détecté", 3);
-          return;
-        }
-
-
-        if (data == espConnectionFailed) {
-          ToastUtils.showToast(context, espConnectionError, 3);
-          return;
-        }
-      }
-    }
-
-    }
 
     Future<void> selectDate() async {
       await showDialog(
@@ -306,34 +67,34 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       );
 
       setState(() {
-        dataChanging=true;
+        dateChanging=true;
       });
 
       if(selectedDate==null){
         ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
         setState(() {
-          dataChanging=false;
+          dateChanging=false;
         });
         return;
       }
        start=selectedDate!;
 
       if(utils.isWeekend(start)){
-        disableFingerprintEnrollmentIfPreviouslyEnabled();
+
         ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
         setState(() {
-          dataChanging=false;
+          dateChanging=false;
         });
         return;
       }
 
 
       if((await HolidayDB().isHoliday(start))){
-      disableFingerprintEnrollmentIfPreviouslyEnabled();
+
       ToastUtils.showToast(context, "Cette date de début est définie comme un jour férié ou de congés", 3);
 
       setState(() {
-        dataChanging=false;
+        dateChanging=false;
       });
       return;
       }
@@ -344,7 +105,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       });
       log.d('after The start date is :$startDate');
       setState(() {
-        dataChanging=false;
+        dateChanging=false;
       });
 
 
@@ -353,26 +114,26 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   Future<void> handleRegisterEmployee(BuildContext context) async {
 
 
-    // Employee employee=Employee
-    //   ( firstname: firstname,
-    //     gender: gender, lastname: lastname,
-    //     email: email, service:serviceName,
-    //     startDate: start, entryTime: entryTime,
-    //     exitTime: exitTime);
+    widget.employee=Employee
+      ( firstname: firstname,
+        gender: gender, lastname: lastname,
+        email: email, service:serviceName,
+        startDate: start, entryTime: entryTime,
+        exitTime: exitTime);
 
-    Employee employee=Employee
-      ( firstname: 'John',
-        gender: 'M', lastname: 'LOLA',
-        email: 'email', service:'Direction',
-        startDate: DateTime.now(), entryTime: '08:00',
-        exitTime: '17:00');
+
+    //  Employee
+    //   ( firstname: 'John',
+    //     gender: 'M', lastname: 'LOLA',
+    //     email: 'email@gmail.com', service:'Direction',
+    //     startDate: start, entryTime: '08:00',
+    //     exitTime: '17:00');
 
 
     String message;
 
+    if(await EmployeeDB().exists(widget.employee!.email)){
 
-    if(await EmployeeDB().exists(employee.email)){
-      disableFingerprintEnrollmentIfPreviouslyEnabled();
       message=  'Cette adresse email a été déjà attribuée à un employé';
       ToastUtils.showToast(context, message, 3);
       return;
@@ -383,14 +144,13 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         MaterialPageRoute(
             builder: (context) =>
              EnrollFingerprint(
-               employee:employee,)));
+               employee:widget.employee!,)));
 
 
   }
 
   late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
 
- bool fingerprintSaved=false;
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(message),
@@ -402,8 +162,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     items = await ServiceDB().getServicesNames();
     DateTime now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
-
-
 
   }
 
@@ -434,7 +192,6 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
   @override
   Widget build(BuildContext context) {
-    employee = widget.employee;
 
     retrieveServices();
 
@@ -450,41 +207,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                   fontSize:appBarTextFontSize,
                  ),
               ),
-              actions: [
-             if(canEnrollFingerprint)   Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Container(
-                    height: 40,
-                    width: 40,
-                    alignment: Alignment.center,
-                    margin: const EdgeInsets.only(left: 8),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.blueGrey,
-                    ),
-                    child:  IconButton(
-                      tooltip: "Enregistrer l'empreinte",
-                      onPressed: () async {
-
-                       await  showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return CustomAlertDialog(
-                              title: "Enregistrer l'empreinte",
-                              message: "Continuer pour enregistrer l'empreinte de l'employé",
-                              positiveOption: 'Continuer',
-                              context: context,
-                            );
-                          },
-                        );
-                       enrolFingerprint();
-                      },
-                      icon: const Icon(Icons.fingerprint, color: Colors.black, ),
-                    ),
-                  ),
-                )
-              ],
-            ),
+                          ),
 
             body: ListView(
               scrollDirection: Axis.vertical,
@@ -502,7 +225,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                           child: Column(
                             children: [
                               TextFormField(
-                                  initialValue: employee?.lastname,
+                                  initialValue: widget.employee?.lastname,
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
 
@@ -510,6 +233,8 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                     if (v != null && v.isNotEmpty) {
                                       lastname = v;
+                                      log.d('Value changement');
+                                      // widget.employee?.lastname=lastname;
                                       return null;
                                     } else {
                                       return "Entrez le nom de l'employé";
@@ -536,7 +261,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               TextFormField(
-                                  initialValue: employee?.firstname,
+                                  initialValue: widget.employee?.firstname,
                                   keyboardType: TextInputType.name,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
@@ -544,6 +269,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                     if (v != null && v.isNotEmpty) {
                                       firstname = v;
+                                      // widget.employee?.firstname=firstname;
                                       return null;
                                     }
                                     return "Entrez le(s) prenom(s) de l'employé";
@@ -569,7 +295,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               TextFormField(
-                                  initialValue: employee?.email,
+                                  initialValue: widget.employee?.email,
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
                                   validator: (String? v) {
@@ -578,6 +304,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                     if (v != null &&
                                         EmailValidator.validate(v)) {
                                       email = v;
+                                      widget.employee?.email=email;
                                       return null;
                                     }
                                     return "Email invalide";
@@ -603,7 +330,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: employee?.gender,
+                                value: widget.employee?.gender,
                                 items: const [
                                   DropdownMenuItem(
 
@@ -625,6 +352,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                   if (v != null) {
                                     gender = v;
+                                    // widget.employee?.gender=gender;
                                     return null;
                                   }
                                   return "Sélectionnez le sexe";
@@ -646,7 +374,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: employee?.service,
+                                value: widget.employee?.service,
                                 items: items.map((String item) {
                                   return DropdownMenuItem<String>(
                                     value: item,
@@ -660,6 +388,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                   if (v != null) {
                                     serviceName = v;
+                                    // widget.employee?.service=serviceName;
                                     return null;
                                   }
                                   return "Sélectionnez le service";
@@ -684,7 +413,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: employee?.entryTime,
+                                value: widget.employee?.entryTime,
                                 items:  const [
                                   DropdownMenuItem(
                                     value: "07:00",
@@ -710,6 +439,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                   if (v != null) {
                                     entryTime = v;
+                                    // widget.employee?.entryTime=entryTime;
                                     return null;
                                   }
                                   return "Sélectionnez l'heure d'arrivée";
@@ -734,7 +464,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: employee?.exitTime,
+                                value: widget.employee?.exitTime,
                                 items: const [
                                   DropdownMenuItem(
                                     value: "12:00",
@@ -799,15 +529,22 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                               const SizedBox(height: 12),
                                 DateActionContainer
                                   (
-                                  dateChanging: dataChanging,
+                                  dateChanging: dateChanging,
                                     title: 'Date de début',
                                     selectedDate:
-                                    employee==null?startDate
+                                    widget.employee==null?startDate
 
-                                        : utils.frenchFormatDate(employee?.startDate),
+                                        : utils.frenchFormatDate(widget.employee?.startDate),
                                     onSelectDate:
                                         () async {
                                           await  selectDate();
+
+                                          if( widget.employee!=null){
+                                           setState(() {
+                                             widget.employee?.startDate=start;
+                                           });
+                                          }
+
                                         }
                                 ),
                               const SizedBox(height: 12),
@@ -830,18 +567,14 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                   CustomElevatedButton(
                                     text: 'Suivant',
                                     onPressed: () async {
-                                      //
-                                      // if (_key.currentState!.validate()) {
-                                      //   _key.currentState!.save();
-                                      //
-                                      //   handleRegisterEmployee(context);
-                                      // }
 
-                                      handleRegisterEmployee(context);
+                                      if (_key.currentState!.validate()) {
+                                        _key.currentState!.save();
 
-
-
-                                    },),
+                                        handleRegisterEmployee(context);
+                                      }
+                                    },
+                                  ),
                                 ],
                               )
                             ],

@@ -30,6 +30,8 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
   }
   @override
   Widget build(BuildContext context) {
+
+    log.d('The email is:${widget.employee.email}');
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
