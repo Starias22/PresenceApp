@@ -106,20 +106,26 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
   Future<void> handleRegisterEmployee(BuildContext context) async {
 
 
+    int? fingerprintId;
+
+    // if(widget.employee!=null) {
+    //   log.d(' is fingerprint id null? ${widget.employee?.fingerprintId==null}');
+    // }
+
+     if(widget.employee!=null&&widget.employee!.fingerprintId!=null){
+      fingerprintId=widget.employee!.fingerprintId;
+    }
+    log.d('tHE FINGERPRINTID IS § $fingerprintId');
+    log.d('---tHE FINGERPRINTID IS § ${widget.employee?.fingerprintId}');
     widget.employee=Employee
       ( firstname: firstname,
         gender: gender, lastname: lastname,
         email: email, service:serviceName,
         startDate: start, entryTime: entryTime,
-        exitTime: exitTime);
+        exitTime: exitTime,
+    fingerprintId:fingerprintId );
 
 
-    //  Employee
-    //   ( firstname: 'John',
-    //     gender: 'M', lastname: 'LOLA',
-    //     email: 'email@gmail.com', service:'Direction',
-    //     startDate: start, entryTime: '08:00',
-    //     exitTime: '17:00');
 
 
     String message;

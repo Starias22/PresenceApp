@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
@@ -17,6 +18,7 @@ class EnrollFingerprint extends StatefulWidget {
 }
 
 class _EnrollFingerprintState extends State<EnrollFingerprint> {
+  int? fingerprintId;
   bool enrollmentInProgress=false;
   bool started=false;
   bool creationInProgress=false;
@@ -62,7 +64,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
 
               SizedBox(height: MediaQuery.of(context).size.height *0.05),
               Center(
-                child: Text(message,
+                child: Text( widget.employee.fingerprintId==null? message:"Plus qu'une étape! Cliquez sur Achever" ,
                   style: const TextStyle(fontSize: 15),
                   textAlign: TextAlign.center,
 
@@ -82,10 +84,9 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                 ),
               SizedBox(height: MediaQuery.of(context).size.height *0.10),
              creationInProgress?
-             const CircularProgressIndicator(): CustomElevatedButton(
+             const CircularProgressIndicator():
+             CustomElevatedButton(
                 onPressed: () async {
-      int? fingerprintId;
-
                   if(buttonText=='Démarrer'||buttonText=='Reessayer')
 
                   {
@@ -97,6 +98,9 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   });
 
                 fingerprintId=  await enrolFingerprint();
+                  log.d('The fingerprint id is :'
+                      ' $fingerprintId');
+                  widget.employee.fingerprintId=fingerprintId;
 
                   setState(() {
                   enrollmentInProgress=false;
@@ -126,6 +130,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   }
 
                   else if(buttonText=='Achever'){
+                    log.d('Complete employee registration');
 
                     setState(() {
                       creationInProgress=true;
@@ -134,9 +139,13 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                     //complete the employee registration
                     widget.employee.fingerprintId=fingerprintId;
 
+
+                    log.d('-----The fingerprint id is :'
+                        ' ${widget.employee.fingerprintId}');
+
                     if(
-                    true
-                    // await EmployeeDB().create(widget.employee)
+                    // true
+                    await EmployeeDB().create(widget.employee)
                     )
                       {
 
@@ -149,6 +158,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                     setState(() {
                       creationInProgress=false;
                     });
+
                     Navigator.pushReplacement(
                         context,
                         MaterialPageRoute(
@@ -156,14 +166,9 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                                 RegisterEmployee()));
                   }
                   else if(buttonText=='Annuler'){
-                    //cancel the fingerprint enrollment process
-                    // setState(() {
-                    //   creationInProgress=true;
-                    // });
-                    //I should stop reading and update the
-                    // text--placer votre doigt sur le capteur
+
                     cancelled=true;
-                    await ESP32().sendData('-1');
+                    await ESP32().sendData('annuler');
 
                     setState(() {
                       buttonText='Reessayer';
@@ -175,7 +180,8 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   }
 
                 },
-                text: buttonText,
+                text:
+                widget.employee.fingerprintId==null? buttonText:'Achever',
               ),
             ],
           ),
@@ -243,6 +249,7 @@ updateMessage('Vérification de la configuration du microcontrôleur');
     if(data==150) {
 
       updateMessage("Aucun doigt détecté");
+      ESP32().sendData('enroll');
       return null;
     }
 
@@ -285,6 +292,7 @@ log.d('Merveil le Cornard****');
       // log.d('Merveil salot:$data');
       if(data==151){
         updateMessage("Doigt non retiré! Veuillez reprendre",val: false);
+        ESP32().sendData('enroll');
         return null;
       }
 
@@ -300,6 +308,7 @@ log.d('Merveil le Cornard****');
 
       if (data == 254) {
         updateMessage("Aucun doigt détecté! Echec de l'enregistrement");
+        ESP32().sendData('enroll');
         return null;
       }
 
@@ -358,14 +367,15 @@ log.d('Merveil le Cornard****');
 
           if(x==data){
             updateMessage("Aucun doigt détecté! Echec de l'enregistrement");
-
+            ESP32().sendData('enroll');
           }
 
 
         }
 
         else if (data == -15) {
-          updateMessage("Aucun doigt détecté");
+          updateMessage("Doigt non retiré. Veillez reprendre");
+          ESP32().sendData('enroll');
 
           return null;
         }

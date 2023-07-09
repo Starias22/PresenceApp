@@ -113,15 +113,6 @@ class _HandleHolidaysState extends State<HandleHolidays> {
         startDate: start, entryTime: entryTime,
         exitTime: exitTime);
 
-
-    //  Employee
-    //   ( firstname: 'John',
-    //     gender: 'M', lastname: 'LOLA',
-    //     email: 'email@gmail.com', service:'Direction',
-    //     startDate: start, entryTime: '08:00',
-    //     exitTime: '17:00');
-
-
     String message;
 
     if(await EmployeeDB().exists(widget.employee!.email)){
@@ -199,7 +190,7 @@ class _HandleHolidaysState extends State<HandleHolidays> {
               backgroundColor: appBarColor,
               centerTitle: true,
               title: const Text(
-                "Création de compte employé",
+                "Gestion des congés",
                 style: TextStyle(
                   fontSize:appBarTextFontSize,
                 ),
@@ -223,73 +214,6 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                           key: _key,
                           child: Column(
                             children: [
-                              TextFormField(
-                                  initialValue: widget.employee?.lastname,
-                                  keyboardType: TextInputType.name,
-                                  textInputAction: TextInputAction.next,
-
-                                  validator: (String? v) {
-
-                                    if (v != null && v.isNotEmpty) {
-                                      lastname = v;
-                                      log.d('Value changement');
-                                      // widget.employee?.lastname=lastname;
-                                      return null;
-                                    } else {
-                                      return "Entrez le nom de l'employé";
-                                    }
-                                  },
-                                  onSaved: (String? v) {
-                                  },
-                                  decoration: InputDecoration(
-                                      label: const Text('Nom:'),
-                                      hintText: "Ex: ADOKO",
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(0.0),
-                                        borderSide:
-                                        const BorderSide(color: Colors.red),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(20.0),
-                                        borderSide: const BorderSide(
-                                            color: Colors.green),
-                                      ))),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              TextFormField(
-                                  initialValue: widget.employee?.firstname,
-                                  keyboardType: TextInputType.name,
-                                  textInputAction: TextInputAction.next,
-                                  validator: (String? v) {
-                                    // return null;
-
-                                    if (v != null && v.isNotEmpty) {
-                                      firstname = v;
-                                      // widget.employee?.firstname=firstname;
-                                      return null;
-                                    }
-                                    return "Entrez le(s) prenom(s) de l'employé";
-                                  },
-                                  onSaved: (String? v) {
-                                  },
-                                  decoration: InputDecoration(
-                                      label: const Text('Prenom(s):'),
-                                      hintText: "Ex: John",
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(0.0),
-                                        borderSide:
-                                        const BorderSide(color: Colors.red),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(20.0),
-                                        borderSide: const BorderSide(
-                                            color: Colors.green),
-                                      ))),
                               const SizedBox(
                                 height: 12,
                               ),
@@ -311,8 +235,8 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                                   onSaved: (String? v) {
                                   },
                                   decoration: InputDecoration(
-                                      label: const Text('Email:'),
-                                      hintText: "Ex: employe@gmail.com",
+                                      label: const Text('Description'),
+                                      hintText: "Ex: Description du congé",
                                       border: OutlineInputBorder(
                                         borderRadius:
                                         BorderRadius.circular(0.0),
@@ -325,50 +249,6 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                                         borderSide: const BorderSide(
                                             color: Colors.green),
                                       ))),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              DropdownButtonFormField(
-                                value: widget.employee?.gender,
-                                items: const [
-                                  DropdownMenuItem(
-
-                                    value: "M",
-                                    child: Text("M"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "F",
-                                    child: Text("F"),
-                                  ),
-                                ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
-                                onSaved: (val) => setState(() {
-                                  //_service = int.parse(_valueSaved);
-                                }),
-                                validator: (String? v) {
-                                  // return null;
-
-                                  if (v != null) {
-                                    gender = v;
-                                    // widget.employee?.gender=gender;
-                                    return null;
-                                  }
-                                  return "Sélectionnez le sexe";
-                                },
-                                decoration: InputDecoration(
-                                    labelText: 'Selectionnez le sexe',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(0.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.red),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.green),
-                                    )),
-                              ),
                               const SizedBox(
                                 height: 12,
                               ),
@@ -397,123 +277,6 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                                 }),
                                 decoration: InputDecoration(
                                     labelText: 'Selectionnez le service',
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(0.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.red),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.green),
-                                    )),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              DropdownButtonFormField(
-                                value: widget.employee?.entryTime,
-                                items:  const [
-                                  DropdownMenuItem(
-                                    value: "07:00",
-                                    child: Text("07:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "08:00",
-                                    child: Text("08:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "09:00",
-                                    child: Text("09:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "10:00",
-                                    child: Text("10:00"),
-                                  ),
-                                ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
-                                validator: (String? v) {
-                                  // return null;
-
-                                  if (v != null) {
-                                    entryTime = v;
-                                    // widget.employee?.entryTime=entryTime;
-                                    return null;
-                                  }
-                                  return "Sélectionnez l'heure d'arrivée";
-                                },
-                                onSaved: (val) => setState(() {
-                                  // _service = int.parse(_valueSaved);
-                                }),
-                                decoration: InputDecoration(
-                                    labelText: "Selectionnez l'heure d'arrivée",
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(0.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.red),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(20.0),
-                                      borderSide:
-                                      const BorderSide(color: Colors.green),
-                                    )),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              DropdownButtonFormField(
-                                value: widget.employee?.exitTime,
-                                items: const [
-                                  DropdownMenuItem(
-                                    value: "12:00",
-                                    child: Text("12:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "13:00",
-                                    child: Text("13:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "14:00",
-                                    child: Text("14:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "15:00",
-                                    child: Text("15:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "16:00",
-                                    child: Text("16:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "17:00",
-                                    child: Text("17:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "18:00",
-                                    child: Text("18:00"),
-                                  ),
-                                  DropdownMenuItem(
-                                    value: "19:00",
-                                    child: Text("19:00"),
-                                  ),
-                                ],
-                                onChanged: (val) =>
-                                    setState(() => _valueChanged = val!),
-                                onSaved: (val) => setState(() {
-                                  // _service = int.parse(_valueSaved);
-                                }),
-                                validator: (String? v) {
-                                  // return null;
-
-                                  if (v != null) {
-                                    exitTime = v;
-                                    return null;
-                                  }
-                                  return "Sélectionnez l'heure de sortie";
-                                },
-                                decoration: InputDecoration(
-                                    labelText: "Selectionnez l'heure de sortie",
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(0.0),
                                       borderSide:
