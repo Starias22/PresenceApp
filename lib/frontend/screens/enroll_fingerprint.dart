@@ -34,7 +34,6 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
   @override
   Widget build(BuildContext context) {
 
-    log.d('The email is:${widget.employee.email}');
     return SafeArea(
         child: Scaffold(
             appBar: AppBar(
@@ -64,7 +63,8 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
 
               SizedBox(height: MediaQuery.of(context).size.height *0.05),
               Center(
-                child: Text( widget.employee.fingerprintId==null? message:"Plus qu'une étape! Cliquez sur Achever" ,
+                child: Text( widget.employee.fingerprintId==null?
+                message:"Plus qu'une étape! Cliquez sur Achever" ,
                   style: const TextStyle(fontSize: 15),
                   textAlign: TextAlign.center,
 
@@ -130,7 +130,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   }
 
                   else if(buttonText=='Achever'){
-                    log.d('Complete employee registration');
+                    updateMessage("Enregistrement en cours",val: false);
 
                     setState(() {
                       creationInProgress=true;

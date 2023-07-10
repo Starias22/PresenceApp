@@ -22,26 +22,16 @@ class EmployeeDB{
     employee.serviceId=(await ServiceDB().getServiceIdByName(employee.service))!;
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
-    // int uniqueCode;
-    // do{
-    //   uniqueCode=utils.generateRandomCode();
-    // }while(await uniqueCodeExists(uniqueCode) );
 
-    //employee.uniqueCode=uniqueCode;
+    if(employee.startDate.isAtSameMomentAs(today)) employee.status=EStatus.absent;
+
        await _employee.add(employee.toMap());
     employee.id=(await getEmployeeIdByEmail(employee.email))!;
 
     _employee.doc(employee.id).update({'id':employee.id});
+    PresenceDB().setAttendance(employee.id, today);
 
-    if(employee.startDate.isAtSameMomentAs(today)) employee.status=EStatus.absent;
-    if(employee.status==EStatus.absent) {
-      Presence presence=Presence(date: today, employeeId: employee.id, status: EStatus.absent);
-      presence.employeeService=employee.service;
 
-      PresenceDB().create(
-          presence
-      );
-    }
     return true;
   }
 
@@ -85,16 +75,6 @@ class EmployeeDB{
 
   }
 
-  // Future<void> deleteUniqueCode(String documentId) async {
-  //   var documentReference = _employee.
-  //   doc(documentId);
-  //   await documentReference.update({
-  //     'unique_code': FieldValue.delete(),
-  //   });
-
-  //}
-
-
   Future<String?> getEmployeeIdByFingerprintId(int fingerprintId) async {
     QuerySnapshot querySnapshot = await _employee
         .where('fingerprint_id', isEqualTo: fingerprintId)
@@ -106,21 +86,6 @@ class EmployeeDB{
     }
     return null;
   }
-
-  //
-  // Future<String?> getEmployeeIdByUniqueCode(int uniqueCode) async {
-  //   QuerySnapshot querySnapshot = await _employee
-  //       .where('unique_code', isEqualTo: uniqueCode)
-  //       .limit(1)
-  //       .get();
-  //   if (querySnapshot.docs.isNotEmpty) {
-  //     return querySnapshot.docs.first.id;
-  //   }
-  //   return null;
-  // }
-
-
-
 
   Future<Employee> getEmployeeById(String id) async {
     DocumentSnapshot<Map<String, dynamic>> snapshot =

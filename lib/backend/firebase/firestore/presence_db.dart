@@ -27,6 +27,9 @@ class PresenceDB {
     if (await exists(presence.date,presence.employeeId)) return false;
 
     _presence.add(presence.toMap());
+    presence.id=(await getPresenceId(presence.date,presence.employeeId))!;
+
+    _presence.doc(presence.id).update({'id':presence.id});
     return true;
   }
 
@@ -1052,14 +1055,13 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
   Future<void> setAttendance(String employeeId,DateTime date) async {
     EStatus status;
 
-    //log.i('attendance setting for $employeeId the data');
     Employee employee=await EmployeeDB().getEmployeeById(employeeId);
 
     if(employee.startDate.isAfter(date)){
     return;
     }
 
-    if(/*employee.status==EStatus.pending&&*/
+    if(
     employee.startDate.isAtSameMomentAs(date)){
       EmployeeDB().updateCurrentStatus(employeeId, EStatus.absent);
 
@@ -1079,12 +1081,14 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
       status=EStatus.absent;
 
     }
-    Presence presence=Presence(date: date, employeeId: employeeId, status: status);
-    presence.employeeService=employee.service;
+    Presence presence=Presence(
+        date: date, employeeId: employeeId, status: status,
+    employeeService: employee.service);
+    // presence.employeeService=employee.service;
 
     await create(presence);
-    presence.id=(await getPresenceId(date, employeeId))!;
-    _presence.doc(presence.id).update({'id':presence.id});
+    // presence.id=(await getPresenceId(date, employeeId))!;
+    // _presence.doc(presence.id).update({'id':presence.id});
 
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);

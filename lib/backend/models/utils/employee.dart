@@ -19,7 +19,6 @@ class Employee {
   String? pictureDownloadUrl;
   late String id, firstname, lastname, email, gender;
   int? fingerprintId;
-  //int uniqueCode;
   EStatus status;
   late DateTime startDate;
   late String serviceId;

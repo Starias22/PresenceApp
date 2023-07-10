@@ -574,6 +574,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
 
                                       if (_key.currentState!.validate()) {
                                         _key.currentState!.save();
+                                        // await EmployeeDB().create(widget.employee!);
 
                                         handleRegisterEmployee(context);
                                       }
