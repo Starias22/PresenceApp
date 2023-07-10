@@ -1,15 +1,9 @@
 // ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
-
-import 'package:email_validator/email_validator.dart';
-
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
-import 'package:presence_app/frontend/screens/enroll_fingerprint.dart';
+import 'package:presence_app/backend/models/utils/holiday.dart';
+import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/date_action_widget.dart';
@@ -29,7 +23,9 @@ class _HandleHolidaysState extends State<HandleHolidays> {
   DateTime? selectedDate;
   late DateTime today;
   late DateTime start;
-  bool dateChanging=false;
+  late DateTime end;
+  bool startDateChanging=false;
+  bool endDateChanging=false;
   DateTime initialDate=DateTime(1970,1,1);
 
   @override
@@ -39,13 +35,14 @@ class _HandleHolidaysState extends State<HandleHolidays> {
   }
 
 
-  Future<void> selectDate() async {
+  Future<void> selectDate({bool isStartDate=true}) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return CustomAlertDialog(
           title: "Sélection de date",
-          message: "Continuer pour sélectionner la date de début de travail de l'employé",
+          message: "Continuer pour sélectionner la date de"
+              " ${isStartDate?'début':'fin'} de congé",
           positiveOption: 'Continuer',
           context: context,
 
@@ -53,86 +50,68 @@ class _HandleHolidaysState extends State<HandleHolidays> {
       },
     );
 
-    DateTime lastDate=utils.add30Days(today);
+    DateTime lastDate=
+    utils.addAYear(isStartDate?today:start);
     selectedDate = await  showDatePicker(context: context,
-
       locale: const Locale('fr'),
-      initialDate:initialDate ,
-      firstDate: initialDate ,
+      initialDate:isStartDate? initialDate:start ,
+      firstDate: isStartDate? initialDate:start ,
       lastDate:lastDate,
       currentDate: today,
     );
+    action(isStartDate);
 
+
+
+  }
+void updateDateController(bool isStartDate){
+  setState(() {
+    if(isStartDate) {
+      startDateChanging=startDateChanging;
+    } else {
+      endDateChanging=!endDateChanging;
+    }
+  });
+}
+
+  void updateDate(bool isStartDate){
     setState(() {
-      dateChanging=true;
+      if(isStartDate) {
+        start=selectedDate!;
+        end=start;
+      } else {
+        end=selectedDate!;
+      }
     });
+  }
+  void action(bool isStartDate){
+    updateDateController(isStartDate);
 
     if(selectedDate==null){
-      ToastUtils.showToast(context, "Date de début de travail non sélectionnée", 3);
-      setState(() {
-        dateChanging=false;
-      });
+      ToastUtils.showToast(context, "Date non sélectionnée", 3);
+     updateDateController(isStartDate);
       return;
     }
-    start=selectedDate!;
-
-    if(utils.isWeekend(start)){
-
-      ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
-      setState(() {
-        dateChanging=false;
-      });
-      return;
-    }
+    updateDate(isStartDate);
 
 
-    if((await HolidayDB().isHoliday(start))){
+    //
+    // if((await HolidayDB().isHoliday(start))){
+    //
+    //   ToastUtils.showToast(context, "Cette date de début est définie comme un jour férié ou de congés", 3);
+    //
+    //   setState(() {
+    //     startDateChanging=false;
+    //   });
+    //   return;
+    // }
 
-      ToastUtils.showToast(context, "Cette date de début est définie comme un jour férié ou de congés", 3);
-
-      setState(() {
-        dateChanging=false;
-      });
-      return;
-    }
-
-    setState(() {
-      dateChanging=false;
-    });
-
+    updateDateController(isStartDate);
 
   }
-  //#######################################################################
-  Future<void> handleRegisterEmployee(BuildContext context) async {
-
-
-    widget.employee=Employee
-      ( firstname: firstname,
-        gender: gender, lastname: lastname,
-        email: email, service:serviceName,
-        startDate: start, entryTime: entryTime,
-        exitTime: exitTime);
-
-    String message;
-
-    if(await EmployeeDB().exists(widget.employee!.email)){
-
-      message=  'Cette adresse email a été déjà attribuée à un employé';
-      ToastUtils.showToast(context, message, 3);
-      return;
-
-    }
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) =>
-                EnrollFingerprint(
-                  employee:widget.employee!,)));
-
-
-  }
-
-  late String firstname, lastname, email, serviceName, gender, entryTime, exitTime;
+  HolidayType type=HolidayType.holiday;
+  String? description;
+  String? employeeId='';
 
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -142,13 +121,17 @@ class _HandleHolidaysState extends State<HandleHolidays> {
   }
 
   Future<void> retrieveServices() async {
-    items = await ServiceDB().getServicesNames();
+    items.add(utils.str(HolidayType.holiday));
+    items.add(utils.str(HolidayType.permission));
+    items.add(utils.str(HolidayType.leave));
+
     DateTime now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
-    initialDate= utils.isWeekend(today)?utils.getNextWorkDate(today):today;
+    initialDate=today;
 
     setState(() {
       start= initialDate;
+      end=initialDate;
 
     });
 
@@ -217,43 +200,9 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                               const SizedBox(
                                 height: 12,
                               ),
-                              TextFormField(
-                                  initialValue: widget.employee?.email,
-                                  keyboardType: TextInputType.emailAddress,
-                                  textInputAction: TextInputAction.next,
-                                  validator: (String? v) {
-                                    // return null;
 
-                                    if (v != null &&
-                                        EmailValidator.validate(v)) {
-                                      email = v;
-                                      widget.employee?.email=email;
-                                      return null;
-                                    }
-                                    return "Email invalide";
-                                  },
-                                  onSaved: (String? v) {
-                                  },
-                                  decoration: InputDecoration(
-                                      label: const Text('Description'),
-                                      hintText: "Ex: Description du congé",
-                                      border: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(0.0),
-                                        borderSide:
-                                        const BorderSide(color: Colors.red),
-                                      ),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderRadius:
-                                        BorderRadius.circular(20.0),
-                                        borderSide: const BorderSide(
-                                            color: Colors.green),
-                                      ))),
-                              const SizedBox(
-                                height: 12,
-                              ),
                               DropdownButtonFormField(
-                                value: widget.employee?.service,
+                                value: items[0],
                                 items: items.map((String item) {
                                   return DropdownMenuItem<String>(
                                     value: item,
@@ -266,17 +215,16 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                                   // return null;
 
                                   if (v != null) {
-                                    serviceName = v;
-                                    // widget.employee?.service=serviceName;
+                                  type=utils.convertHoliday(v);
                                     return null;
                                   }
-                                  return "Sélectionnez le service";
+                                  return "Sélectionnez le type de congé";
                                 },
                                 onSaved: (val) => setState(() {
                                   // _service = int.parse(_valueSaved);
                                 }),
                                 decoration: InputDecoration(
-                                    labelText: 'Selectionnez le service',
+                                    labelText: 'Type de congé',
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(0.0),
                                       borderSide:
@@ -289,56 +237,138 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                                     )),
                               ),
                               const SizedBox(height: 12),
+                              TextField(
+                                keyboardType: TextInputType.multiline,
+                                maxLines: null, // Permet d'avoir plusieurs lignes de texte
+                                decoration: InputDecoration(
+                                  labelText: 'Description (facultatif)',
+                                  hintText: 'Ex: Description du congé',
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(0.0),
+                                    borderSide: const BorderSide(color: Colors.red),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20.0),
+                                    borderSide: const BorderSide(color: Colors.green),
+                                  ),
+                                ),
+                                onChanged: (String value) {
+                                description=value;
+                                },
+                              ),
+                              const SizedBox(
+                                height: 12,
+                              ),
+                              DropdownButtonFormField(
+                                value: 'no',
+                                items: const [
+                                  DropdownMenuItem(
+
+                                    value: "yes",
+                                    child: Text("Oui"),
+                                  ),
+                                  DropdownMenuItem(
+                                    value: "no",
+                                    child: Text("Non"),
+                                  ),
+                                ],
+                                onChanged: (val) {
+
+                                    setState(() => _valueChanged = val!
+                                    );
+                                    log.d('We are inside');
+
+                                    if (_valueChanged=='yes')
+                                    {
+                                      employeeId=null;
+                                    }
+                                    if (_valueChanged=='no')
+                                    {
+                                      employeeId='';
+                                    }
+                                },
+                                onSaved: (val) => setState(() {
+
+                                }),
+                                validator: (String? v) {
+                                  log.d('We are inside');
+
+                                    if (v=='yes')
+                                      {
+                                        employeeId=null;
+                                      }
+                                    if (v=='no')
+                                    {
+                                      employeeId='';
+                                    }
+                                    return null;
+
+                                },
+                                decoration: InputDecoration(
+                                    labelText: 'Tous les employés?',
+                                    border: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(0.0),
+                                      borderSide:
+                                      const BorderSide(color: Colors.red),
+                                    ),
+                                    focusedBorder: OutlineInputBorder(
+                                      borderRadius: BorderRadius.circular(20.0),
+                                      borderSide:
+                                      const BorderSide(color: Colors.green),
+                                    )),
+                              ),
+
+                              const SizedBox(
+                                height: 12,
+                              ),
                               DateActionContainer
                                 (
-                                  dateChanging: dateChanging,
-                                  title: 'Date de début',
+                                  dateChanging: startDateChanging,
+                                  title: 'Début',
                                   selectedDate:
                                   utils.frenchFormatDate(
-                                      widget.employee==null?
-                                      start:widget.employee?.startDate),
+                                  start),
                                   onSelectDate:
                                       () async {
                                     await  selectDate();
 
-                                    if( widget.employee!=null){
-                                      setState(() {
-                                        widget.employee?.startDate=start;
-                                      });
-                                    }
-
                                   }
                               ),
                               const SizedBox(height: 12),
+                              DateActionContainer
+                                (
+                                  dateChanging: endDateChanging,
+                                  title: 'Fin   ',
+                                  selectedDate:
+                                  utils.frenchFormatDate(end),
+                                  onSelectDate:
+                                      () async {
+                                    await  selectDate(isStartDate: false);
 
-                              Row(
-                                mainAxisAlignment:
-                                MainAxisAlignment.spaceAround,
-                                children: [
-                                  CustomElevatedButton(text: "Annuler",
+                                  }
+                              ),
+                              CustomElevatedButton
+                                (
+                                  text: 'Suivant',
+                                  onPressed: (){
 
-                                    onPressed: () =>
-                                        Navigator.pushReplacement(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    HandleHolidays()))
-                                    ,
-                                  ),
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                EmployeesList(
+                                                  holiday: Holiday(
+                                                      employeeId: employeeId,
+                                                    startDate: start,
+                                                    endDate: end,
+                                                    type: type,
+                                                    description: description
+                                                  ),
+                                                  )
+                                        )
+                                    );
 
-                                  CustomElevatedButton(
-                                    text: 'Suivant',
-                                    onPressed: () async {
-
-                                      if (_key.currentState!.validate()) {
-                                        _key.currentState!.save();
-
-                                        handleRegisterEmployee(context);
-                                      }
-                                    },
-                                  ),
-                                ],
-                              )
+                                  })
                             ],
                           ),
                         ),

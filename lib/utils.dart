@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:logger/logger.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/holiday.dart';
 
 import 'backend/models/presence_report_model/presence_report.dart';
 
@@ -128,8 +129,23 @@ log.d(DateTime(date.year, date.month, day));
     return DateTime(date.year, date.month, day);
   }
 
+  HolidayType convertHoliday(String type){
+    if(type=='holiday') {
+      return HolidayType.holiday;
+    }
+    if(type=='permission') {
+      return HolidayType.permission;
+    }
+    // if(type=='holiday') {
+      return HolidayType.leave;
+    // }
+
+  }
   DateTime add30Days(DateTime date) {
     return date.add(const Duration(days: 30));
+  }
+  DateTime addAYear(DateTime date) {
+    return date.add(const Duration(days: 30*12));
   }
 
   String frenchFormatDate(DateTime? dateTime) {

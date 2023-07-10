@@ -4,7 +4,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
-import 'package:presence_app/frontend/screens/bottom_nav_bar.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 
 

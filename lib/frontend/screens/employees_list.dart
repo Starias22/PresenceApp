@@ -1,14 +1,21 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
+import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/backend/models/utils/holiday.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/employee_card.dart';
 import 'package:presence_app/frontend/widgets/cardTabbar.dart';
 import 'package:presence_app/utils.dart';
 
 class EmployeesList extends StatefulWidget {
-  bool showCheckBoxes;
+
+  Holiday? holiday;
    EmployeesList({Key? key,
-     this.showCheckBoxes=false
+
+     this.holiday
   }) : super(key: key);
 
   @override
@@ -23,6 +30,8 @@ class _EmployeesListState extends State<EmployeesList> {
 
   late List<Employee> employees = [];
   late List<Employee> employeesAff = [];
+  bool holidayCreationInProgress=false;
+  List<String> selectedEmployeesIds = []; // Add this line
 
   @override
   void initState() {
@@ -75,11 +84,80 @@ class _EmployeesListState extends State<EmployeesList> {
       length: tabBars.length,
       child: Scaffold(
         appBar: AppBar(
+
+          actions: [
+            if(widget.holiday!=null&&holidayCreationInProgress)
+              const CircularProgressIndicator()
+
+             else if(widget.holiday!=null&&!holidayCreationInProgress)
+               IconButton(
+                  onPressed: () async {
+
+                    if(selectedEmployeesIds.isEmpty&&
+                        widget.holiday!.employeeId!=null)
+                      {
+                        ScaffoldMessenger.of(context).showSnackBar
+                          (const SnackBar(
+                          content: Text("Aucun employé sélectionné"),
+                          duration: Duration(seconds: 3),
+                        ));
+                        return;
+                      }
+                    setState(() {
+                      holidayCreationInProgress=true;
+                    });
+                    if(employees.length==selectedEmployeesIds.length) {
+                      widget.holiday!.employeeId=null;
+                    }
+
+                    bool created=false;
+                    if(widget.holiday!.employeeId==null)
+                      {
+                      created=  await HolidayDB().create(widget.holiday!);
+                      }
+
+                    else{
+
+                      for(var employeeId in selectedEmployeesIds){
+
+                        widget.holiday?.employeeId=employeeId;
+                        created=await HolidayDB().create(widget.holiday!);
+
+                      }
+                    }
+                    setState(() {
+                      holidayCreationInProgress=false;
+                    });
+
+                      ScaffoldMessenger.of(context).showSnackBar
+                        (const SnackBar(
+                        content: Text("Congé créé avec succès"),
+                        duration: Duration(seconds: 3),
+                      ));
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const AppBarExample(
+                                )
+                        )
+                    );
+
+
+
+
+
+
+                  },
+                  icon: const Icon(Icons.holiday_village))
+
+          ],
           backgroundColor: appBarColor,
           centerTitle: true,
-          title: const Text(
-            "Liste des employés",
-            style: TextStyle(
+          title:  Text(
+            widget.holiday!=null?"Sélection des employés": "Liste des employés",
+            style: const TextStyle(
               fontSize: appBarTextFontSize,
             ),
 
@@ -88,6 +166,7 @@ class _EmployeesListState extends State<EmployeesList> {
         body:
         CustomScrollView(
           slivers: [
+
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.only(top: 3),
@@ -154,7 +233,23 @@ class _EmployeesListState extends State<EmployeesList> {
                       onTap: () {
                         },
                       child:
-                          EmployeeCard(employee: employeesAff[index])
+                          EmployeeCard(
+                            forHoliday: widget.holiday!=null,
+                            isChecked:
+                            widget.holiday!=null&& widget.holiday!.employeeId==null,
+                              employee: employeesAff[index],
+
+                            onEmployeeChecked:widget.holiday==null?null:
+                       (employee, isChecked) {
+
+                                if (isChecked) {
+                                  selectedEmployeesIds.add(employee.id);
+                                } else {
+                                  selectedEmployeesIds.remove(employee.id);
+                                }
+
+                            },
+                          )
                   ),
                   const Padding(
                     padding:
@@ -162,8 +257,11 @@ class _EmployeesListState extends State<EmployeesList> {
                     child: Divider(),
                   )
                 ],
+                
               );
             }))),
+
+
           ],
         ),
       ),

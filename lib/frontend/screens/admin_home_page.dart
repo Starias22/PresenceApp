@@ -1,493 +1,412 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/frontend/screens/adminCompte.dart';
-import 'package:presence_app/frontend/screens/admins_list.dart';
-import 'package:presence_app/frontend/screens/employees_list.dart';
-import 'package:presence_app/frontend/screens/pageConges.dart';
-import 'package:presence_app/frontend/screens/services_management.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
+import 'package:presence_app/frontend/screens/handle_holidays.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
+import 'package:presence_app/frontend/screens/services_management.dart';
 import 'package:presence_app/frontend/screens/welcome.dart';
+import 'package:presence_app/frontend/widgets/custom_button.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/utils.dart';
-import 'package:provider/provider.dart';
 
-class AdminHomePage extends StatefulWidget {
-  const AdminHomePage({Key? key}) : super(key: key);
+import 'adminCompte.dart';
+import 'admins_list.dart';
+import 'employees_list.dart';
 
-  @override
-  State<AdminHomePage> createState() => _AdminHomePageState();
-}
+/// Flutter code sample for [AppBar].
 
-class _AdminHomePageState extends State<AdminHomePage> {
-  late double width1;
+List<String> titles = <String>[
+  'Employés',
+  'Admins',
+  'Autres',
+];
+
+
+class AdminHomePage extends StatelessWidget {
+  const AdminHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    var appSettings = Provider.of<AppSettings>(context);
-    width1 = MediaQuery.of(context).size.width*4/5;
+    return MaterialApp(
+      theme: ThemeData(
+          colorSchemeSeed: const Color(0xff6750a4), useMaterial3: true),
+      home: const AppBarExample(),
+    );
+  }
+}
 
-    return Theme(
-        data: appSettings.isDarkMode ? ThemeData.dark() : ThemeData.light(),
-    child: Scaffold(
-      //put appbar here
+class AppBarExample extends StatelessWidget {
+  const AppBarExample({super.key});
 
-      body: ListView(
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height/13.5,
-            decoration: const BoxDecoration(
-              //shape: BoxShape.circle,
-              color:appBarColor,
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
+    const int tabsCount = 3;
 
-                  PopupMenuButton(
-                    icon: const Icon(Icons.menu, color: Colors.white,),
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                      PopupMenuItem(
-                        value: 1,
-                        child: Row(
-                          children: [
-                            const Text('Employés'),
-                            PopupMenuButton(
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                                  const PopupMenuItem(
-                                    value: 1,
-                                    child: Text('Créer un compte employé'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 2,
-                                    child: Text('Liste des employés'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 3,
-                                    child: Text('Rapport de présence'),
-                                  ),
-                                ],
-                              onSelected: (value){
-                                if(value == 1){
+    return DefaultTabController(
+      initialIndex: 1,
+      length: tabsCount,
+      child: Scaffold(
 
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder:
-                                          (BuildContext context) {
-                                        return  RegisterEmployee();
-                                      })
-                                  );
-                                }
-                                else if(value == 2){
+        appBar: AppBar(
+          // centerTitle: true,
+          automaticallyImplyLeading: false,
+          actions: [
 
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder:
-                                          (BuildContext context) {
-                                        return EmployeesList();
-                                      })
-                                  );
-                                }
-                                else if(value == 3){
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder:
-                                          (BuildContext context) {
-                                        return const EmployeePresenceReport();
-                                      })
-                                  );
-                                }
-                              },
-                            )
-                          ],
-                        ),
-                      ),
-                      PopupMenuItem(
-                        value: 2,
-                        child: Row(
-                          children: [
-                            const Text('Admins'),
+            PopupMenuButton(
+              icon: const Icon(
+                Icons.more_vert,
+                // size: 30,
+              ),
+              itemBuilder: (BuildContext context) => <PopupMenuEntry>[
+                // if(widget.email!=null)
+                const PopupMenuItem(
+                  value: 1,
+                  child: Text('Mon compte'),
+                ),
+                const PopupMenuItem(
+                  value: 2,
+                  child: Text('Langue'),
+                ),
+                const PopupMenuItem(
+                  value: 3,
+                  child: Text('Mode sombre'),
+                ),
+                const PopupMenuItem(
+                  value: 4,
+                  child: Text('Déconnexion'),
+                ),
 
-                            PopupMenuButton(
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry>[
-                                  const PopupMenuItem(
-                                    value: 1,
-                                    child: Text('Créer un compte admin'),
-                                  ),
-                                  const PopupMenuItem(
-                                    value: 2,
-                                    child: Text('Liste des admins'),
-                                  ),
-                                ],
-                              onSelected: (value){
-                                if(value == 1){
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder:
-                                          (BuildContext context) {
-                                        return const RegisterAdmin();
-                                      })
-                                  );
-                                } else
-                                if(value == 2){
+              ],
+              onSelected: (value) async {
+                if (value == 1) {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                          const AdminAccount()));
 
-                                  Navigator.push(context,
-                                      MaterialPageRoute(builder:
-                                          (BuildContext context) {
-                                        return  AfficherAdmins();
-                                      })
-                                  );
-                                }
-                              },
-                            )
-
-                          ],
-                        ),
-                      ),
-                      const PopupMenuItem(
-                        value: 3,
-                        child: Text('Congés'),
-                      ),
-                      const PopupMenuItem(
-                        value: 4,
-                        child: Text('Services'),
-                      ),
-                    ],
-                    onSelected: (value){
-                      if(value == 3){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder:
-                                (BuildContext context) {
-                              return const PageConges();
-                            }));
-                      } else
-                      if(value == 4){
-                        Navigator.push(context,
-                            MaterialPageRoute(builder:
-                                (BuildContext context) {
-                              return const ServicesManagement();
-                            })
-                        );
-                      }
-                    },
-                  ),
-
-                  const Center(
-                    child: Text("Page d'accueil admin",
-                    ),
-                  ),
-
-                  GestureDetector(
-                    onTap: (){
-                    },
-                    child: const CircleAvatar(
-
-                      backgroundImage: AssetImage("assets/images/profile.png"),
-                    ),
-                  ),
-
-                  PopupMenuButton<String>(
-                    onSelected: (value) async {
-                      if (value == "logout") {
-                        // Handle déconnexion option
-
-                        await Login().googleSingOut();
-                        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
-                          simple: true,
-                          showCloseIcon: false,
-                          duration: const Duration(seconds: 3) ,
-                          //width: MediaQuery.of(context).size.width-2*10,
-                          message:'Vous êtes déconnecté' ,
-                        ));
-
-                        Future.delayed(const Duration(seconds: 3),
-                                () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-
-                                      builder: (context) =>
-                                      const WelcomeImsp()));
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (BuildContext context) {
-                                    return const WelcomeImsp();
-                                  }));
-                            });
+                }
+                if (value == 2) {
 
 
-                      }
-                      else if (value == "handle") {
+                }if (value == 3) {
 
+
+                }
+                if (value == 4) {
+                  await Login().googleSingOut();
+                  ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+                    simple: true,
+                    showCloseIcon: false,
+                    duration: const Duration(seconds: 3) ,
+                    //width: MediaQuery.of(context).size.width-2*10,
+                    message:'Vous êtes déconnecté' ,
+                  ));
+
+                  Future.delayed(const Duration(seconds: 3),
+                          () {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
+
                                 builder: (context) =>
-                                const AdminAccount()));
-                      }
+                                const WelcomeImsp()));
+                        Navigator.push(context, MaterialPageRoute(
+                            builder: (BuildContext context) {
+                              return const WelcomeImsp();
+                            }));
+                      });
 
-                      else if (value == "dark") {
+                }
 
-                        await Provider.of<AppSettings>(context, listen: false)
-                            .setDarkMode(
-                          !Provider.of<AppSettings>(context, listen: false).
-                          isDarkMode,
-                        );
 
-                      }
-                      else if (value == "language") {
-                      }
-                    },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-
-                      const PopupMenuItem<String>(
-                        value: "handle",
-                        child: Text("Mon compte"),
-                      ),
-                      PopupMenuItem<String>(
-                        value: "dark",
-                        child: Text(appSettings.isDarkMode ? 'Mode lumineux' : 'Mode sombre'),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: "language",
-                        child: Text("Langue"),
-                      ),
-                      const PopupMenuItem<String>(
-                        value: "logout",
-                        child: Text("Déconnexion"),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+              },
             ),
 
+          ],
+          backgroundColor: appBarColor,
+          title: const Text('PresenceApp'),
+
+          notificationPredicate: (ScrollNotification notification) {
+            return notification.depth == 1;
+          },
+          // The elevation value of the app bar when scroll view has
+          // scrolled underneath the app bar.
+          scrolledUnderElevation: 4.0,
+          shadowColor: Theme.of(context).shadowColor,
+          bottom: TabBar(
+            tabs: <Widget>[
+              Tab(
+                icon: const Icon(Icons.person),
+                text: titles[0],
+              ),
+              Tab(
+                icon: const Icon(Icons.key),
+                text: titles[1],
+              ),
+              Tab(
+                icon: const Icon(Icons.brightness_5_sharp),
+                text: titles[2],
+              ),
+            ],
           ),
+        ),
+        body: TabBarView(
+          children: <Widget>[
 
-           Expanded(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 15),
-                    child: Text("Bienvenue !",
-                      style: GoogleFonts.pinyonScript(
-                        fontSize: 35,
-                      ),
-                    ),
-                  ),
-                  Text("PresenceApp à votre service...",
-                    style: GoogleFonts.tangerine(
-                      fontSize: 40,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: Text("Avec PresenceApp, surveillez de près les présences de vos employés...",
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.vollkorn(
-                        fontSize: 25,
-                      ),
-                    ),
-                  ),
+            ListView.builder(
+              itemCount: 1,
+              itemBuilder: (BuildContext context, int index) {
+                return Center(
+                  child: ListTile(
+                    // tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                    title: Container(
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width*4/5,
-                      child: GestureDetector(
-                        onTap: (){
-                          showMenu(
-                            context: context,
-                            position: const RelativeRect.fromLTRB(50, 370, 0, 0),
-                            items: [
-                              const PopupMenuItem(
-                                value: 1,
-                                child: Text('Créer un compte employé'),
+                      child: Column(
+
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 15),
+                            child: Text("Bienvenue !",
+                              style: GoogleFonts.pinyonScript(
+                                fontSize: 35,
                               ),
-                              const PopupMenuItem(
-                                value: 2,
-                                child: Text('Liste des employés'),
+                            ),
+                          ),
+                          const Text("PresenceApp à votre service...",
+                            style: TextStyle(fontSize: 20),
+                            // style:
+                            // GoogleFonts.pinyonScript(
+                            //   fontSize: 30,
+                            // ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 10),
+                            child: Image.asset(
+
+
+                              'assets/images/clock1.jpg',
+                              width:MediaQuery.of(context).size.width ,
+                              height:MediaQuery.of(context).size.height*0.35 ,
+                              fit: BoxFit.cover,
+                              //width: MediaQuery.of(context).size.width*0.75,
+                            ),
+
+                          ),
+
+
+                         SizedBox(
+                    height: MediaQuery.of(context).size.height/30),
+                          MenuButton(
+                              text: 'Créer un employé',
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder:
+                                        (BuildContext context) {
+                                      return RegisterEmployee(
+                                    employee:
+                                         Employee
+                                          ( firstname: 'John',
+                                            gender: 'M', lastname: 'LOLA',
+                                            email: 'email@gmail.com', service:'Direction',
+                                            startDate: DateTime(2023,7,10), entryTime: '08:00',
+                                            exitTime: '17:00'),
+
+                                      );
+                                    })
+                                );
+                              },
+                            width: MediaQuery.of(context).size.width*4/5,
                               ),
-                              const PopupMenuItem(
-                                value: 3,
-                                child: Text('Rapport de présence'),
-                              ),
-
-                              // const PopupMenuItem(
-                              //   value: 4,
-                              //   child: Text('Statistiques de présence'),
-                              // ),
-                            ],
-                            elevation: 10,
-                          ).then((value){
-
-                            if(value == 1){
-
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder:
-                                      (BuildContext context) {
-                                    return RegisterEmployee();
-                                  })
-                              );
-
-                            } else
-                            if(value == 2){
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height/50),
+                          MenuButton(
+                            text: 'Liste des employés',
+                            onPressed: (){
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
                                     return EmployeesList();
                                   })
                               );
-                            } else
-                            if(value == 3){
-
+                            },
+                            width: MediaQuery.of(context).size.width*4/5,
+                          ),
+                          SizedBox(
+                              height: MediaQuery.of(context).size.height/50),
+                          MenuButton(
+                            text: 'Rapport de présences',
+                            onPressed: (){
                               Navigator.push(context,
                                   MaterialPageRoute(builder:
                                       (BuildContext context) {
                                     return const EmployeePresenceReport();
                                   })
                               );
-                            }
-                           // else if(value == 4){
-                           //
-                           //    Navigator.push(context,
-                           //        MaterialPageRoute(builder:
-                           //            (BuildContext context) {
-                           //          return const EmployeePresenceStatistics();
-                           //        })
-                           //    );
-                           //  }
-                          });
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: const Color(0xFF0020FF),
-                          ),
-                          // Définir le style et la forme du bouton ici
-                          width: MediaQuery.of(context).size.width*4/5,
-                          height: 36,
-
-                            child: const Center(
-                              child: Text(
-                                'Gestion des employés',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                        )
-                        ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 35),
-                    child: SizedBox(
-                      child: GestureDetector(
-                        onTap: (){
-                          showMenu(
-                              context: context,
-                              position: const RelativeRect.fromLTRB(50, 450, 0, 0),
-                              items: [
-                                const PopupMenuItem(
-                                  value: 1,
-                                  child: Text('Créer un compte admin'),
-                                ),
-                                const PopupMenuItem(
-                                  value: 2,
-                                  child: Text('Liste des admins'),
-                                ),
-                              ],
-                          ).then((value){
-                            if(value == 1){
-
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder:
-                                      (BuildContext context) {
-                                    return const RegisterAdmin();
-                                  }));
-                            } else
-                            if(value == 2){
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder:
-                                      (BuildContext context) {
-                                    return const AfficherAdmins();
-                                  }));
-                            }
-                          });
-                        },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                              color: const Color(0xFF0020FF),
-                            ),
-                            // Définir le style et la forme du bouton ici
+                            },
                             width: MediaQuery.of(context).size.width*4/5,
-                            height: 36,
+                          ),
+                        ],
+                      ),
+                    )
+                  ),
+                );
+              },
+            ),
+            ListView.builder(
+              itemCount: 1,
+              itemBuilder: (BuildContext context, int index) {
+                return Center(
+                  child: ListTile(
+                    // tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                      title: Container(
 
-                            child: const Center(
-                              child: Text(
-                                'Gestion des admins',
-                                style: TextStyle(color: Colors.white),
+                        child: Column(
+
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              child: Text("Bienvenue !",
+                                style: GoogleFonts.pinyonScript(
+                                  fontSize: 35,
+                                ),
                               ),
                             ),
-                          )
-                      ),
-                    ),
-                  ),
+                            const Text("PresenceApp à votre service...",
+                              style: TextStyle(fontSize: 20),
+                              // style:
+                              // GoogleFonts.pinyonScript(
+                              //   fontSize: 30,
+                              // ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Image.asset(
+                                'assets/images/admin.jpg',
+                                width:MediaQuery.of(context).size.width ,
+                                height:MediaQuery.of(context).size.height*0.35 ,
+                                fit: BoxFit.cover,
+                                //width: MediaQuery.of(context).size.width*0.75,
+                              ),
 
-                  Padding(
-                    padding: const EdgeInsets.only(top: 35),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width*4/5,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
                             ),
-                          ),
-                          backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
-                        ),
-                        onPressed: (){
-                          Navigator.push(context,MaterialPageRoute(
-                              builder: (BuildContext context) {return const PageConges();}
-                          ));
-                        },
-                        child: const Text("Gestion des congés"),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 25),
-                    child: SizedBox(
-                      width: MediaQuery.of(context).size.width*4/5,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
+
+
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height/30),
+                            MenuButton(
+                              text: 'Créer un admin',
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder:
+                                        (BuildContext context) {
+                                      return const RegisterAdmin();
+                                    }));
+                              },
+                              width: MediaQuery.of(context).size.width*4/5,
                             ),
-                          ),
-                          backgroundColor: MaterialStateProperty.all<Color>
-                            (const Color(0xFF0020FF)),
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height/50),
+                            MenuButton(
+                              text: 'Liste des admins',
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder:
+                                        (BuildContext context) {
+                                      return const AfficherAdmins();
+                                    })
+                                );
+                              },
+                              width: MediaQuery.of(context).size.width*4/5,
+                            ),
+                          ],
                         ),
-                        onPressed: (){
-                          Navigator.push(context,
-                              MaterialPageRoute(builder:
-                                  (BuildContext context) {
-                                return const ServicesManagement();
-                              }));
-                        },
-                        child: const Text("Gestion des services"),
-                      ),
-                    ),
+                      )
                   ),
-                ],
-              )
-          )
-        ],
-      )),
+                );
+              },
+            ),
+
+
+            ListView.builder(
+              itemCount: 1,
+              itemBuilder: (BuildContext context, int index) {
+                return Center(
+                  child: ListTile(
+                    // tileColor: index.isOdd ? oddItemColor : evenItemColor,
+                      title: Container(
+
+                        child: Column(
+
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 15),
+                              child: Text("Bienvenue !",
+                                style: GoogleFonts.pinyonScript(
+                                  fontSize: 35,
+                                ),
+                              ),
+                            ),
+                            const Text("PresenceApp à votre service...",
+                              style: TextStyle(fontSize: 20),
+
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 10),
+                              child: Image.asset(
+
+
+                                'assets/images/services.jpg',
+                                width:MediaQuery.of(context).size.width ,
+                                height:MediaQuery.of(context).size.height*0.35 ,
+                                fit: BoxFit.cover,
+                                //width: MediaQuery.of(context).size.width*0.75,
+                              ),
+
+                            ),
+
+
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height/30),
+                            MenuButton(
+                              text: 'Gérer les congés',
+                              onPressed: (){
+                                Navigator.push(context,MaterialPageRoute(
+                                    builder: (BuildContext context) {
+                                      return HandleHolidays();}
+                                ));
+                              },
+                              width: MediaQuery.of(context).size.width*4/5,
+                            ),
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height/50),
+                            MenuButton(
+                              text: 'Gérer les services',
+                              onPressed: (){
+                                Navigator.push(context,
+                                    MaterialPageRoute(builder:
+                                        (BuildContext context) {
+                                      return const ServicesManagement();
+                                    }));
+                              },
+                              width: MediaQuery.of(context).size.width*4/5,
+                            ),
+
+                          ],
+                        ),
+                      )
+                  ),
+                );
+              },
+            ),
+
+          ],
+        ),
+      ),
     );
   }
 }

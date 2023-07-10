@@ -115,8 +115,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
      if(widget.employee!=null&&widget.employee!.fingerprintId!=null){
       fingerprintId=widget.employee!.fingerprintId;
     }
-    log.d('tHE FINGERPRINTID IS § $fingerprintId');
-    log.d('---tHE FINGERPRINTID IS § ${widget.employee?.fingerprintId}');
+
     widget.employee=Employee
       ( firstname: firstname,
         gender: gender, lastname: lastname,

@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
-import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/presence_calendar.dart';
 import 'package:presence_app/frontend/screens/update_employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -13,12 +12,14 @@ import 'package:presence_app/utils.dart';
 
 class EmployeeCard extends StatefulWidget {
   final Employee employee;
-  bool showCheckBox;
-  bool isChecked;
+  bool forHoliday;
+  bool? isChecked;
+  final Function(Employee, bool)? onEmployeeChecked; // Add this line
 
    EmployeeCard({Key? key, required this.employee,
-   this.showCheckBox=false,
-   this.isChecked=false})
+   this.forHoliday=false,
+   this.isChecked=false,
+     required this.onEmployeeChecked})
       : super(key: key);
 
   @override
@@ -51,8 +52,8 @@ class _EmployeeCardState extends State<EmployeeCard> {
     return InkWell(
       onTap: () {
 
-        log.d('The email of the employee is : ${widget.employee.email}');
-        Navigator.push(
+     if(!widget.forHoliday) {
+       Navigator.push(
           context,
           MaterialPageRoute(builder: (BuildContext context) {
             return PresenceCalendar(
@@ -60,6 +61,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
             );
           }),
         );
+     }
       },
       child: Container(
         color: Colors.white,
@@ -117,15 +119,19 @@ class _EmployeeCardState extends State<EmployeeCard> {
                               ],
                             ),
                           ),
-               if(widget.showCheckBox) Checkbox(
+               if(widget.forHoliday) Checkbox(
                   value: widget.isChecked,
-                  onChanged: (bool? value) {
-                    setState(() {
-                      widget.isChecked = value ?? false;
-                    });
-                  },
+                 onChanged: (value) {
+                   setState(() {
+                     widget.isChecked = value ?? false;
+                   });
+                   if (widget.onEmployeeChecked != null) {
+                     widget.onEmployeeChecked!(
+                         widget.employee, widget.isChecked!);
+                   }
+                 },
                 ),
-                                DropdownButtonHideUnderline(
+                          if(!widget.forHoliday)   DropdownButtonHideUnderline(
                             child: DropdownButton(
                               onChanged: (String? v) async {
                                 if (v == "modifier") {
@@ -139,9 +145,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                       },
                                     ),
                                   );
-                                } else if (v == "supprimer") {
+                                } else if (v == "supprimer")
+                                {
+
                                   String email =
                                   FirebaseAuth.instance.currentUser!.email!;
+
                                   String adminId = (await AdminDB()
                                       .getAdminIdByEmail(email))!;
                                   if (!(await AdminDB()
@@ -153,6 +162,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                         3);
                                     return;
                                   }
+
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
@@ -176,27 +186,37 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                         ),
                                         ElevatedButton(
                                           onPressed: () async {
-                                            Navigator.pop(context);
+
+                                             Navigator.pop(context);
                                             log.d(widget.employee.lastname);
                                             int? fingerprintId =
                                                 widget.employee.fingerprintId;
 
+                                            log.d('The fingerprintId is: '
+                                                '$fingerprintId');
+
                                             if (fingerprintId != null) {
 
                                               log.d('Fingerprint id:$fingerprintId');
-                                              if (!await ESP32()
+
+                                              await ESP32()
                                                   .sendData(
-                                                  fingerprintId.toString())) {
+                                                  'remove');
 
-                                                ToastUtils.showToast(
-                                                    context,
-                                                    connectionError,
-                                                    3);
-                                                return;
-                                              }
+                                              // if (!await ESP32()
+                                              //     .sendData(
+                                              //     fingerprintId.toString())) {
+                                              //
+                                              //   ToastUtils.showToast(
+                                              //       context,
+                                              //       connectionError,
+                                              //       3);
+                                              //   return;
+                                              // }
 
-                                              // int data = await assureDataChanged(fingerprintId, 2000);
-                                              int data = await ESP32().receiveData();
+                                              //int data = await ESP32().receiveData();
+                                              int data=-999;
+
                                               log.d('data: $data');
 
                                               if (data == 2000) {
@@ -209,14 +229,14 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
                                                 //EmployeeDB().delete(id!);
 
-                                                Navigator.of(context).pop();
-                                                Navigator.pushReplacement(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) =>
-                                                    EmployeesList(),
-                                                  ),
-                                                );
+                                                // Navigator.of(context).pop();
+                                                // Navigator.pushReplacement(
+                                                //   context,
+                                                //   MaterialPageRoute(
+                                                //     builder: (context) =>
+                                                //     EmployeesList(),
+                                                //   ),
+                                                // );
                                                 return;
                                               }
                                               if (data == espConnectionFailed) {
@@ -227,10 +247,10 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                                     3);
                                                 return;
                                               }
-
                                             }
 
                                           },
+
                                           style: ElevatedButton.styleFrom(
                                             backgroundColor:
                                             const Color.fromARGB(

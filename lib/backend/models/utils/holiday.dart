@@ -21,6 +21,7 @@ class Holiday {
     'start_date': utils.formatDateTime(startDate),
     'end_date': utils.formatDateTime(endDate),
     'employee_id':employeeId,
+    'type':utils.str(type)
 
   };
 
