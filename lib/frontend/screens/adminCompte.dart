@@ -45,7 +45,7 @@ Future<void> retrieve() async {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const AppBarExample()))
+                              const AdminHomePage()))
                 },
             icon: const Icon(
               Icons.arrow_back,

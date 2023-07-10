@@ -8,14 +8,16 @@ import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
 import 'package:presence_app/frontend/widgets/alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 class WelcomeImsp extends StatefulWidget {
-
-  const WelcomeImsp({Key? key}) : super(key: key);
+bool isSuperAdmin;
+   WelcomeImsp({Key? key,
+   this.isSuperAdmin=false}) : super(key: key);
 
 
   @override
@@ -80,7 +82,14 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
     });
     super.initState();
 
+    log.d('Yeah bro I am fine');
+
+    log.d('Is super admin? ${widget.isSuperAdmin}');
+
+    if(widget.isSuperAdmin) {
+      log.d('Is super admin');
       startDataFetching();
+    }
 
   }
 
@@ -426,7 +435,10 @@ else{
 
                   Navigator.push(context,MaterialPageRoute(
                   builder: (BuildContext context) {
-                   return const LoginMenu();
+
+                   return widget.isSuperAdmin?
+                   const AdminHomePage():const LoginMenu();
+
                   }));
     },
                 child: Container(
@@ -456,7 +468,7 @@ else{
                 ),
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                   child: Image.asset('assets/images/app2.png',
+                   child: Image.asset('assets/images/app_logo.png',
                      fit: BoxFit.cover,
                      //width: MediaQuery.of(context).size.width*0.75,
                    ),
@@ -497,10 +509,13 @@ else{
                       ),
                         onPressed: (){
                         nextPage=true;
-                          Navigator.push(context,MaterialPageRoute(
-                              builder: (BuildContext context)
-                              {return const LoginMenu();}
-                          ));
+                        Navigator.push(context,MaterialPageRoute(
+                            builder: (BuildContext context) {
+
+                              return widget.isSuperAdmin?
+                              const AdminHomePage():const LoginMenu();
+
+                            }));
                         },
                         child: const Text("Commencer"),
                     ),

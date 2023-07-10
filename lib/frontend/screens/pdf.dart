@@ -134,7 +134,7 @@ Future<void> setPdfHeader(bool portrait) async {
   page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 100, 100));
 
   ByteData byteData = await
-  rootBundle.load('assets/images/app2.png');
+  rootBundle.load('assets/images/app_logo.png');
 
   data = byteData.buffer.asUint8List();
   image = PdfBitmap(data);
@@ -177,7 +177,7 @@ Future<void> setPdfHeader(bool portrait) async {
     page.graphics.drawImage(image, const Rect.fromLTWH(0, 0, 60, 60));
 
     ByteData byteData = await
-    rootBundle.load('assets/images/app2.png');
+    rootBundle.load('assets/images/app_logo.png');
 
     data = byteData.buffer.asUint8List();
     image = PdfBitmap(data);

@@ -13,7 +13,7 @@ class Wrapper extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
     final user0 = Provider.of<User?>(context);
     if(user0 == null) {
-      return const WelcomeImsp();
+      return WelcomeImsp();
 
     }
     else{
@@ -21,7 +21,7 @@ class Wrapper extends StatelessWidget {
       for(UserInfo userInfo in providerData){
         if (userInfo.providerId == 'password'){
           // return const AdminHomePage();
-          return const AppBarExample();
+          return const AdminHomePage();
 
         }
         else{

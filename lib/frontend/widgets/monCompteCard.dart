@@ -114,7 +114,7 @@ class CompteCard extends StatelessWidget {
               children: [
                 Padding(
                   padding: const EdgeInsets.only(top: 10),
-                  child: Image.asset('assets/images/app2.png',
+                  child: Image.asset('assets/images/app_logo.png',
                     fit: BoxFit.cover,
                   ),
 

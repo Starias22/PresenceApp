@@ -394,7 +394,7 @@ class _AdminLoginState extends State<AdminLogin> {
           // Utilisez Navigator.pushReplacement pour afficher la page de l'administrateur
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (BuildContext context) => AppBarExample()),
+            MaterialPageRoute(builder: (BuildContext context) => AdminHomePage()),
           );
 
         }
