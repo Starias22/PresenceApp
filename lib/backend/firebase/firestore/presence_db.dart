@@ -1084,11 +1084,9 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
     Presence presence=Presence(
         date: date, employeeId: employeeId, status: status,
     employeeService: employee.service);
-    // presence.employeeService=employee.service;
+
 
     await create(presence);
-    // presence.id=(await getPresenceId(date, employeeId))!;
-    // _presence.doc(presence.id).update({'id':presence.id});
 
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
@@ -1213,10 +1211,7 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
     }).toList();
 
 
-
     final batch = FirebaseFirestore.instance.batch();
-
-
 
     for (var doc in presences) {
 
@@ -1236,23 +1231,16 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
   Future<void>x() async {
     QuerySnapshot querySnapshot = await _presence.
-    where('entry_time',isNull: true)
-    .where('status',isEqualTo: 'present')
+    where('date',isEqualTo: '2023-07-11')
     .get();
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).toList();
 
     final batch = FirebaseFirestore.instance.batch();
-
-
-
     for (var doc in presences) {
 
-
-        batch.update(_presence.doc(doc.id), {'entry_time': '06:30'});
-
-
+        batch.update(_presence.doc(doc.id), {'status': 'absent'});
     }
     await batch.commit();
 
@@ -1265,9 +1253,6 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
       QuerySnapshot snapshot =await _lastUpdate.limit(1).get();
       DocumentSnapshot documentSnapshot = snapshot.docs[0];
       DocumentReference doc = documentSnapshot.reference;
-
-
-
 
       Map<String,dynamic> map=(await doc.get()).data()
       as  Map<String,dynamic>;

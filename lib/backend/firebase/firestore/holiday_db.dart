@@ -1,6 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
+import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
+import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
+
+import 'employee_db.dart';
 
 
 class HolidayDB {
@@ -12,9 +17,40 @@ class HolidayDB {
     _holiday.add(holiday.toMap());
   holiday.id=(await getHolidayId(holiday))!;
     _holiday.doc(holiday.id).update({'id':holiday.id});
+    //update all matching presence documents
+    DateTime now=await utils.localTime();
+
+    DateTime today=DateTime(now.year,now.month,now.day);
+    if(today.isAtSameMomentAs(holiday.startDate)){
+
+    if(holiday.employeeId != null){
+      resetToHoliday(holiday.employeeId!, today);
+    }
+    else {
+      var employees=await EmployeeDB().getAllEmployees();
+
+      for (var employee in employees){
+        resetToHoliday(employee.id, today);
+      }
+    }
+
+    }
     return true;
   }
 
+  Future<void> resetToHoliday(String employeeId,DateTime date) async {
+
+
+      var presenceId=await PresenceDB().getPresenceId(date,
+          employeeId);
+      var presence=await PresenceDB().getPresenceById(presenceId!);
+      presence.entryTime=null;
+      presence.exitTime=null;
+      presence.status=EStatus.inHoliday;
+      PresenceDB().update(presence);
+      EmployeeDB().updateCurrentStatus(employeeId, EStatus.inHoliday);
+
+  }
   Future<bool> exists(Holiday holiday) async {
     String startDate=utils.formatDateTime(holiday.startDate);
     String endDate=utils.formatDateTime(holiday.endDate);

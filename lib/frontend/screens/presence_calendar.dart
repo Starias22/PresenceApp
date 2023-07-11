@@ -165,8 +165,6 @@ late Presence presenceDoc;
         ],
         leading: IconButton(
             onPressed: () => {
-                 /* Navigator.pushReplacement(context,
-                      MaterialPageRoute(builder: (context) => const Welcome()))*/
               Navigator.pop(context)
                 },
             icon: const Icon(
@@ -212,13 +210,8 @@ log.d('The day is long pressed');
         (date.isBefore(today)||date.isAtSameMomentAs(today))
     ) {
 
-       log.d('Yes inside');
-
-       log.d('The employee id is: ${employee.id}');
       String? presenceId = await PresenceDB().getPresenceId(date, employee.id);
-log.d('Presence id retrieved successfully');
       Presence myPresence = await PresenceDB().getPresenceById(presenceId!);
-
 
 
       if(myPresence.status==EStatus.absent) {
@@ -228,6 +221,17 @@ log.d('Presence id retrieved successfully');
           duration: const Duration(seconds: 5) ,
           //width: MediaQuery.of(context).size.width-2*10,
           message:'Absent' ,
+        ));
+
+      }
+
+     else  if(myPresence.status==EStatus.inHoliday) {
+        ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
+          simple: true,
+          showCloseIcon: false,
+          duration: const Duration(seconds: 5) ,
+          //width: MediaQuery.of(context).size.width-2*10,
+          message:'En congé' ,
         ));
 
       }
