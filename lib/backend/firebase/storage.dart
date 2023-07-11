@@ -11,15 +11,23 @@ class Storage{
           .ref()
           .child(fileName)
           .getDownloadURL();
+
     } catch (e) {
-      log.d('An error occurred during get of the download URl');
+      log.d('An error occurred during get of the download URl:$e');
       return "";
     }
   }
-  static void saveFile(String filename,String contentType,Uint8List bytes){
-    FirebaseStorage.instance.ref()
+  static Future<String?> saveFile(String filename,String contentType,Uint8List bytes) async {
+
+    final TaskSnapshot snapshot = await FirebaseStorage.instance
+        .ref()
         .child(filename)
-        .putData(bytes,SettableMetadata(contentType: contentType));
+        .putData(bytes, SettableMetadata(contentType: contentType));
+    String? url;
+    await snapshot.ref.getDownloadURL().then((downloadUrl) async {
+      url=downloadUrl;
+    });
+    return url;
   }
 
 }

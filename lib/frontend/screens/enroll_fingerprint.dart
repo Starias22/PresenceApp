@@ -6,6 +6,7 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
+import 'package:presence_app/frontend/widgets/custom_message.dart';
 import 'package:presence_app/utils.dart';
 
 class EnrollFingerprint extends StatefulWidget {
@@ -25,6 +26,7 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
   String message ="Cliquez sur démarrer ...";
   String buttonText='Démarrer';
   bool cancelled=false;
+  int colorCode=1;
 
   @override
   void initState() {
@@ -63,12 +65,10 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
 
               SizedBox(height: MediaQuery.of(context).size.height *0.05),
               Center(
-                child: Text( widget.employee.fingerprintId==null?
-                message:"Plus qu'une étape! Cliquez sur Achever" ,
-                  style: const TextStyle(fontSize: 15),
-                  textAlign: TextAlign.center,
-
-                ),
+                child: CustomMessage.
+                getText(widget.employee.fingerprintId==null?
+                message:"Un instant!!!",
+                colorCode: colorCode),
               ),
               if(enrollmentInProgress)
                 const CircularProgressIndicator(),
@@ -115,56 +115,84 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                   }
 
                 if(fingerprintId!=null) {
+
+                  updateMessage("Enregistrement en cours",val: false,
+                      colorCode: 4);
+
                   setState(() {
-                    buttonText = 'Achever';
+                    creationInProgress=true;
                   });
 
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                    content: Text("Plus qu'une étape: Cliquez pour"
-                        " achever l'enregistrement de l'employé!"),
-                    duration: Duration(seconds: 3),
-                  ));
+                  //complete the employee registration
+                  widget.employee.fingerprintId=fingerprintId;
+
+
+                  log.d('-----The fingerprint id is :'
+                      ' ${widget.employee.fingerprintId}');
+
+                  if(
+                  // true
+                  await EmployeeDB().create(widget.employee)
+                  )
+                  {
+
+
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("Employé enregistré avec succès"),
+                      duration: Duration(seconds: 3),
+                    ));
+                  }
+                  setState(() {
+                    creationInProgress=false;
+                  });
+
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              RegisterEmployee()));
 
                 }
 
                   }
 
-                  else if(buttonText=='Achever'){
-                    updateMessage("Enregistrement en cours",val: false);
-
-                    setState(() {
-                      creationInProgress=true;
-                    });
-
-                    //complete the employee registration
-                    widget.employee.fingerprintId=fingerprintId;
-
-
-                    log.d('-----The fingerprint id is :'
-                        ' ${widget.employee.fingerprintId}');
-
-                    if(
-                    // true
-                    await EmployeeDB().create(widget.employee)
-                    )
-                      {
-
-
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Employé enregistré avec succès"),
-                          duration: Duration(seconds: 3),
-                        ));
-                      }
-                    setState(() {
-                      creationInProgress=false;
-                    });
-
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                RegisterEmployee()));
-                  }
+                  // else if(buttonText=='Achever'){
+                  //   updateMessage("Enregistrement en cours",val: false,
+                  //   colorCode: 4);
+                  //
+                  //   setState(() {
+                  //     creationInProgress=true;
+                  //   });
+                  //
+                  //   //complete the employee registration
+                  //   widget.employee.fingerprintId=fingerprintId;
+                  //
+                  //
+                  //   log.d('-----The fingerprint id is :'
+                  //       ' ${widget.employee.fingerprintId}');
+                  //
+                  //   if(
+                  //   // true
+                  //   await EmployeeDB().create(widget.employee)
+                  //   )
+                  //     {
+                  //
+                  //
+                  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  //         content: Text("Employé enregistré avec succès"),
+                  //         duration: Duration(seconds: 3),
+                  //       ));
+                  //     }
+                  //   setState(() {
+                  //     creationInProgress=false;
+                  //   });
+                  //
+                  //   Navigator.pushReplacement(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //           builder: (context) =>
+                  //               RegisterEmployee()));
+                  // }
                   else if(buttonText=='Annuler'){
 
                     cancelled=true;
@@ -190,10 +218,12 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
     );
   }
 
-  void updateMessage(String message,{bool val=true}){
+  void updateMessage(String message,{bool val=true,int colorCode=3}){
     setState(() {
       this.message = message;
+      this.colorCode=colorCode;
       enrollmentInProgress=val;
+
     });
   }
 
@@ -224,14 +254,16 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
 
 int? fingerprintId;
     String networkConnectionError= "Vérifiez votre connexion internet et reessayez";
-    String espConnectionError = "Vérifiez la configuration du microcontrôleur et ressayez";
+    String espConnectionError =
+        "Vérifiez la configuration du microcontrôleur et ressayez";
 
     if ( await Connectivity().checkConnectivity() == ConnectivityResult.none) {
       updateMessage(networkConnectionError);
       return null;
     }
 
-updateMessage('Vérification de la configuration du microcontrôleur');
+updateMessage('Vérification de la configuration du microcontrôleur',
+colorCode: 4);
 
     if (!(await ESP32().sendData('enroll'))){
 
@@ -239,7 +271,8 @@ updateMessage('Vérification de la configuration du microcontrôleur');
       return null;
     }
 
-    updateMessage("Placez votre doigt sur le capteur",val: false);
+    updateMessage("Placez votre doigt sur le capteur",val: false,
+    colorCode: 5);
 
 
     int  data=await getData(150);
@@ -263,13 +296,14 @@ if(data==noInternetConnection) {
       return null;
     }
 if(data==-1000) {
-  updateMessage('Opération annulée');
+  updateMessage('Opération annulée',colorCode: 1);
   cancelled=false;
   return null;
 }
 
 
-updateMessage("Vérification de l'existence de votre empreinte en cours!");
+updateMessage("Vérification de l'existence de votre empreinte en cours!",
+colorCode: 4);
 
 
     if(minFingerprintId<=data&&data<=maxFingerprintId)//alredy exists
@@ -285,7 +319,8 @@ log.d('Merveil le Cornard****');
         {
       await ESP32().sendData('go');
 
-      updateMessage("Retirez votre doigt du capteur",val: false);
+      updateMessage("Retirez votre doigt du capteur",val: false,
+      colorCode: 5);
 
       data = await getData(151);
       log.d('Data merv $data ');
@@ -298,7 +333,8 @@ log.d('Merveil le Cornard****');
 
 
       updateMessage("L'enregistrement peut démarrer à présent! "
-          "Placez à nouveau votre doigt!",val: false);
+          "Placez à nouveau votre doigt!",val: false,
+      colorCode: 4);
 
 
 
@@ -313,12 +349,13 @@ log.d('Merveil le Cornard****');
       }
 
 
-  log.d('Merveil salot:$data');
 
 
       if (data == -15) {
-        updateMessage("Retirez votre doigt du capteur, pour passer à la vérification "
-            "de la correspondance",val: false);
+        updateMessage("Retirez votre doigt du capteur pour passer "
+            "à la vérification "
+            "de la correspondance",val: false,
+        colorCode: 4);
 
         data = await getData(-15);
         log.d('Data1222:hhh $data ');
@@ -329,7 +366,8 @@ log.d('Merveil le Cornard****');
 
           log.d('merveil bandit:');
           updateMessage("Placez à nouveau votre doigt"
-              " pour la vérification de correspondance",val: false);
+              " pour la vérification de correspondance",val: false,
+          colorCode: 4);
 
 
           int x = await getData(data);
@@ -337,7 +375,8 @@ log.d('Merveil le Cornard****');
           log.d('ezechiel bandit: $x');
 
           if (x == noMatchingFingerprint) {
-            updateMessage("Empreintes non correspondantes! Echec de l'enregistrement");
+            updateMessage(
+                "Empreintes non correspondantes! Echec de l'enregistrement");
 
           }
 
@@ -357,7 +396,9 @@ log.d('Merveil le Cornard****');
             setState(() {
 
             });
-            updateMessage("Enregistrement terminé! Vous pouvez retirer votre doigt du capteur");
+            updateMessage("Enregistrement terminé!"
+                " Vous pouvez retirer votre doigt du capteur",
+            colorCode: 1);
 
             ESP32().sendData('-1');
 

@@ -20,10 +20,8 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  log.i('update ***');
-  await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
 
-  //await PresenceDB().x();
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
 

@@ -58,6 +58,10 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
   Map<DateTime, EStatus> _events = {};
 
   Future<void> retrieveReport() async {
+
+    log.i('Setting all employees attendance for today');
+    await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
+
     Map<DateTime, EStatus>x = {};
     nEntryTime = utils.format(employee.entryTime)!;
     nExitTime = utils.format(employee.exitTime)!;

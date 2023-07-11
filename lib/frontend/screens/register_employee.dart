@@ -74,9 +74,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         });
         return;
       }
-       start=selectedDate!;
 
-      if(utils.isWeekend(start)){
+
+      if(utils.isWeekend(selectedDate!)){
 
         ToastUtils.showToast(context, "La date de début de travail ne doit pas être un weekend", 3);
         setState(() {
@@ -85,8 +85,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
         return;
       }
 
-
-      if((await HolidayDB().isHoliday(start))){
+      if((await HolidayDB().isHoliday(selectedDate!))){
 
       ToastUtils.showToast(context, "Cette date de début est définie comme un jour férié ou de congés", 3);
 
@@ -97,7 +96,9 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
       }
 
       setState(() {
+        start=selectedDate!;
         dateChanging=false;
+
       });
 
 
@@ -105,12 +106,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
     //#######################################################################
   Future<void> handleRegisterEmployee(BuildContext context) async {
 
-
     int? fingerprintId;
-
-    // if(widget.employee!=null) {
-    //   log.d(' is fingerprint id null? ${widget.employee?.fingerprintId==null}');
-    // }
 
      if(widget.employee!=null&&widget.employee!.fingerprintId!=null){
       fingerprintId=widget.employee!.fingerprintId;

@@ -61,15 +61,12 @@ class CompteCard extends StatelessWidget {
     if(ext==null) return unsupportedFileExtension;
     try {
 
-      log.d('The filename is :$fileName');
+      log.d('The filename is :***$fileName***');
       log.d('The filename content type is :$contentType');
-     Storage.saveFile(fileName, contentType, bytes);
-
-      String downloadUrl=await Storage.getDownloadURL(fileName);
+      String? downloadUrl=
+      await Storage.saveFile(fileName, contentType, bytes);
       log.d('The new download URL is : $downloadUrl');
-      await EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl);
-
-
+      await EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl!);
 
       return success;
     } catch (e) {

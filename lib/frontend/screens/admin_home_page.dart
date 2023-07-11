@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
+import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/handle_holidays.dart';
@@ -33,11 +34,15 @@ class _AdminHomePageState extends State<AdminHomePage> {
   ];
   bool? isSuperAdmin = false;
 Future<void> retrieve() async {
+  log.i('Setting all employees attendance for today');
+  await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
+
 String? email=FirebaseAuth.instance.currentUser?.email;
 var x=(await AdminDB().getAdminByEmail(email!)).isSuper;
 setState(() {
   isSuperAdmin=x ;
 });
+
 
 }
   @override
