@@ -1,7 +1,7 @@
 import 'dart:convert';
-import 'dart:math';
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:http/http.dart' as http;
 import 'package:email_validator/email_validator.dart';
 import 'package:logger/logger.dart';
@@ -133,13 +133,21 @@ log.d(DateTime(date.year, date.month, day));
     if(type=='holiday') {
       return HolidayType.holiday;
     }
+    if(type=='vacation') {
+      return HolidayType.vacation;
+    }
     if(type=='permission') {
       return HolidayType.permission;
     }
-    // if(type=='holiday') {
+    if(type=='leave') {
       return HolidayType.leave;
+    }
+    if(type=='disease') {
+      return HolidayType.disease;
+    }
+    // if(type=='other') {
+      return HolidayType.other;
     // }
-
   }
   DateTime add30Days(DateTime date) {
     return date.add(const Duration(days: 30));
@@ -417,11 +425,16 @@ log.d(DateTime(date.year, date.month, day));
 
     return "$hours:$minutes";
   }
-  int generateRandomCode() {
-    var random = Random();
-    // Generates a random number between 100000 and 999999 (inclusive)
-    var code = random.nextInt(900000) + 100000;
 
-    return code;
+  // int generateRandomCode() {
+  //   var random = Random();
+  //   // Generates a random number between 100000 and 999999 (inclusive)
+  //   var code = random.nextInt(900000) + 100000;
+  //
+  //   return code;
+  // }
+
+  Future<bool> netWorkAvailable() async {
+    return  (await Connectivity().checkConnectivity() != ConnectivityResult.none);
   }
 }

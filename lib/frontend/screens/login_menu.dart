@@ -7,8 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
-import 'package:presence_app/frontend/screens/admin_home_page.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/frontend/screens/admin_login.dart';
 import 'package:presence_app/utils.dart';
 

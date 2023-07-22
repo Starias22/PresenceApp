@@ -4,13 +4,13 @@ import 'package:presence_app/utils.dart';
 
 
 
-class PresenceCard extends StatelessWidget {
+class PresenceDetailsCard extends StatelessWidget {
   final Presence presence;
   final String nEntryTime;
   final String nExitTime;
   final bool isAdmin;
 
-  const PresenceCard({Key? key,
+  const PresenceDetailsCard({Key? key,
     required this.presence,
     required this.nEntryTime,
     required this.nExitTime,

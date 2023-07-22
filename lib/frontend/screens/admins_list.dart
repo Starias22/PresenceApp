@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
-import 'package:presence_app/frontend/widgets/afficheAdminCard.dart';
+import 'package:presence_app/frontend/widgets/admin_display_card.dart';
 import 'package:presence_app/utils.dart';
 
-class AfficherAdmins extends StatefulWidget {
-  const AfficherAdmins({Key? key}) : super(key: key);
+class AdminsList extends StatefulWidget {
+  const AdminsList({Key? key}) : super(key: key);
 
   @override
-  State<AfficherAdmins> createState() => _AfficherAdminsState();
+  State<AdminsList> createState() => _AdminsListState();
 }
 
-class _AfficherAdminsState extends State<AfficherAdmins> {
+class _AdminsListState extends State<AdminsList> {
   late List<Admin> admins = [];
   late List<Admin> adminsAff = [];
 
@@ -89,7 +89,7 @@ class _AfficherAdminsState extends State<AfficherAdmins> {
               children: [
                 InkWell(
                   onTap: () {},
-                  child: AfficherAdminCard(admin: adminsAff[index]),
+                  child: AdminDisplayCard(admin: adminsAff[index]),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),

@@ -3,17 +3,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
-import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/presence.dart';
-import 'package:presence_app/frontend/screens/monCompte.dart';
 import 'package:presence_app/frontend/screens/presence_details.dart';
-import 'package:presence_app/frontend/screens/login_menu.dart';
 import 'package:presence_app/frontend/screens/statistics_by_intervals.dart';
-import 'package:presence_app/frontend/widgets/calendrierCard.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/presence_calendar_card.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 import 'package:provider/provider.dart';
@@ -21,8 +18,8 @@ import 'package:provider/provider.dart';
 
 class PresenceCalendar extends StatefulWidget {
 
-  String? email;
-   PresenceCalendar({Key? key,this.email}) : super(key: key);
+  final String? email;
+   const PresenceCalendar({Key? key,this.email}) : super(key: key);
 
 
   @override
@@ -179,7 +176,7 @@ late Presence presenceDoc;
                   child: CircularProgressIndicator(),
                 )
             else
-              CalendrierCard(
+              PresenceCalendarCard(
                 events: _events,
                 onDayLongPressed: onDayLongPressed,
                 onCalendarChanged: onCalendarChanged,

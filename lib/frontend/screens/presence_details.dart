@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/utils/presence.dart';
-import 'package:presence_app/frontend/widgets/presence_details.dart';
+import 'package:presence_app/frontend/widgets/presence_details_card.dart';
 import 'package:presence_app/utils.dart';
 
 class PresenceDetails extends StatelessWidget {
@@ -33,7 +33,7 @@ class PresenceDetails extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: PresenceCard(
+        child: PresenceDetailsCard(
           isAdmin: isAdmin,
           presence: presence,
           nEntryTime: nEntryTime,

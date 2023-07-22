@@ -3,9 +3,9 @@ import 'package:presence_app/backend/firebase/firestore/statististics_data.dart'
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class StatisticsCard extends StatelessWidget {
-  late TooltipBehavior _tooltipBehavior;
+  late final TooltipBehavior _tooltipBehavior;
 
-  List<StatisticsData>  entryOrExitData;
+  final List<StatisticsData>  entryOrExitData;
   StatisticsCard({Key? key,
      required this.entryOrExitData}) : super(key: key){
     _tooltipBehavior = TooltipBehavior(enable: true);

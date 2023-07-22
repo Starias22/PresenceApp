@@ -4,7 +4,6 @@ import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 
 import 'package:presence_app/backend/models/utils/employee.dart';
-import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/backend/models/utils/service.dart';
 import 'package:presence_app/utils.dart';
 
@@ -98,6 +97,7 @@ class EmployeeDB{
       employee.id = snapshot.id;
       return employee;
     } else {
+
       throw Exception('Employee not found');
     }
   }
@@ -185,8 +185,8 @@ class EmployeeDB{
       (service.name))!;
     employee.id=(await getEmployeeIdByEmail(employee.email))!;
 
-    log.d('****** ${employee.serviceId}');
-    _employee.doc(employee.id).update({'service':service.name,'service_id':employee.serviceId});
+    _employee.doc(employee.id).update({'service':service.name,
+      'service_id':employee.serviceId});
   }
 
 

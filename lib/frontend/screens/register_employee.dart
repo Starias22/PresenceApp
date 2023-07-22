@@ -10,9 +10,9 @@ import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/enroll_fingerprint.dart';
-import 'package:presence_app/frontend/widgets/alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/date_action_widget.dart';
+import 'package:presence_app/frontend/widgets/date_action_row.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
@@ -208,7 +208,8 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                           ),
 
             body: initialDate.isAtSameMomentAs(DateTime(1970,1,1))?
-            const Center(child: CircularProgressIndicator()):  ListView(
+            const Center(child: CircularProgressIndicator()):
+            ListView(
               scrollDirection: Axis.vertical,
               children:  [
 
@@ -527,7 +528,7 @@ class _RegisterEmployeeState extends State<RegisterEmployee> {
                                     )),
                               ),
                               const SizedBox(height: 12),
-                                DateActionContainer
+                                DateActionRow
                                   (
                                   dateChanging: dateChanging,
                                     title: 'Date de début',

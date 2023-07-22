@@ -11,7 +11,7 @@ import 'package:presence_app/frontend/widgets/toast.dart';
 
 class ServiceCard extends StatelessWidget {
   final Service service;
-  ServiceCard({Key? key, required this.service}) : super(key: key);
+  const ServiceCard({Key? key, required this.service}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

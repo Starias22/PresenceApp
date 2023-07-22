@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
-import 'package:presence_app/backend/models/utils/presence.dart';
 import 'package:presence_app/utils.dart';
 
 import 'employee_db.dart';
@@ -22,35 +21,44 @@ class HolidayDB {
 
     DateTime today=DateTime(now.year,now.month,now.day);
     if(today.isAtSameMomentAs(holiday.startDate)){
+      List<Employee> employees=await EmployeeDB().getAllEmployees();
 
-    if(holiday.employeeId != null){
-      resetToHoliday(holiday.employeeId!, today);
-    }
-    else {
-      var employees=await EmployeeDB().getAllEmployees();
+    if(holiday.employeesIds != null){
+      employees=
+          employees.where((element) =>
+              holiday.employeesIds!.contains(element.id)).toList();
 
-      for (var employee in employees){
-        resetToHoliday(employee.id, today);
-      }
     }
+      resetAttendanceToHoliday(employees, today);
 
     }
     return true;
   }
 
-  Future<void> resetToHoliday(String employeeId,DateTime date) async {
+  Future<void> resetAttendanceToHoliday(List<Employee> employees,
+      DateTime date) async {
 
 
-      var presenceId=await PresenceDB().getPresenceId(date,
-          employeeId);
+    for (var employee in employees){
+      String employeeId=employee.id;
+      var presenceId=await PresenceDB().getPresenceId(date,employeeId);
       var presence=await PresenceDB().getPresenceById(presenceId!);
       presence.entryTime=null;
       presence.exitTime=null;
       presence.status=EStatus.inHoliday;
       PresenceDB().update(presence);
       EmployeeDB().updateCurrentStatus(employeeId, EStatus.inHoliday);
+    }
+
 
   }
+
+  bool listContainsAll(List<String>? list, List<String>? items) {
+    if (items == null&&list == null) return true;
+    if (items == null||list == null) return false;
+    return items.every((element) => list.contains(element));
+  }
+
   Future<bool> exists(Holiday holiday) async {
     String startDate=utils.formatDateTime(holiday.startDate);
     String endDate=utils.formatDateTime(holiday.endDate);
@@ -58,11 +66,17 @@ class HolidayDB {
     QuerySnapshot querySnapshot = await _holiday
         .where('start_date', isEqualTo: startDate)
         .where('end_date', isEqualTo: endDate)
-        .where('employee_id', isEqualTo: holiday.employeeId)
-        .limit(1)
         .get();
 
-    return querySnapshot.docs.isNotEmpty;
+      var matchingDocuments = querySnapshot.docs.where((doc)
+      {
+        List<String>? docEmployeesIds = doc['employees_ids'] as List<String>?;
+        return listContainsAll
+          (docEmployeesIds, holiday.employeesIds);
+      }).toList();
+
+
+    return matchingDocuments.isNotEmpty;
   }
 
 
@@ -72,12 +86,17 @@ class HolidayDB {
     QuerySnapshot querySnapshot = await _holiday
         .where('start_date', isEqualTo: startDate)
         .where('end_date', isEqualTo: endDate)
-        .where('employee_id', isEqualTo: holiday.employeeId)
-        .limit(1)
-        .get();
 
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first.id;
+        .get();
+    var matchingDocuments = querySnapshot.docs.where((doc)
+    {
+      List<String>? docEmployeesIds =  doc['employees_ids'] as List<String>?;
+      return listContainsAll
+        (docEmployeesIds, holiday.employeesIds);
+    }).toList();
+
+    if (matchingDocuments.isNotEmpty) {
+      return matchingDocuments.first.id;
     }
     return null;
   }
@@ -131,7 +150,7 @@ class HolidayDB {
     }
     String date=utils.formatDateTime(dateTime);
     QuerySnapshot querySnapshot = await _holiday
-        .where('employee_id', isEqualTo: employeeId)
+        .where('employees_ids', arrayContains: employeeId)
         .where('start_date', isLessThanOrEqualTo: date)
         .get();
     QuerySnapshot queryEnd = await _holiday
@@ -144,7 +163,7 @@ class HolidayDB {
   Future<bool> isHoliday(DateTime dateTime) async {
     String date=utils.formatDateTime(dateTime);
     QuerySnapshot querySnapshot = await _holiday
-        .where('employee_id',isEqualTo:null)
+        .where('employees_ids',isEqualTo:null)
         .where('start_date', isLessThanOrEqualTo: date)
         .limit(1)
         .get();
@@ -159,7 +178,7 @@ class HolidayDB {
 
   Future<void> removeAllHolidayDocuments(String employeeId) async {
     final querySnapshot = await _holiday
-        .where('employee_id', isEqualTo: employeeId)
+        .where('employees_ids', arrayContains: employeeId)
         .get();
     final documentsToDelete = querySnapshot.docs;
     final batch = FirebaseFirestore.instance.batch();
@@ -171,7 +190,7 @@ class HolidayDB {
 
   Future<List<String>> getHolidayIds(String employeeId) async {
     QuerySnapshot querySnapshot = await _holiday
-        .where('employee_id',isEqualTo: employeeId).get();
+        .where('employees_ids',arrayContains: employeeId).get();
     List<String> holidayIds=[];
     List<Holiday> holidays = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Holiday.fromMap(doc.data() as Map<String,dynamic>);

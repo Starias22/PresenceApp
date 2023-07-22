@@ -7,9 +7,9 @@ import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/update_admin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 
-class AfficherAdminCard extends StatelessWidget {
+class AdminDisplayCard extends StatelessWidget {
   final Admin admin;
-   const AfficherAdminCard({Key? key, required this.admin}) : super(key: key);
+   const AdminDisplayCard({Key? key, required this.admin}) : super(key: key);
 
  
   @override
@@ -113,7 +113,7 @@ class AfficherAdminCard extends StatelessWidget {
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder: (context) => const AfficherAdmins()));
+                                                        builder: (context) => const AdminsList()));
 
                                                  
                                               },

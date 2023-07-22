@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import '../../backend/firebase/firestore/presence_db.dart';
 import '../../backend/models/utils/employee.dart';
 import '../../utils.dart';

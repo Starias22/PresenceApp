@@ -47,7 +47,6 @@ class Employee {
       });
 
   Map<String, dynamic> toMap() => {
-        //'unique_code':uniqueCode,
         'fingerprint_id':fingerprintId,
         'service':service,
         'status':utils.str(status),

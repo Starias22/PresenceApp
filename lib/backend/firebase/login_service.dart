@@ -302,31 +302,21 @@ log.d('Signing in on web');
   }
 
   Future<UserCredential?> withoutWeb() async {
-    // Trigger the Google Sign-In flow
-    log.d('We are inside without web');
     final GoogleSignInAccount? googleSignInAccount =
         await GoogleSignIn().signIn();
 
-    log.d('googleSignInAccount $googleSignInAccount');
-
-    log.d('email  ${googleSignInAccount!.email}');
-    log.d('id  ${googleSignInAccount.id}');
-    log.d('id  ${googleSignInAccount.displayName}');
 
     // Obtain the authentication details from
     //the Google Sign-In
     final GoogleSignInAuthentication googleAuth =
         await googleSignInAccount!.authentication;
-    log.d('id token  ${googleAuth.idToken}');
-    log.d('acess token  ${googleAuth.accessToken}');
+
     // Create a new credential using the
     //obtained authentication details
     final credential = GoogleAuthProvider.credential(
       accessToken: googleAuth.accessToken,
       idToken: googleAuth.idToken,
     );
-log.d('id token  ${credential.idToken}');
-    log.d('access token ${credential.accessToken}');
 
     // Sign in to Firebase using the obtained credential
 

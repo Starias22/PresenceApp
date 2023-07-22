@@ -9,11 +9,11 @@ import 'package:presence_app/utils.dart';
 import '../screens/update_admin.dart';
 
 
-class CompteCard extends StatelessWidget {
+class AdminAccountCard extends StatelessWidget {
   
 
-  Admin admin ;
-  CompteCard({Key? key, required this.admin}) : super(key: key);
+  final Admin admin ;
+  const AdminAccountCard({Key? key, required this.admin}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -38,7 +38,7 @@ class CompteCard extends StatelessWidget {
                 const SizedBox(
                   height: 5,
                 ),
-                Center(
+                const Center(
                     child: Text(
                         "Mettez à jour vos informations pour assurer la sécurité de votre compte"))
               ],
@@ -146,7 +146,7 @@ class CompteCard extends StatelessWidget {
 
                         admin.email,
                         style:
-                            const TextStyle(fontSize: 17, color: Colors.blue),
+                            const TextStyle(fontSize: 15, color: Colors.blue),
                       ),
                     ),
                   ],

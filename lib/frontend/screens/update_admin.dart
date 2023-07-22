@@ -7,15 +7,15 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 
 import '../../utils.dart';
 import 'adminCompte.dart';
 
 
 class UpdateAdmin extends StatefulWidget {
-  Admin admin;
-  bool himself;
+   Admin admin;
+  final bool himself;
   UpdateAdmin({Key? key, required this.admin, this.himself=true}) : super(key: key);
 
   @override
@@ -79,7 +79,7 @@ class _UpdateAdminState extends State<UpdateAdmin> {
 
                     else
                       Navigator.pushReplacement(context, MaterialPageRoute(
-                          builder: (context) => const AfficherAdmins()))
+                          builder: (context) => const AdminsList()))
 
                   }
 
@@ -213,7 +213,7 @@ class _UpdateAdminState extends State<UpdateAdmin> {
 
                                         else
                                           Navigator.pushReplacement(context, MaterialPageRoute(
-                                              builder: (context) => const AfficherAdmins()))
+                                              builder: (context) => const AdminsList()))
 
                                       }
 

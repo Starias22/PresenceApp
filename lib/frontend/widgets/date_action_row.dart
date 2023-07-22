@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'custom_button.dart';
 
-class DateActionContainer extends Row {
-  DateActionContainer({
+class DateActionRow extends Row {
+  DateActionRow({
     super.key,
     required String title,
     required String selectedDate,

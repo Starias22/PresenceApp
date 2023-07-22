@@ -4,15 +4,16 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 import '../../utils.dart';
 
 
-class CalendrierCard extends StatelessWidget {
-  Map<DateTime, EStatus> events;
-  Function(DateTime) onCalendarChanged;
-  DateTime minSelectedDate;
-  Function(DateTime)? onDayLongPressed;
-  bool colorCalendar;
+class PresenceCalendarCard extends StatelessWidget {
+
+final  Map<DateTime, EStatus> events;
+  final Function(DateTime) onCalendarChanged;
+ final DateTime minSelectedDate;
+final  Function(DateTime)? onDayLongPressed;
+  final bool colorCalendar;
 
 
-  CalendrierCard({Key? key,
+  const PresenceCalendarCard({Key? key,
     required this.events,
     required this.onCalendarChanged,
     required this.minSelectedDate,

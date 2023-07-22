@@ -4,7 +4,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 
 
 import 'package:presence_app/utils.dart';
@@ -394,7 +394,7 @@ class _AdminLoginState extends State<AdminLogin> {
           // Utilisez Navigator.pushReplacement pour afficher la page de l'administrateur
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (BuildContext context) => AdminHomePage()),
+            MaterialPageRoute(builder: (BuildContext context) => const AdminHomePage()),
           );
 
         }

@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/app_settings/app_settings.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,7 +26,6 @@ void main() async {
 
 
   if (isDarkModeValue != null) {
-
     appSettings.setDarkMode(isDarkModeValue);
     log.i('******${appSettings.isDarkMode}');
   }

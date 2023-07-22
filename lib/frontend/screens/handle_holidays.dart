@@ -4,15 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
-import 'package:presence_app/frontend/widgets/alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/date_action_widget.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
+import 'package:presence_app/frontend/widgets/date_action_row.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
 
 class HandleHolidays extends StatefulWidget {
-  Employee? employee;
-  HandleHolidays({Key? key,
+  final Employee? employee;
+  const HandleHolidays({Key? key,
     this.employee}) : super(key: key);
 
   @override
@@ -111,7 +112,7 @@ void updateDateController(bool isStartDate){
   }
   HolidayType type=HolidayType.holiday;
   String? description;
-  String? employeeId='';
+  List<String>? employeesIds=[];
 
   void showToast(String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -124,6 +125,9 @@ void updateDateController(bool isStartDate){
     items.add(utils.str(HolidayType.holiday));
     items.add(utils.str(HolidayType.permission));
     items.add(utils.str(HolidayType.leave));
+    items.add(utils.str(HolidayType.disease));
+    items.add(utils.str(HolidayType.vacation));
+    items.add(utils.str(HolidayType.other));
 
     DateTime now=await utils.localTime();
     today=DateTime(now.year,now.month,now.day);
@@ -276,34 +280,20 @@ void updateDateController(bool isStartDate){
 
                                     setState(() => _valueChanged = val!
                                     );
-                                    log.d('We are inside');
+
 
                                     if (_valueChanged=='yes')
                                     {
-                                      employeeId=null;
+                                      employeesIds=null;
                                     }
                                     if (_valueChanged=='no')
                                     {
-                                      employeeId='';
+                                      employeesIds=[];
                                     }
                                 },
                                 onSaved: (val) => setState(() {
 
                                 }),
-                                validator: (String? v) {
-                                  log.d('We are inside');
-
-                                    if (v=='yes')
-                                      {
-                                        employeeId=null;
-                                      }
-                                    if (v=='no')
-                                    {
-                                      employeeId='';
-                                    }
-                                    return null;
-
-                                },
                                 decoration: InputDecoration(
                                     labelText: 'Tous les employés?',
                                     border: OutlineInputBorder(
@@ -321,7 +311,7 @@ void updateDateController(bool isStartDate){
                               const SizedBox(
                                 height: 12,
                               ),
-                              DateActionContainer
+                              DateActionRow
                                 (
                                   dateChanging: startDateChanging,
                                   title: 'Début',
@@ -335,7 +325,7 @@ void updateDateController(bool isStartDate){
                                   }
                               ),
                               const SizedBox(height: 12),
-                              DateActionContainer
+                              DateActionRow
                                 (
                                   dateChanging: endDateChanging,
                                   title: 'Fin   ',
@@ -352,21 +342,31 @@ void updateDateController(bool isStartDate){
                                   text: 'Suivant',
                                   onPressed: (){
 
-                                    Navigator.push(
+                                    if(start.isAfter(end)){
+                                      CustomSnackBar(
+                                        duration: const Duration(seconds: 5),
+                                          message: 'La date de début ne doit pas être après celle de fin');
+
+                                    }
+                                    else {
+                                      Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) =>
                                                 EmployeesList(
                                                   holiday: Holiday(
-                                                      employeeId: employeeId,
+                                                      employeesIds: employeesIds,
                                                     startDate: start,
                                                     endDate: end,
                                                     type: type,
-                                                    description: description
+                                                    description: description,
+                                                      creationDate: null,
+                                                      lastUpdateDate: null
                                                   ),
                                                   )
                                         )
                                     );
+                                    }
 
                                   })
                             ],

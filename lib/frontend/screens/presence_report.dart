@@ -7,9 +7,9 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
-import 'package:presence_app/frontend/widgets/alert_dialog.dart';
-import 'package:presence_app/frontend/widgets/date_action_widget.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/date_action_row.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 class EmployeePresenceReport extends StatefulWidget {
@@ -490,7 +490,7 @@ void setSelectedDates({required DateTime date}){
                               reportType==ReportType.periodic?
                               Column(
                                 children: [
-                                DateActionContainer(title: 'Début',
+                                DateActionRow(title: 'Début',
                                   selectedDate: selectedStartDate,
                                   onSelectDate: () async {
 
@@ -513,7 +513,7 @@ void setSelectedDates({required DateTime date}){
                                     }
                                   },),
                                 const SizedBox(height: 12,),
-                                DateActionContainer(title: 'Fin',
+                                DateActionRow(title: 'Fin',
                                   selectedDate: selectedEndDate,
                                   onSelectDate: () async {
 
@@ -538,7 +538,7 @@ void setSelectedDates({required DateTime date}){
                                   },),
                               ],
                               )
-                                  :DateActionContainer(
+                                  :DateActionRow(
                                 title: getTitle(),
                                 selectedDate: selectedStartDate,
                                 onSelectDate:

@@ -7,13 +7,13 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/widgets/employee_card.dart';
-import 'package:presence_app/frontend/widgets/cardTabbar.dart';
+import 'package:presence_app/frontend/widgets/custom_tab_bar.dart';
 import 'package:presence_app/utils.dart';
 
 class EmployeesList extends StatefulWidget {
 
-  Holiday? holiday;
-   EmployeesList({Key? key,
+  final Holiday? holiday;
+   const EmployeesList({Key? key,
 
      this.holiday
   }) : super(key: key);
@@ -92,9 +92,12 @@ class _EmployeesListState extends State<EmployeesList> {
              else if(widget.holiday!=null&&!holidayCreationInProgress)
                IconButton(
                   onPressed: () async {
+                    DateTime now=await utils.localTime();
+                    widget.holiday!.creationDate=now;
+                    widget.holiday!.lastUpdateDate=now;
 
                     if(selectedEmployeesIds.isEmpty&&
-                        widget.holiday!.employeeId!=null)
+                        widget.holiday!.employeesIds!=null)
                       {
                         ScaffoldMessenger.of(context).showSnackBar
                           (const SnackBar(
@@ -107,27 +110,21 @@ class _EmployeesListState extends State<EmployeesList> {
                       holidayCreationInProgress=true;
                     });
                     if(employees.length==selectedEmployeesIds.length) {
-                      widget.holiday!.employeeId=null;
+                      widget.holiday!.employeesIds=null;
                     }
 
-                    bool created=false;
-                    if(widget.holiday!.employeeId==null)
+                    if(widget.holiday!.employeesIds==null)
                       {
-                      created=  await HolidayDB().create(widget.holiday!);
                       }
 
                     else{
+                      widget.holiday?.employeesIds=selectedEmployeesIds;
 
-                      for(var employeeId in selectedEmployeesIds){
-
-                        widget.holiday?.employeeId=employeeId;
-                        created=await HolidayDB().create(widget.holiday!);
-
-                      }
                     }
                     setState(() {
                       holidayCreationInProgress=false;
                     });
+                    await HolidayDB().create(widget.holiday!);
 
                       ScaffoldMessenger.of(context).showSnackBar
                         (const SnackBar(
@@ -236,7 +233,7 @@ class _EmployeesListState extends State<EmployeesList> {
                           EmployeeCard(
                             forHoliday: widget.holiday!=null,
                             isChecked:
-                            widget.holiday!=null&& widget.holiday!.employeeId==null,
+                            widget.holiday!=null&& widget.holiday!.employeesIds==null,
                               employee: employeesAff[index],
 
                             onEmployeeChecked:widget.holiday==null?null:

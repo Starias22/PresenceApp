@@ -10,13 +10,13 @@ import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/login_menu.dart';
-import 'package:presence_app/frontend/widgets/alert_dialog.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
 class WelcomeImsp extends StatefulWidget {
-bool isSuperAdmin;
-   WelcomeImsp({Key? key,
+final bool isSuperAdmin;
+   const WelcomeImsp({Key? key,
    this.isSuperAdmin=false}) : super(key: key);
 
 

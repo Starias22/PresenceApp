@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
@@ -9,7 +8,7 @@ import 'package:presence_app/backend/models/presence_report_model/presence_recor
 import 'package:presence_app/backend/models/presence_report_model/presence_report.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
-import 'package:presence_app/frontend/widgets/alert_dialog.dart';
+import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
 
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';

@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
+import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
+import 'package:presence_app/frontend/widgets/admin_account_card.dart';
 import 'package:presence_app/utils.dart';
-import '../../backend/firebase/firestore/admin_db.dart';
-import '../../backend/models/utils/admin.dart';
-import '../widgets/adminCompteCard.dart';
+
 
 
 class AdminAccount extends StatefulWidget {
@@ -72,7 +73,7 @@ Future<void> retrieve() async {
     child: Text('Error retrieving admin data'),
     );
     } else {
-    return CompteCard(admin: admin);
+    return AdminAccountCard(admin: admin);
     }
     },
     )

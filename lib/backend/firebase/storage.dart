@@ -17,7 +17,8 @@ class Storage{
       return "";
     }
   }
-  static Future<String?> saveFile(String filename,String contentType,Uint8List bytes) async {
+  static Future<String?> saveFile(String filename,
+      String contentType,Uint8List bytes) async {
 
     final TaskSnapshot snapshot = await FirebaseStorage.instance
         .ref()

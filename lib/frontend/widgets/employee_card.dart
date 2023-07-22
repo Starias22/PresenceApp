@@ -3,6 +3,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
+import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
 import 'package:presence_app/frontend/screens/presence_calendar.dart';
@@ -12,7 +13,7 @@ import 'package:presence_app/utils.dart';
 
 class EmployeeCard extends StatefulWidget {
   final Employee employee;
-  bool forHoliday;
+  final bool forHoliday;
   bool? isChecked;
   final Function(Employee, bool)? onEmployeeChecked; // Add this line
 
@@ -40,10 +41,30 @@ class _EmployeeCardState extends State<EmployeeCard> {
       });
     });
   }
+  Future<int> getData(int val) async {
+    int data = val;
+    int cpt = 0;
+
+    Future<int> fetchData() async {
+      data = await ESP32().receiveData();
+      if (cpt == 10 ||( data != val && data!=-1)) {
+        log.d('Condition satisfied');
+        return data;
+      } else {
+        cpt++;
+        await Future.delayed(const Duration(seconds: 1));
+        return await fetchData();
+      }
+    }
+
+    return await fetchData();
+  }
 
   Future<String> getDownloadURL() async {
     return '';
   }
+
+
 
   String connectionError = "Erreur de connexion! Veillez reessayer";
 
@@ -214,39 +235,64 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                               //   return;
                                               // }
 
-                                              //int data = await ESP32().receiveData();
-                                              int data=-999;
+                                              int data = await getData(150);
 
-                                              log.d('data: $data');
 
-                                              if (data == 2000) {
+                                              log.d('datauuuuu: $data');
+                                              if(data == -11){
+                                                await ESP32()
+                                                    .sendData(
+                                                    fingerprintId.toString());
 
+                                                data = await getData(-11);
+                                                log.d('dataaaaaaaa: $data');
+                                                if(data == 2000){
+                                                  await ESP32()
+                                                      .sendData(
+                                                      'enroll');
+                                                  log.d('Succès');
+
+                                                 String id=(await  EmployeeDB().
+                                                 getEmployeeByFingerprintId(fingerprintId))!.id;
+                                                  //delete the employee
+
+                                                  EmployeeDB().delete
+                                                    (id);
+
+                                                  // Navigator.of(context).pop();
+                                                  // Navigator.pushReplacement(
+                                                  //   context,
+                                                  //   MaterialPageRoute(
+                                                  //     builder: (context) =>
+                                                  //     EmployeesList(),
+                                                  //   ),
+                                                  // );
+                                                  ToastUtils.showToast(
+                                                      context,
+                                                      'Employé supprimé avec succès',
+                                                      3);
+
+
+                                                }else{
+                                                  await ESP32()
+                                                      .sendData(
+                                                      'enroll');
+                                                  log.d('Echec');
+                                                  ToastUtils.showToast(
+                                                      context,
+                                                      'Echec de la suppression',
+                                                      3);
+
+                                                }
+
+
+                                              }else{
                                                 ToastUtils.showToast(
                                                     context,
-                                                    'Employé supprimé avec succès',
+                                                    'Problème de connection. Erreur de la suppression.',
                                                     3);
-                                                //delete the employee
-
-                                                //EmployeeDB().delete(id!);
-
-                                                // Navigator.of(context).pop();
-                                                // Navigator.pushReplacement(
-                                                //   context,
-                                                //   MaterialPageRoute(
-                                                //     builder: (context) =>
-                                                //     EmployeesList(),
-                                                //   ),
-                                                // );
-                                                return;
                                               }
-                                              if (data == espConnectionFailed) {
 
-                                                ToastUtils.showToast(
-                                                    context,
-                                                    connectionError,
-                                                    3);
-                                                return;
-                                              }
                                             }
 
                                           },

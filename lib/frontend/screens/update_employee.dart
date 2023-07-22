@@ -5,7 +5,7 @@ import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/utils.dart';
 
 
@@ -65,7 +65,7 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
 
               leading: IconButton(
                   onPressed: () => {Navigator.pushReplacement(context, MaterialPageRoute(
-                      builder: (context) => EmployeesList()
+                      builder: (context) => const EmployeesList()
                   ))},
                   icon: const Icon(Icons.arrow_back,)
               ),
@@ -340,7 +340,7 @@ class _UpdateEmployeeState extends State<UpdateEmployee> {
                                 children: [
                                   CustomElevatedButton(
                                     onPressed: ()=>  Navigator.pushReplacement(context, MaterialPageRoute(
-                                        builder: (context) => EmployeesList())),
+                                        builder: (context) => const EmployeesList())),
                                     text: "Annuler",
                                   ),
 

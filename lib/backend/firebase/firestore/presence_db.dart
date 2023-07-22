@@ -48,7 +48,8 @@ Future<bool> entered(String employeeId) async {
 
 
     return (await getPresenceById(
-        (await getPresenceId(await utils.localTime(), employeeId))!)).entryTime!=null;
+        (await getPresenceId(await utils.localTime(), employeeId))!))
+        .entryTime!=null;
 }
   Future<bool> exited(String employeeId) async {
     return (await getPresenceById
@@ -80,6 +81,9 @@ Future<bool> entered(String employeeId) async {
      return entryMarkedSuccessfully;
 
      }
+
+
+
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
     String date=utils.formatDateTime(dateTime);
@@ -340,7 +344,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
         .where('employee_service', isEqualTo:service )
         .where('status',whereIn: status)
         .orderBy('entry_time')
-        .orderBy('entry_time')
         .orderBy('exit_time')
 
         .get()
@@ -488,12 +491,6 @@ Future<List<String>> getPresenceIds(String employeeId) async {
 
     return report;
   }
-
-
-
-
-
-
 
   Future<List<Presence>> getSomeServicesPeriodicPresenceReport(
       {required DateTime start,required DateTime
@@ -743,11 +740,11 @@ else if(reportType==ReportType.weekly)
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .get()
     ;
-    log.d('The size  ${querySnapshot.size}');
+
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).where((presence) => presence.entryTime!=null).toList();
-    log.d('The length  ${presences.length}');
+
     if(presences.isEmpty) return [];
     presences.sort((a, b) =>
     a.entryTime!.isBefore(b.entryTime!) ? -1 : 1);
@@ -769,20 +766,17 @@ else if(reportType==ReportType.weekly)
         .where('date',isLessThanOrEqualTo: utils.formatDateTime(end))
         .get()
     ;
-    log.d('The size  ${querySnapshot.size}');
+
     List<Presence> presences = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Presence.fromMap(doc.data() as Map<String,dynamic>);
     }).where((presence) => presence.exitTime!=null).toList();
 
     if(presences.isEmpty) return [];
-    log.d('The length  ${presences.length}');
     presences.sort((a, b) =>
     a.exitTime!.isBefore(b.exitTime!) ? -1 : 1);
 
     DateTime? inf=presences.first.exitTime;
-    log.d('The inf  $inf');
     DateTime? sup=presences.last.exitTime;
-    log.d('The sup  $sup');
     return [inf!,sup!];
   }
 
@@ -868,15 +862,12 @@ else if(reportType==ReportType.weekly)
     }
     result.add(sup);
 
-    log.d('The result $result');
-
     List<List<DateTime>> intervalBounds = [];
 
     for (int i = 0; i < result.length - 1; i++) {
       List<DateTime> bounds = [result[i], result[i + 1]];
       intervalBounds.add(bounds);
     }
-    log.d('The intervals $intervalBounds');
 
     return intervalBounds;
   }
@@ -891,13 +882,11 @@ else if(reportType==ReportType.weekly)
       }
       )
   async {
-    log.d('Periodic presence report');
 
     List<Presence> presences;
 
     if(services==null&&employeesIds==null)
     {
-      log.d('services  null and no employee targeted');
       presences=await getAllPeriodicPresenceRecords(
           start: start, end: end,status:status);
     }
@@ -921,8 +910,9 @@ else if(reportType==ReportType.weekly)
 
   }
 
-
-  Future<List<Presence>> getMonthPresenceRecords(String employeeId,DateTime date) async {
+//check and solve the issue
+  Future<List<Presence>> getMonthPresenceRecords
+      (String employeeId,DateTime date) async {
     DateTime now=await utils.localTime();
     DateTime today=DateTime(now.year,now.month,now.day);
     date=DateTime(date.year,date.month,date.day);
@@ -1114,7 +1104,6 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
         .where('date',isLessThanOrEqualTo: end)
         .where('status',whereIn: ['present','late','absent'])
         .orderBy('date')
-    //.orderBy('status')
         .get()
     ;
 
@@ -1276,15 +1265,11 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
          setAllEmployeesAttendances(date);
 
          date=date.add(const Duration(days: 1));
-         //log.d('//////');
        }
-
-       //log.d('End of the while loop');
 
        String lastUpdateId=( await _lastUpdate.limit(1).get()).docs.first.id;
 
        _lastUpdate.doc(lastUpdateId).update({'date':utils.formatDateTime(today)});
-      //log.d('Updated successfully');
     }
 
 
@@ -1296,7 +1281,6 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
   List<Presence> presenceDocuments=
   await getMonthPresenceRecords(employeeId, date);
-  log.d('The length of the list: ${presenceDocuments.length}');
 
    Map<DateTime, EStatus> report = {};
    for(Presence presence in presenceDocuments){

@@ -3,18 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/employee_home_page.dart';
+import 'package:presence_app/frontend/widgets/monCompteCard.dart';
 import 'package:presence_app/utils.dart';
-import '../widgets/monCompteCard.dart';
 
 
-class MonCompte extends StatefulWidget {
-   const MonCompte({Key? key}) : super(key: key);
+
+class EmployeeAccount extends StatefulWidget {
+   const EmployeeAccount({Key? key}) : super(key: key);
 
   @override
-  State<MonCompte> createState() => _MonCompteState();
+  State<EmployeeAccount> createState() => _EmployeeAccountState();
 }
 
-class _MonCompteState extends State<MonCompte> {
+class _EmployeeAccountState extends State<EmployeeAccount> {
   late Employee employee;
 
 

@@ -11,8 +11,8 @@ void showServiceDialog(BuildContext context) async {
   bool createClicked=false;
 
 
-  String _serviceName = "";
-  final _key = GlobalKey<FormState>();
+  String serviceName = "";
+  final key = GlobalKey<FormState>();
 
   showDialog(context: context, builder: (BuildContext context){
 
@@ -24,13 +24,13 @@ void showServiceDialog(BuildContext context) async {
           child: Column(
             children: [
               Form(
-                  key: _key,
+                  key: key,
                   child: TextFormField(
                       keyboardType: TextInputType.name,
                       textInputAction: TextInputAction.next,
-                      onChanged: (value) => _serviceName = value,
+                      onChanged: (value) => serviceName = value,
                       validator: (value) =>
-                      _serviceName.isEmpty ?
+                      serviceName.isEmpty ?
                       "Veuillez saisir le nom du service" : null,
 
                       decoration: InputDecoration(
@@ -64,11 +64,11 @@ void showServiceDialog(BuildContext context) async {
                     onPressed: () async {
                       if(createClicked) return;
                       createClicked=true;
-                      if (_key.currentState!.validate()) {
-                        _key.currentState!.save();
+                      if (key.currentState!.validate()) {
+                        key.currentState!.save();
 
                         String message;
-                        bool created=await ServiceDB().create(Service(name: _serviceName));
+                        bool created=await ServiceDB().create(Service(name: serviceName));
                         if(created)
                           {
                             message="Service ajouté avec succès";
@@ -100,9 +100,9 @@ void showServiceDialog(BuildContext context) async {
 
 void showServiceUpdateDialog(BuildContext context, Service service) async {
   bool updateClicked=false;
-  String _serviceName = "";
+  String serviceName = "";
 
-  final _key = GlobalKey<FormState>();
+  final key = GlobalKey<FormState>();
   String initialServiceName=service.name;
 
   showDialog(context: context, builder: (BuildContext context){
@@ -115,13 +115,13 @@ void showServiceUpdateDialog(BuildContext context, Service service) async {
           child: Column(
             children: [
               Form(
-                  key: _key,
+                  key: key,
                   child: TextFormField(
                       initialValue: service.name,
                       keyboardType: TextInputType.name,
                       textInputAction: TextInputAction.next,
                       validator: (value) => value!.isEmpty ? "Veuillez saisir le nom du service" : null,
-                      onSaved: (value) => _serviceName = value!,
+                      onSaved: (value) => serviceName = value!,
 
                       decoration: InputDecoration(
                           label: const Text('Nom du service:'), hintText: "Ex: Comptabilité",
@@ -156,9 +156,9 @@ void showServiceUpdateDialog(BuildContext context, Service service) async {
                       if(updateClicked) return;
                       updateClicked=true;
 
-                      if (_key.currentState!.validate()) {
+                      if (key.currentState!.validate()) {
 
-                        _key.currentState!.save();
+                        key.currentState!.save();
                         //Navigator.pop(context);
 
 
@@ -166,7 +166,7 @@ void showServiceUpdateDialog(BuildContext context, Service service) async {
                         String message;
                         bool updated=
                         await ServiceDB().update(Service(name: initialServiceName)
-                            ,Service(name: _serviceName));
+                            ,Service(name: serviceName));
                         Navigator.pop(context);
                         if(updated)
                         {

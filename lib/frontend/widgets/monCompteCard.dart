@@ -1,4 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
+
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,11 +19,22 @@ class CompteCard extends StatelessWidget {
 
   Future<void> removePictureIfExists() async {
 
-    final pictureName =
-        (await FirebaseStorage.instance.ref().listAll()).items.
-        where((item) => item.name.
-    startsWith(RegExp('^${employee.id}'))).toList()[0].name;
-    await FirebaseStorage.instance.ref(pictureName).delete();
+
+    log.d('We are going to remove the picture if it exists');
+
+
+    try {
+      final pictureName =
+          (await FirebaseStorage.instance.ref().listAll()).items.
+          where((item) =>
+              item.name.
+              startsWith(RegExp('^${employee.id}'))).toList()[0].name;
+      log.d('The filename is: $pictureName');
+      await FirebaseStorage.instance.ref(pictureName).delete();
+    }
+    on RangeError catch(e){
+      log.e('The picture doesnt exists');
+    }
 
   }
 
@@ -48,10 +60,9 @@ class CompteCard extends StatelessWidget {
   Future<int> uploadPicture(
       XFile pickedFile,
       ) async {
-    await removePictureIfExists();
+
     var bytes=await pickedFile.readAsBytes();
     var contentType=pickedFile.mimeType;
-
     var ext=getImageExtensionFromMimeType(contentType!);
 
     log.d('The extension is: $ext');
@@ -63,13 +74,16 @@ class CompteCard extends StatelessWidget {
 
       log.d('The filename is :***$fileName***');
       log.d('The filename content type is :$contentType');
+      await removePictureIfExists();
       String? downloadUrl=
       await Storage.saveFile(fileName, contentType, bytes);
       log.d('The new download URL is : $downloadUrl');
+
       await EmployeeDB().updatePictureDownloadUrl(employee.id, downloadUrl!);
 
       return success;
     } catch (e) {
+      log.d('An error occurred: $e');
       return failure;
     }
   }
@@ -117,9 +131,9 @@ class CompteCard extends StatelessWidget {
 
                 ),
 
-                SizedBox(height: 5,),
+                const SizedBox(height: 5,),
 
-                Center(
+                const Center(
                     child: Text("")
 
                 )
@@ -267,7 +281,7 @@ class CompteCard extends StatelessWidget {
                       padding: const EdgeInsets.all(8.0),
                       child: Text(employee.email,
                         style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 15,
                             color: Colors.blue
                         ),),
                     ),

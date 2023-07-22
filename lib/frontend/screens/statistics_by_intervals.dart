@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/firestore/statististics_data.dart';
-import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/frontend/screens/pdf.dart';
 import 'package:presence_app/frontend/widgets/custom_button.dart';
-import 'package:presence_app/frontend/widgets/snack_bar.dart';
+import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/frontend/widgets/statistics_card.dart';
 import 'package:presence_app/utils.dart';
-import '../widgets/cardTabbar.dart';
+import '../widgets/custom_tab_bar.dart';
 
 
 class EmployeeStatisticsPerRanges extends StatefulWidget {
