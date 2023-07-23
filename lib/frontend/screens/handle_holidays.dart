@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
-import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';

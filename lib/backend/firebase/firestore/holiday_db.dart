@@ -8,31 +8,46 @@ import 'employee_db.dart';
 
 
 class HolidayDB {
+
   final CollectionReference _holiday =
   FirebaseFirestore.instance.collection('holidays');
 
-  Future<bool> create(Holiday holiday) async {
-    if (await exists(holiday)) return false;
-    _holiday.add(holiday.toMap());
-  holiday.id=(await getHolidayId(holiday))!;
-    _holiday.doc(holiday.id).update({'id':holiday.id});
-    //update all matching presence documents
-    DateTime now=await utils.localTime();
+  Future<int> create(Holiday holiday) async {
+    int code;
+    if (await isAlreadyCreated(holiday)) return 200;
+    //check if can be appended
 
-    DateTime today=DateTime(now.year,now.month,now.day);
-    if(today.isAtSameMomentAs(holiday.startDate)){
-      List<Employee> employees=await EmployeeDB().getAllEmployees();
-
-    if(holiday.employeesIds != null){
-      employees=
-          employees.where((element) =>
-              holiday.employeesIds!.contains(element.id)).toList();
-
+    if(await canBeAppended(holiday)){//update an existing holiday
+      code=201;
     }
-      resetAttendanceToHoliday(employees, today);
+    else //create a new holiday
+    {
+      _holiday.add(holiday.toMap());
+      holiday.id=(await getHolidayId(holiday))!;
+      _holiday.doc(holiday.id).update({'id':holiday.id});
+      //update all matching presence documents
+      DateTime now=await utils.localTime();
 
+      DateTime today=DateTime(now.year,now.month,now.day);
+
+      if(today.isAtSameMomentAs(holiday.startDate)){
+        List<Employee> employees=await EmployeeDB().getAllEmployees();
+
+        if(holiday.employeesIds != null){
+          employees=
+              employees.where((element) =>
+                  holiday.employeesIds!.contains(element.id)).toList();
+
+        }
+        resetAttendanceToHoliday(employees, today);
+
+      }
+      code=202;
     }
-    return true;
+
+
+
+    return code;
   }
 
   Future<void> resetAttendanceToHoliday(List<Employee> employees,
@@ -55,11 +70,42 @@ class HolidayDB {
   bool listContainsAll(List<dynamic>? list, List<String>? items) {
     if (items == null && list == null) return true;
     if (items == null || list == null) return false;
+
     return items.every((element) => list.contains(element));
   }
 
+  Future<bool> canBeAppended(Holiday holiday) async {
+    String startDate=utils.formatDateTime(holiday.startDate);
+    String endDate=utils.formatDateTime(holiday.endDate);
 
-  Future<bool> exists(Holiday holiday) async {
+    QuerySnapshot querySnapshot = await _holiday
+        .where('start_date', isEqualTo: startDate)
+        .where('end_date', isEqualTo: endDate)
+        .where('employees_ids',arrayContainsAny:holiday.employeesIds )
+        .limit(1)
+        .get();
+    if(querySnapshot.docs.isEmpty) return false;
+
+    var existingEmployeesIds = querySnapshot.docs.map((DocumentSnapshot doc) {
+      return Holiday.fromMap(doc.data() as Map<String,dynamic>);
+    }).toList().first.employeesIds;
+    for (var employeeId in holiday.employeesIds!){
+      if(!existingEmployeesIds!.contains(employeeId)) {
+        existingEmployeesIds.add(employeeId);
+      }
+      
+    }
+
+    _holiday.doc(querySnapshot.docs.first.id).
+    update({'employees_ids':existingEmployeesIds});
+
+    return true;
+  }
+
+
+
+
+  Future<bool> isAlreadyCreated(Holiday holiday) async {
     String startDate=utils.formatDateTime(holiday.startDate);
     String endDate=utils.formatDateTime(holiday.endDate);
 
@@ -79,26 +125,7 @@ class HolidayDB {
     return matchingDocuments.isNotEmpty;
   }
 
-
-  Future<bool> cannotBeC(Holiday holiday) async {
-    String startDate=utils.formatDateTime(holiday.startDate);
-    String endDate=utils.formatDateTime(holiday.endDate);
-
-    QuerySnapshot querySnapshot = await _holiday
-        .where('start_date', isEqualTo: startDate)
-        .where('end_date', isEqualTo: endDate)
-        .get();
-
-    var matchingDocuments = querySnapshot.docs.where((doc)
-    {
-      var docEmployeesIds = doc['employees_ids'] ;
-      return listContainsAll
-        (docEmployeesIds, holiday.employeesIds);
-    }).toList();
-
-
-    return matchingDocuments.isNotEmpty;
-  }
+  
 
 
   Future<String?> getHolidayId(Holiday holiday) async {
