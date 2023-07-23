@@ -52,12 +52,12 @@ class HolidayDB {
 
 
   }
-
-  bool listContainsAll(List<String>? list, List<String>? items) {
-    if (items == null&&list == null) return true;
-    if (items == null||list == null) return false;
+  bool listContainsAll(List<dynamic>? list, List<String>? items) {
+    if (items == null && list == null) return true;
+    if (items == null || list == null) return false;
     return items.every((element) => list.contains(element));
   }
+
 
   Future<bool> exists(Holiday holiday) async {
     String startDate=utils.formatDateTime(holiday.startDate);
@@ -70,10 +70,31 @@ class HolidayDB {
 
       var matchingDocuments = querySnapshot.docs.where((doc)
       {
-        List<String>? docEmployeesIds = doc['employees_ids'] as List<String>?;
+        var docEmployeesIds = doc['employees_ids'] ;
         return listContainsAll
           (docEmployeesIds, holiday.employeesIds);
       }).toList();
+
+
+    return matchingDocuments.isNotEmpty;
+  }
+
+
+  Future<bool> cannotBeC(Holiday holiday) async {
+    String startDate=utils.formatDateTime(holiday.startDate);
+    String endDate=utils.formatDateTime(holiday.endDate);
+
+    QuerySnapshot querySnapshot = await _holiday
+        .where('start_date', isEqualTo: startDate)
+        .where('end_date', isEqualTo: endDate)
+        .get();
+
+    var matchingDocuments = querySnapshot.docs.where((doc)
+    {
+      var docEmployeesIds = doc['employees_ids'] ;
+      return listContainsAll
+        (docEmployeesIds, holiday.employeesIds);
+    }).toList();
 
 
     return matchingDocuments.isNotEmpty;
@@ -90,7 +111,7 @@ class HolidayDB {
         .get();
     var matchingDocuments = querySnapshot.docs.where((doc)
     {
-      List<String>? docEmployeesIds =  doc['employees_ids'] as List<String>?;
+      var docEmployeesIds =  doc['employees_ids'] ;
       return listContainsAll
         (docEmployeesIds, holiday.employeesIds);
     }).toList();
@@ -106,6 +127,7 @@ class HolidayDB {
     await _holiday.doc(id).get()as DocumentSnapshot<Map<String, dynamic>>;
 
     if (snapshot.exists) {
+
       // Convert the document snapshot into an Holiday object
      Holiday holiday = Holiday.fromMap(snapshot.data()!);
       holiday.id = snapshot.id;

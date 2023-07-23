@@ -1,5 +1,6 @@
 // ignore_for_file: use_build_context_synchronously
 import 'dart:async';
+import 'dart:html';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
@@ -343,11 +344,23 @@ void updateDateController(bool isStartDate){
                                   onPressed: (){
 
                                     if(start.isAfter(end)){
-                                      CustomSnackBar(
+                                      ScaffoldMessenger.of(context).showSnackBar( CustomSnackBar(
                                         duration: const Duration(seconds: 5),
-                                          message: 'La date de début ne doit pas être après celle de fin');
+                                          message: 'La date de début ne doit pas être après celle de fin',
+                                        simple: true,
+                                      ));
 
                                     }
+                                    else if(start.isAtSameMomentAs(end)&& utils.isWeekend(start)){
+                                      ScaffoldMessenger.of(context).showSnackBar( CustomSnackBar(
+                                          duration: const Duration(seconds: 5),
+                                          message: 'Les dates limites, weekend, ne doivent pas coincider',
+                                        simple: true,
+
+                                      ));
+
+                                    }
+
                                     else {
                                       Navigator.push(
                                         context,
