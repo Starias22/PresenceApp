@@ -92,6 +92,11 @@ class _EmployeesListState extends State<EmployeesList> {
              else if(widget.holiday!=null&&!holidayCreationInProgress)
                IconButton(
                   onPressed: () async {
+
+                    setState(() {
+                      holidayCreationInProgress=true;
+                    });
+
                     DateTime now=await utils.localTime();
                     widget.holiday!.creationDate=now;
                     widget.holiday!.lastUpdateDate=now;
@@ -104,11 +109,12 @@ class _EmployeesListState extends State<EmployeesList> {
                           content: Text("Aucun employé sélectionné"),
                           duration: Duration(seconds: 3),
                         ));
+                        setState(() {
+                          holidayCreationInProgress=false;
+                        });
                         return;
                       }
-                    setState(() {
-                      holidayCreationInProgress=true;
-                    });
+
                     if(employees.length==selectedEmployeesIds.length) {
                       widget.holiday!.employeesIds=null;
                     }
@@ -121,30 +127,48 @@ class _EmployeesListState extends State<EmployeesList> {
                       widget.holiday?.employeesIds=selectedEmployeesIds;
 
                     }
+
+                    int code=await HolidayDB().create(widget.holiday!);
                     setState(() {
                       holidayCreationInProgress=false;
                     });
-                    await HolidayDB().create(widget.holiday!);
 
+                     if(code==203) {
+                    ScaffoldMessenger.of(context).showSnackBar
+                    (const SnackBar(
+                    content: Text("Ce congé a été déjà créé auparavant pour tous les employés"),
+                    duration: Duration(seconds: 3),
+                    ));
+                    }
+                    else if(code==200) {
+                      ScaffoldMessenger.of(context).showSnackBar
+                        (const SnackBar(
+                        content: Text("Ce congé a été déjà créé auparavant pour les employés sélectionnés"),
+                        duration: Duration(seconds: 3),
+                      ));
+                    }
+                    else if(code==203) {
+                      ScaffoldMessenger.of(context).showSnackBar
+                        (const SnackBar(
+                        content: Text("Ce congé a été déjà créé auparavant pour tous les employés"),
+                        duration: Duration(seconds: 3),
+                      ));
+                    }
+                    else if(code==201||code==202) {
                       ScaffoldMessenger.of(context).showSnackBar
                         (const SnackBar(
                         content: Text("Congé créé avec succès"),
                         duration: Duration(seconds: 3),
                       ));
-
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const AdminHomePage(
-                                )
-                        )
-                    );
-
-
-
-
-
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                              const AdminHomePage(
+                              )
+                          )
+                      );
+                    }
 
                   },
                   icon: const Icon(Icons.holiday_village))

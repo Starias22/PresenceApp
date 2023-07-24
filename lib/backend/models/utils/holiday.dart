@@ -42,9 +42,10 @@ class Holiday {
     return Holiday(
       id:map['id'],
       description:map['description'],
-      type: map['type'],
-      startDate: map['start_date'],
-      endDate: map['end_date'],
+      type: utils.convertHoliday(map['type']),
+
+      startDate: utils.parseDate(map['start_date']),
+      endDate:utils.parseDate(map['end_date']),
       employeesIds: map['employees_ids'],
       creationDate: map['creation_date'],
       lastUpdateDate: map['last_update_date'],
