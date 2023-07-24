@@ -157,7 +157,7 @@ class _ManageHolidaysState extends State<ManageHolidays> {
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController _descriptionController =
+    TextEditingController descriptionController =
     TextEditingController(text:widget.holiday.description);
 
 
@@ -231,7 +231,7 @@ class _ManageHolidaysState extends State<ManageHolidays> {
                               ),
                               const SizedBox(height: 12),
                               TextField(
-                                controller:_descriptionController ,
+                                controller:descriptionController ,
                                 keyboardType: TextInputType.multiline,
                                 maxLines: null, // Permet d'avoir plusieurs lignes de texte
                                 decoration: InputDecoration(
@@ -254,7 +254,7 @@ class _ManageHolidaysState extends State<ManageHolidays> {
                                 height: 12,
                               ),
                               DropdownButtonFormField(
-                                value: 'no',
+                                value: widget.holiday.employeesIds!.isEmpty?'yes':'no',
                                 items: const [
                                   DropdownMenuItem(
 
