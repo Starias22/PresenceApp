@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
 import 'package:presence_app/backend/firebase/firestore/service_db.dart';
-import 'package:presence_app/backend/models/utils/service.dart';
-import 'package:presence_app/frontend/services.dart';
+import 'package:presence_app/backend/models/utils/holiday.dart';
+import 'package:presence_app/frontend/screens/attribute_holidays.dart';
+import 'package:presence_app/frontend/widgets/holiday_card.dart';
 import 'package:presence_app/frontend/widgets/service_card.dart';
 import 'package:presence_app/utils.dart';
 
@@ -13,12 +15,12 @@ class HandleHolidays extends StatefulWidget {
 }
 
 class _HandleHolidaysState extends State<HandleHolidays> {
-  List<Service> services=[];
+  List<Holiday> holidays=[];
 
   Future<void> retrieveServices() async {
-    var x=await ServiceDB().getAllServices();
+    var x=await HolidayDB().getAllHolidays();
     setState(() {
-      services=x;
+      holidays=x;
     });
   }
 
@@ -33,7 +35,7 @@ class _HandleHolidaysState extends State<HandleHolidays> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: appBarColor,
-        title: const Text("Gestion des congés",
+        title: const Text("Liste des congés",
           style: TextStyle(
               fontSize: appBarTextFontSize
           ),),
@@ -50,9 +52,17 @@ class _HandleHolidaysState extends State<HandleHolidays> {
                 color: Colors.blueGrey,
               ),
               child: IconButton(
-                tooltip: 'Ajouter ',
+                tooltip: 'Attribuer ',
                 onPressed: (){
-                  showServiceDialog(context);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (BuildContext context) {
+                        return const AttributeHolidays();
+                      },
+                    ),
+                  );
                 },
                 icon: const Icon(Icons.add, color: Colors.black, ),
               ),
@@ -65,10 +75,10 @@ class _HandleHolidaysState extends State<HandleHolidays> {
         slivers: [
           SliverList(
               delegate: SliverChildListDelegate(
-                  List.generate(services.length, (int index) {
+                  List.generate(holidays.length, (int index) {
                     return Column(
                       children: [
-                        ServiceCard(service: services[index]),
+                        HolidayDisplayCard(holiday: holidays[index]),
                         const Padding(
                           padding: EdgeInsets.symmetric(
                               horizontal: 8.0, vertical: 0.0),

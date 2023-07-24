@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/firestore/presence_db.dart';
 import 'package:presence_app/backend/firebase/login_service.dart';
+import 'package:presence_app/frontend/screens/handle_holidays.dart';
 import 'package:presence_app/frontend/screens/presence_report.dart';
 import 'package:presence_app/frontend/screens/register_admin.dart';
 import 'package:presence_app/frontend/screens/register_employee.dart';
@@ -379,7 +380,7 @@ setState(() {
                               context,
                               MaterialPageRoute(
                                 builder: (BuildContext context) {
-                                  return const AttributeHolidays();
+                                  return const HandleHolidays();
                                 },
                               ),
                             );
