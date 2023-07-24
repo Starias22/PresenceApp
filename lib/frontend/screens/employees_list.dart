@@ -143,7 +143,7 @@ class _EmployeesListState extends State<EmployeesList> {
                     else if(code==200) {
                       ScaffoldMessenger.of(context).showSnackBar
                         (const SnackBar(
-                        content: Text("Ce congé a été déjà créé auparavant pour les employés sélectionnés"),
+                        content: Text("Ce congé a été déjà créé auparavant pour cette liste d'employé(s) sélectionné(s)"),
                         duration: Duration(seconds: 3),
                       ));
                     }
@@ -154,12 +154,34 @@ class _EmployeesListState extends State<EmployeesList> {
                         duration: Duration(seconds: 3),
                       ));
                     }
-                    else if(code==201||code==202) {
-                      ScaffoldMessenger.of(context).showSnackBar
-                        (const SnackBar(
-                        content: Text("Congé créé avec succès"),
-                        duration: Duration(seconds: 3),
-                      ));
+
+                     else if(code==201) {
+                       ScaffoldMessenger.of(context).showSnackBar
+                         (const SnackBar(
+                         content: Text("Employé(s) ajouté(s) à ce congé préalablement créé"),
+                         duration: Duration(seconds: 3),
+                       ));
+
+                     }
+                     else if(code==202) {
+                       ScaffoldMessenger.of(context).showSnackBar
+                         (const SnackBar(
+                         content: Text("Congé créé avec succès"),
+                         duration: Duration(seconds: 3),
+                       ));
+
+                     }
+                     else if(code==207) {
+                       ScaffoldMessenger.of(context).showSnackBar
+                         (const SnackBar(
+                         content: Text("Congé attribué à tous les employés"),
+                         duration: Duration(seconds: 3),
+                       ));
+
+                     }
+
+                     if(code==201||code==202||code==207) {
+
                       Navigator.push(
                           context,
                           MaterialPageRoute(

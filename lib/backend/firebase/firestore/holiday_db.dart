@@ -14,17 +14,24 @@ class HolidayDB {
 
   Future<int> create(Holiday holiday) async {
     int code;
+
     if (await isEveryEmployeeInHoliday(holiday)) return 203;
     if (await isAlreadyCreated(holiday)) return 200;
 
     //check if can be appended
 
-    if(await canBeAppended(holiday)){//update an existing holiday
+    if(await hasBeenAppended(holiday)){//update an existing holiday
       log.d('Can be appended');
       code=201;
+      return code;
     }
-    else //create a new holiday
-    {
+    else if(holiday.employeesIds==null&&await exists(holiday)){
+      log.d('to all employees');
+      code=207;
+      delete((await getHolidayId(holiday))!);
+    }
+     //create a new holiday
+
       log.d('create a new holiday');
       _holiday.add(holiday.toMap());
       holiday.id=(await getHolidayId(holiday))!;
@@ -49,7 +56,7 @@ class HolidayDB {
 
       }
       code=202;
-    }
+
 
 
 
@@ -86,10 +93,19 @@ class HolidayDB {
 
     return !items.any((element) => list.contains(element));
   }
+  bool listNotContainsAll(List<dynamic>? list, List<String>? items) {
+    // if (items == null || list == null) return true;
+    // if (items.isEmpty) return true;
+    // if (list.isEmpty) return true;
+    if (items == null && list == null) return true;
+    if (items == null || list == null) return false;
+
+    return !items.every((element) => list.contains(element));
+  }
 
 
 
-  Future<bool> canBeAppended(Holiday holiday) async {
+  Future<bool> hasBeenAppended(Holiday holiday) async {
     String startDate=utils.formatDateTime(holiday.startDate);
     String endDate=utils.formatDateTime(holiday.endDate);
 
@@ -105,7 +121,7 @@ class HolidayDB {
     var matchingDocuments = querySnapshot.docs.where((doc)
     {
       var docEmployeesIds = doc['employees_ids'] ;
-      return listContainsNone(
+      return listNotContainsAll(
         docEmployeesIds, holiday.employeesIds);
     }).toList();
 
@@ -127,10 +143,9 @@ class HolidayDB {
       }
     }
 
-
-
     _holiday.doc(querySnapshot.docs.first.id).
-    update({'employees_ids':existingEmployeesIds});
+    update({'employees_ids':existingEmployeesIds,
+            'last_update_date':await utils.localTime()});
 
     return true;
   }
@@ -173,7 +188,20 @@ class HolidayDB {
     return matchingDocuments.isNotEmpty;
   }
 
-  
+
+  Future<bool> exists(Holiday holiday) async {
+    String startDate=utils.formatDateTime(holiday.startDate);
+    String endDate=utils.formatDateTime(holiday.endDate);
+
+    QuerySnapshot querySnapshot = await _holiday
+        .where('start_date', isEqualTo: startDate)
+        .where('end_date', isEqualTo: endDate)
+        .get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+
+
 
 
   Future<String?> getHolidayId(Holiday holiday) async {
@@ -184,15 +212,15 @@ class HolidayDB {
         .where('end_date', isEqualTo: endDate)
 
         .get();
-    var matchingDocuments = querySnapshot.docs.where((doc)
-    {
-      var docEmployeesIds =  doc['employees_ids'] ;
-      return listContainsAll
-        (docEmployeesIds, holiday.employeesIds);
-    }).toList();
+    // var matchingDocuments = querySnapshot.docs.where((doc)
+    // {
+    //   var docEmployeesIds =  doc['employees_ids'] ;
+    //   return listContainsAll
+    //     (docEmployeesIds, holiday.employeesIds);
+    // }).toList();
 
-    if (matchingDocuments.isNotEmpty) {
-      return matchingDocuments.first.id;
+    if (querySnapshot.docs.isNotEmpty) {
+      return querySnapshot.docs.first.id;
     }
     return null;
   }

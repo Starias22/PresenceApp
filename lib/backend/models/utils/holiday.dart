@@ -46,9 +46,11 @@ class Holiday {
 
       startDate: utils.parseDate(map['start_date']),
       endDate:utils.parseDate(map['end_date']),
-      employeesIds: map['employees_ids'],
-      creationDate: map['creation_date'],
-      lastUpdateDate: map['last_update_date'],
+      // employeesIds: map['employees_ids'],
+      employeesIds: List<String>.from(map['employees_ids'] ?? []),
+
+      creationDate: map['creation_date'].toDate(),
+      lastUpdateDate: map['last_update_date'].toDate(),
     );
   }
 }

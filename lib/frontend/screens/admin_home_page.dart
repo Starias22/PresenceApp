@@ -18,7 +18,7 @@ import 'package:presence_app/utils.dart';
 import 'adminCompte.dart';
 import 'admins_list.dart';
 import 'employees_list.dart';
-import 'handle_holidays.dart';
+import 'attribute_holidays.dart';
 
 class AdminHomePage extends StatefulWidget {
   const AdminHomePage({Key? key}) : super(key: key);
@@ -379,7 +379,7 @@ setState(() {
                               context,
                               MaterialPageRoute(
                                 builder: (BuildContext context) {
-                                  return const HandleHolidays();
+                                  return const AttributeHolidays();
                                 },
                               ),
                             );
