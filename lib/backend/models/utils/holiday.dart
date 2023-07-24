@@ -37,6 +37,13 @@ class Holiday {
     'creation_date' :creationDate,
     'last_update_date' :lastUpdateDate,
   };
+  String getRange(){
+   if(startDate.isAtSameMomentAs(endDate)) {
+     return utils.frenchFormatDate(startDate);
+   }
+   return 'Du ${utils.frenchFormatDate(startDate)}'
+       ' au ${utils.frenchFormatDate(endDate)}';
+  }
 
   static Holiday  fromMap(Map<String, dynamic> map) {
     return Holiday(

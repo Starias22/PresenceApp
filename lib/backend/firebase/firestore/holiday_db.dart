@@ -242,7 +242,9 @@ class HolidayDB {
 
 
   Future<List<Holiday>> getAllHolidays() async {
-    QuerySnapshot querySnapshot = await _holiday.get();
+    QuerySnapshot querySnapshot = await _holiday
+    .orderBy('creation_date',descending: true)
+        .get();
 
     List<Holiday> admins = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Holiday.fromMap(doc.data() as Map<String,dynamic>);

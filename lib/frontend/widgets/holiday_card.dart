@@ -5,6 +5,7 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
+import 'package:presence_app/frontend/screens/handle.dart';
 import 'package:presence_app/frontend/screens/update_admin.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
 import 'package:presence_app/utils.dart';
@@ -18,7 +19,14 @@ class HolidayDisplayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (BuildContext context) {
+              return ManageHolidays(holiday: holiday);
+            },
+          ),
+        );
       },
       child: Container(
         color: Colors.white,
@@ -26,16 +34,6 @@ class HolidayDisplayCard extends StatelessWidget {
           padding: const EdgeInsets.all(8.0),
           child: Row(
             children: [
-              ClipRRect(
-                  borderRadius: BorderRadius.circular(12.0),
-                  child: SizedBox(
-                    height: 90.0,
-                    width: 90.0,
-                    child: Image.asset(
-                      'assets/images/imsp1.png',
-                      fit: BoxFit.fill,
-                    ),
-                  )),
               Expanded(
                   child: Column(
                     children: [
@@ -45,27 +43,37 @@ class HolidayDisplayCard extends StatelessWidget {
                           children: [
                             Expanded(
                               child: Column(
+
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    utils.str(holiday.type),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
+                                  Center(
+                                    child: Text(
+                                      utils.str(holiday.type),
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
+
                                   Text(
-                                    utils.formatDateTime(holiday.startDate),
-                                    style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    utils.formatDateTime(holiday.endDate),
+                                    holiday.getRange(),
                                     style: const TextStyle(color: Colors.grey),
                                   ),
                                 ],
                               ),
+                            ),
+                            Column(
+                              children: [
+                                   Center(
+                                      child:   Text(
+                                        holiday.employeesIds!.isEmpty?'Tous':
+                                        holiday.employeesIds!.length.toString(),
+                                        style: const TextStyle(color: Colors.grey),
+                                      ),
+                                    )
+                                // ),
+                              ],
                             ),
                             DropdownButtonHideUnderline(
                                 child: DropdownButton(
@@ -186,6 +194,7 @@ class HolidayDisplayCard extends StatelessWidget {
                           ],
                         ),
                       ),
+
                     ],
                   ))
             ],
