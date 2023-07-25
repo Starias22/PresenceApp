@@ -34,7 +34,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     'Admins',
     'Autres',
   ];
-  bool? isSuperAdmin = false;
+  bool? isSuperAdmin ;
 Future<void> retrieve() async {
   log.i('Setting all employees attendance for today');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();

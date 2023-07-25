@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/holiday_db.dart';
-import 'package:presence_app/backend/firebase/firestore/service_db.dart';
 import 'package:presence_app/backend/models/utils/holiday.dart';
 import 'package:presence_app/frontend/screens/attribute_holidays.dart';
 import 'package:presence_app/frontend/widgets/holiday_card.dart';
-import 'package:presence_app/frontend/widgets/service_card.dart';
 import 'package:presence_app/utils.dart';
 
 class HandleHolidays extends StatefulWidget {
