@@ -16,13 +16,14 @@ class _AdminsListState extends State<AdminsList> {
   late List<Admin> adminsAff = [];
 
 
-
+  bool inProgress=true;
   Future<void> retrieve() async {
     var x = await AdminDB().getAllAdmins();
 
     setState(() {
       admins = x;
       adminsAff = admins;
+      inProgress=false;
     });
   }
 
@@ -36,8 +37,7 @@ class _AdminsListState extends State<AdminsList> {
 
   @override
   Widget build(BuildContext context) {
-    
-    //adminsAff = admins;
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appBarColor,
@@ -48,19 +48,26 @@ class _AdminsListState extends State<AdminsList> {
            fontSize: appBarTextFontSize,
           ),
         ),
-        // leading: IconButton(
-        //     onPressed: () => {
-        //           Navigator.pushReplacement(
-        //               context,
-        //               MaterialPageRoute(
-        //                   builder: (context) =>
-        //                       const AdminHomePage()))
-        //         },
-        //     icon: const Icon(
-        //       Icons.arrow_back,
-        //     )),
+
       ),
-      body: CustomScrollView(
+        body: FutureBuilder<void>(
+        future: retrieve(),
+    builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+    if (inProgress) {
+    return const Center(
+    child: CircularProgressIndicator(),
+    );
+    }
+    else if (snapshot.hasError) {
+    return const Center(
+    child: Text('Error retrieving admin data'),
+    );
+    }
+    else if(adminsAff.isEmpty){
+    return const Center(child: Text('Aucun admin enregistré'));
+    }
+    else {
+      return CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
@@ -99,7 +106,10 @@ class _AdminsListState extends State<AdminsList> {
             );
           }))),
         ],
-      ),
+      );
+    }
+        },
+        )
     );
   }
 }

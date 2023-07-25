@@ -212,12 +212,6 @@ class _EmployeesListState extends State<EmployeesList> {
             body: FutureBuilder<void>(
               future: retrieve(),
               builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-
-                // if (snapshot.connectionState == ConnectionState.waiting) {
-                //   return const Center(
-                //     child: CircularProgressIndicator(),
-                //   );
-                // }
                 if (inProgress) {
                   return const Center(
                     child: CircularProgressIndicator(),

@@ -20,6 +20,7 @@ class _ServicesManagementState extends State<ServicesManagement> {
     var x=await ServiceDB().getAllServices();
     setState(() {
       services=x;
+      inProgress=false;
     });
   }
 
