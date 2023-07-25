@@ -61,7 +61,9 @@ class _ServicesManagementState extends State<ServicesManagement> {
         ],
       ),
 
-      body: CustomScrollView(
+      body: services.isEmpty?
+      const Center(child: Text('Aucun service enregistré')):
+      CustomScrollView(
         slivers: [
           SliverList(
               delegate: SliverChildListDelegate(

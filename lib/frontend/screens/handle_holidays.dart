@@ -14,18 +14,20 @@ class HandleHolidays extends StatefulWidget {
 
 class _HandleHolidaysState extends State<HandleHolidays> {
   List<Holiday> holidays=[];
+  bool inProgress=true;
 
-  Future<void> retrieveServices() async {
+  Future<void> retrieveHolidays() async {
     var x=await HolidayDB().getAllHolidays();
     setState(() {
       holidays=x;
+      inProgress=false;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    retrieveServices();
+    retrieveHolidays();
   }
   @override
   Widget build(BuildContext context) {
@@ -69,7 +71,25 @@ class _HandleHolidaysState extends State<HandleHolidays> {
         ],
       ),
 
-      body: CustomScrollView(
+        body: FutureBuilder<void>(
+        future: retrieveHolidays(),
+    builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
+
+    if (inProgress) {
+    return const Center(
+    child: CircularProgressIndicator(),
+    );
+    }
+    else if (snapshot.hasError) {
+    return const Center(
+    child: Text('Error retrieving  data'),
+    );
+    }  else if(holidays.isEmpty){
+    return const Center(child: Text('Aucun congé attribué'));
+    }
+    else {
+    return
+      CustomScrollView(
         slivers: [
           SliverList(
               delegate: SliverChildListDelegate(
@@ -89,7 +109,11 @@ class _HandleHolidaysState extends State<HandleHolidays> {
               )
           ),
         ],
-      ),
+      );
+    }
+    }
+    ),
     );
   }
+
 }
