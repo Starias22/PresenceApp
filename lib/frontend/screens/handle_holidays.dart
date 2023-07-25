@@ -82,7 +82,7 @@ class _HandleHolidaysState extends State<HandleHolidays> {
     }
     else if (snapshot.hasError) {
     return const Center(
-    child: Text('Error retrieving  data'),
+    child: Text('Error retrieving holidays  data'),
     );
     }  else if(holidays.isEmpty){
     return const Center(child: Text('Aucun congé attribué'));

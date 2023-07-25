@@ -14,6 +14,7 @@ class ServicesManagement extends StatefulWidget {
 
 class _ServicesManagementState extends State<ServicesManagement> {
   List<Service> services=[];
+  bool inProgress=true;
 
   Future<void> retrieveServices() async {
     var x=await ServiceDB().getAllServices();
@@ -60,30 +61,72 @@ class _ServicesManagementState extends State<ServicesManagement> {
           )
         ],
       ),
+      body: FutureBuilder<void>(
+          future: retrieveServices(),
+          builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
 
-      body: services.isEmpty?
-      const Center(child: Text('Aucun service enregistré')):
-      CustomScrollView(
-        slivers: [
-          SliverList(
-              delegate: SliverChildListDelegate(
-                List.generate(services.length, (int index) {
-                  return Column(
-                    children: [
-                      ServiceCard(service: services[index]),
-                      const Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 8.0, vertical: 0.0),
-                        child: Divider(),
-                      )
-                    ],
-                  );
-                }
-                )
-              )
-          ),
-        ],
+            if (inProgress) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            else if (snapshot.hasError) {
+              return const Center(
+                child: Text('Error retrieving holidays  data'),
+              );
+            }  else if(services.isEmpty){
+              return const Center(child: Text('Aucun service enregistré'));
+            }
+            else {
+              return
+                CustomScrollView(
+                  slivers: [
+                    SliverList(
+                        delegate: SliverChildListDelegate(
+                            List.generate(services.length, (int index) {
+                              return Column(
+                                children: [
+                                  ServiceCard(service: services[index]),
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 0.0),
+                                    child: Divider(),
+                                  )
+                                ],
+                              );
+                            }
+                            )
+                        )
+                    ),
+                  ],
+                );
+            }
+          }
       ),
+      //
+      // body: services.isEmpty?
+      // const Center(child: Text('Aucun service enregistré')):
+      // CustomScrollView(
+      //   slivers: [
+      //     SliverList(
+      //         delegate: SliverChildListDelegate(
+      //           List.generate(services.length, (int index) {
+      //             return Column(
+      //               children: [
+      //                 ServiceCard(service: services[index]),
+      //                 const Padding(
+      //                   padding: EdgeInsets.symmetric(
+      //                       horizontal: 8.0, vertical: 0.0),
+      //                   child: Divider(),
+      //                 )
+      //               ],
+      //             );
+      //           }
+      //           )
+      //         )
+      //     ),
+      //   ],
+      // ),
     );
   }
 }
