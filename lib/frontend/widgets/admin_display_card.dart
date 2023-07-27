@@ -4,12 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/frontend/screens/admin_home_page.dart';
-import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/update_admin.dart';
 
 class AdminDisplayCard extends StatefulWidget {
   final Admin admin;
-   const AdminDisplayCard({Key? key, required this.admin}) : super(key: key);
+  final bool himself;
+   const AdminDisplayCard({Key? key, required this.admin,
+     required this.himself}) : super(key: key);
 
   @override
   _AdminDisplayCardState createState() => _AdminDisplayCardState();
@@ -108,9 +109,12 @@ class _AdminDisplayCardState extends State<AdminDisplayCard> {
                                           ElevatedButton(
                                               onPressed: () async {
                                                 Navigator.of(context).pop();
+
                                                 setState(() {
                                                   deleteInProgress=true;
                                                 });
+
+
                                                 String? id=await AdminDB().getAdminIdByEmail
                                                   (widget.admin.email);
                                              AdminDB().delete(id!);
@@ -146,7 +150,9 @@ class _AdminDisplayCardState extends State<AdminDisplayCard> {
                             }
                           },
                           items: [
-                            DropdownMenuItem(
+
+                         if( ! widget.admin.isSuper||
+                             (widget.admin.isSuper&&widget.himself))  DropdownMenuItem(
                               value: 'modifier',
                               child: const Row(
                                 children: [
@@ -159,7 +165,8 @@ class _AdminDisplayCardState extends State<AdminDisplayCard> {
                               onTap: () {
                              },
                             ),
-                           if(!widget.admin.isSuper) const DropdownMenuItem(
+                           if(!widget.admin.isSuper&&!widget.himself)
+                             const DropdownMenuItem(
                               value: 'supprimer',
                               child: Row(
                                 children: [

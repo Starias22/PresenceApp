@@ -233,25 +233,13 @@ class _EmployeesListState extends State<EmployeesList> {
 
             ),
           ),
-            body: FutureBuilder<void>(
-              future: retrieve(),
-              builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-                if (inProgress) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-                else if (snapshot.hasError) {
-                  return const Center(
-                    child: Text('Error retrieving employees data'),
-                  );
-                }  else if(allEmployees.isEmpty){
-                  return Center(child: Text(body));
-                }
-                else
-                  // if(employeesAff.isNotEmpty)
-                  {
-                  return  CustomScrollView(
+            body: inProgress?const Center(
+    child: CircularProgressIndicator(),
+    )
+
+        : employees.isEmpty
+    ? const Center(child: Text('Aucun employé enregistré'))
+        : CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
                         child: Padding(
@@ -345,19 +333,12 @@ class _EmployeesListState extends State<EmployeesList> {
                                   ],
 
                                 );
-                              }))),
+                              }))
+    ),
 
 
                     ],
-                  );
-                }
-                // else{
-                //   return Text('');
-                // }
-              },
-            )
-         
-        ),
-      );
+                  ),
+    ));
   }
 }

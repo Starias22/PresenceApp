@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
@@ -15,17 +16,21 @@ class _AdminsListState extends State<AdminsList> {
   late List<Admin> admins ;
   late List<Admin> allAdmins ;
   late List<Admin> adminsAff;
+  late String currentAdminEmail;
 
 
 
   bool inProgress=true;
   Future<void> retrieve() async {
     var x = await AdminDB().getAllAdmins();
+    String? y=FirebaseAuth.instance.currentUser?.email;
+
 
     setState(() {
       admins = x;
       allAdmins=admins;
       adminsAff = admins;
+      currentAdminEmail=y!;
       inProgress=false;
     });
   }
@@ -92,7 +97,7 @@ else {
 
             ),
           ),
-         // adminsAff.isEmpty? const Text('Aucun admin correspondant'):
+
          SliverList(
               delegate: SliverChildListDelegate(
                   List.generate(adminsAff.length, (int index) {
@@ -100,7 +105,8 @@ else {
               children: [
                 InkWell(
                   onTap: () {},
-                  child: AdminDisplayCard(admin: adminsAff[index]),
+                  child: AdminDisplayCard(admin: adminsAff[index],
+                  himself: currentAdminEmail==adminsAff[index].email,),
                 ),
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 0.0),
@@ -108,10 +114,10 @@ else {
                 )
               ],
             );
-          }))),
+          }))
+         ),
         ],
-      )
-      ,
+      ),
 
     );
   }
