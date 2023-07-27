@@ -73,7 +73,7 @@ class _ServicesManagementState extends State<ServicesManagement> {
             }
             else if (snapshot.hasError) {
               return const Center(
-                child: Text('Error retrieving holidays  data'),
+                child: Text('Error retrieving services data'),
               );
             }  else if(services.isEmpty){
               return const Center(child: Text('Aucun service enregistré'));
@@ -104,30 +104,6 @@ class _ServicesManagementState extends State<ServicesManagement> {
             }
           }
       ),
-      //
-      // body: services.isEmpty?
-      // const Center(child: Text('Aucun service enregistré')):
-      // CustomScrollView(
-      //   slivers: [
-      //     SliverList(
-      //         delegate: SliverChildListDelegate(
-      //           List.generate(services.length, (int index) {
-      //             return Column(
-      //               children: [
-      //                 ServiceCard(service: services[index]),
-      //                 const Padding(
-      //                   padding: EdgeInsets.symmetric(
-      //                       horizontal: 8.0, vertical: 0.0),
-      //                   child: Divider(),
-      //                 )
-      //               ],
-      //             );
-      //           }
-      //           )
-      //         )
-      //     ),
-      //   ],
-      // ),
     );
   }
 }

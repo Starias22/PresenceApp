@@ -27,8 +27,6 @@ class _EmployeesListState extends State<EmployeesList> {
   int _selectedIndex = 0;
   late String pictureDownloadUrl;
   bool inProgress=true;
-
-
   late List<Employee> employees = [];
   late List<Employee> employeesAff = [];
   bool holidayCreationInProgress=false;
@@ -47,8 +45,8 @@ class _EmployeesListState extends State<EmployeesList> {
     
     setState((){
       employees=x;
-          employeesAff = employees;
-          inProgress=false;
+      employeesAff = employees;
+      inProgress=false;
 
     });
   }
@@ -77,8 +75,6 @@ class _EmployeesListState extends State<EmployeesList> {
   }
 
 
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -94,6 +90,30 @@ class _EmployeesListState extends State<EmployeesList> {
                else if(widget.holiday!=null&&!holidayCreationInProgress)
                  IconButton(
                    tooltip: 'Attribuer',
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
                     onPressed: () async {
 
                       setState(() {
@@ -227,7 +247,6 @@ class _EmployeesListState extends State<EmployeesList> {
                 else {
                   return  CustomScrollView(
                     slivers: [
-
                       SliverToBoxAdapter(
                         child: Padding(
                           padding: const EdgeInsets.only(top: 3),

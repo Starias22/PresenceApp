@@ -6,6 +6,7 @@ import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
 import 'package:presence_app/esp32.dart';
+import 'package:presence_app/frontend/screens/employees_list.dart';
 import 'package:presence_app/frontend/screens/presence_calendar.dart';
 import 'package:presence_app/frontend/screens/update_employee.dart';
 import 'package:presence_app/frontend/widgets/toast.dart';
@@ -15,6 +16,7 @@ class EmployeeCard extends StatefulWidget {
   final Employee employee;
   final bool forHoliday;
   bool? isChecked;
+  bool? isSuperAdmin ;
   final Function(Employee, bool)? onEmployeeChecked; // Add this line
 
    EmployeeCard({Key? key, required this.employee,
@@ -30,14 +32,18 @@ class EmployeeCard extends StatefulWidget {
 class _EmployeeCardState extends State<EmployeeCard> {
   String imageDownloadUrl = '';
   bool isChecked = false;
+  bool deleteInProgress=false;
+  bool? isSuperAdmin;
 
   @override
   void initState() {
     super.initState();
+
     // Call getDownloadURL and update imageDownloadUrl
     getDownloadURL().then((url) {
       setState(() {
         imageDownloadUrl = url;
+
       });
     });
   }
@@ -62,6 +68,14 @@ class _EmployeeCardState extends State<EmployeeCard> {
 
   Future<String> getDownloadURL() async {
     return '';
+  }
+  Future<void> retrieve() async {
+
+    String? email=FirebaseAuth.instance.currentUser?.email;
+    var x=(await AdminDB().getAdminByEmail(email!)).isSuper;
+    setState(() {
+    isSuperAdmin=x ;
+    });
   }
 
 
@@ -153,7 +167,11 @@ class _EmployeeCardState extends State<EmployeeCard> {
                  },
                 ),
                           if(!widget.forHoliday)   DropdownButtonHideUnderline(
-                            child: DropdownButton(
+                            child: deleteInProgress?
+                            const CircularProgressIndicator(
+                              color: Color.fromRGBO(255, 0, 0, 0),
+                            ):
+                             DropdownButton(
                               onChanged: (String? v) async {
                                 if (v == "modifier") {
                                   Navigator.push(
@@ -168,21 +186,6 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                   );
                                 } else if (v == "supprimer")
                                 {
-
-                                  String email =
-                                  FirebaseAuth.instance.currentUser!.email!;
-
-                                  String adminId = (await AdminDB()
-                                      .getAdminIdByEmail(email))!;
-                                  if (!(await AdminDB()
-                                      .getAdminById(adminId))
-                                      .isSuper) {
-                                    ToastUtils.showToast(
-                                        context,
-                                        'Seul le super admin peut supprimer des employés',
-                                        3);
-                                    return;
-                                  }
 
                                   showDialog(
                                     context: context,
@@ -209,6 +212,9 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                           onPressed: () async {
 
                                              Navigator.pop(context);
+                                             setState(() {
+                                               deleteInProgress=false;
+                                             });
                                             log.d(widget.employee.lastname);
                                             int? fingerprintId =
                                                 widget.employee.fingerprintId;
@@ -223,20 +229,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                               await ESP32()
                                                   .sendData(
                                                   'remove');
-
-                                              // if (!await ESP32()
-                                              //     .sendData(
-                                              //     fingerprintId.toString())) {
-                                              //
-                                              //   ToastUtils.showToast(
-                                              //       context,
-                                              //       connectionError,
-                                              //       3);
-                                              //   return;
-                                              // }
-
                                               int data = await getData(150);
-
 
                                               log.d('datauuuuu: $data');
                                               if(data == -11){
@@ -259,18 +252,18 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                                   EmployeeDB().delete
                                                     (id);
 
-                                                  // Navigator.of(context).pop();
-                                                  // Navigator.pushReplacement(
-                                                  //   context,
-                                                  //   MaterialPageRoute(
-                                                  //     builder: (context) =>
-                                                  //     EmployeesList(),
-                                                  //   ),
-                                                  // );
-                                                  ToastUtils.showToast(
-                                                      context,
-                                                      'Employé supprimé avec succès',
-                                                      3);
+                                                  Navigator.of(context).pop();
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                      const EmployeesList(),
+                                                    ),
+                                                  );
+                                                  // ToastUtils.showToast(
+                                                  //     context,
+                                                  //     'Employé supprimé avec succès',
+                                                  //     3);
 
 
                                                 }else{
@@ -294,6 +287,9 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                               }
 
                                             }
+                                            setState(() {
+                                              deleteInProgress=false;
+                                            });
 
                                           },
 
@@ -309,12 +305,12 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                       ],
                                     ),
                                   ).then((value) {
-                                    //setState(() {});
+
                                   });
                                 }
                               },
-                              items: const [
-                                DropdownMenuItem(
+                              items: [
+                                const DropdownMenuItem(
                                   value: 'modifier',
                                   child: Row(
                                     children: [
@@ -325,7 +321,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
                                     ],
                                   ),
                                 ),
-                                DropdownMenuItem(
+                               if( isSuperAdmin==true) const DropdownMenuItem(
                                   value: 'supprimer',
                                   child: Row(
                                     children: [
