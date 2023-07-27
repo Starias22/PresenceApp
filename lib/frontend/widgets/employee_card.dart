@@ -38,6 +38,7 @@ class _EmployeeCardState extends State<EmployeeCard> {
   @override
   void initState() {
     super.initState();
+    retrieve();
 
     // Call getDownloadURL and update imageDownloadUrl
     getDownloadURL().then((url) {
