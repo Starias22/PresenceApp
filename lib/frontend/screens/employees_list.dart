@@ -28,9 +28,12 @@ class _EmployeesListState extends State<EmployeesList> {
   late String pictureDownloadUrl;
   bool inProgress=true;
   late List<Employee> employees = [];
+  late List<Employee> allEmployees ;
   late List<Employee> employeesAff = [];
   bool holidayCreationInProgress=false;
   List<String> selectedEmployeesIds = []; // Add this line
+  String body='Aucun employé enregistré';
+
 
   @override
   void initState() {
@@ -45,6 +48,7 @@ class _EmployeesListState extends State<EmployeesList> {
     
     setState((){
       employees=x;
+      allEmployees=employees;
       employeesAff = employees;
       inProgress=false;
 
@@ -241,10 +245,12 @@ class _EmployeesListState extends State<EmployeesList> {
                   return const Center(
                     child: Text('Error retrieving employees data'),
                   );
-                }  else if(employeesAff.isEmpty){
-                  return const Center(child: Text('Aucun employé enregistré'));
+                }  else if(allEmployees.isEmpty){
+                  return Center(child: Text(body));
                 }
-                else {
+                else
+                  // if(employeesAff.isNotEmpty)
+                  {
                   return  CustomScrollView(
                     slivers: [
                       SliverToBoxAdapter(
@@ -345,6 +351,9 @@ class _EmployeesListState extends State<EmployeesList> {
                     ],
                   );
                 }
+                // else{
+                //   return Text('');
+                // }
               },
             )
          

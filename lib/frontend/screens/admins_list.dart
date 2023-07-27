@@ -13,6 +13,7 @@ class AdminsList extends StatefulWidget {
 
 class _AdminsListState extends State<AdminsList> {
   late List<Admin> admins = [];
+  late List<Admin> allAdmins ;
   late List<Admin> adminsAff = [];
 
 
@@ -22,6 +23,7 @@ class _AdminsListState extends State<AdminsList> {
 
     setState(() {
       admins = x;
+      allAdmins=admins;
       adminsAff = admins;
       inProgress=false;
     });
@@ -63,7 +65,7 @@ class _AdminsListState extends State<AdminsList> {
     child: Text('Error retrieving admin data'),
     );
     }
-    else if(adminsAff.isEmpty){
+    else if(allAdmins.isEmpty){
     return const Center(child: Text('Aucun admin enregistré'));
     }
     else {
