@@ -3,15 +3,20 @@
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 import 'package:presence_app/backend/models/utils/admin.dart';
+import 'package:presence_app/frontend/screens/admin_home_page.dart';
 import 'package:presence_app/frontend/screens/admins_list.dart';
 import 'package:presence_app/frontend/screens/update_admin.dart';
-import 'package:presence_app/frontend/widgets/toast.dart';
 
-class AdminDisplayCard extends StatelessWidget {
+class AdminDisplayCard extends StatefulWidget {
   final Admin admin;
    const AdminDisplayCard({Key? key, required this.admin}) : super(key: key);
 
- 
+  @override
+  _AdminDisplayCardState createState() => _AdminDisplayCardState();
+}
+
+class _AdminDisplayCardState extends State<AdminDisplayCard> {
+  bool deleteInProgress = false;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -47,25 +52,27 @@ class AdminDisplayCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                admin.lastname,
+                               widget.admin.lastname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                admin.firstname,
+                                widget.admin.firstname,
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                               Text(
-                                admin.email,
+                                widget.admin.email,
                                 style: const TextStyle(color: Colors.grey),
                               ),
                             ],
                           ),
                         ),
-                        DropdownButtonHideUnderline(
+                       deleteInProgress?
+                       const CircularProgressIndicator
+                         (color: Color.fromRGBO(255, 0, 0, 1),): DropdownButtonHideUnderline(
                             child: DropdownButton(
                           onChanged: (String? v)  {
                             if (v == "modifier") {
@@ -73,15 +80,11 @@ class AdminDisplayCard extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (BuildContext context) {
-                                  return UpdateAdmin(admin: admin,himself: false,);
+                                  return UpdateAdmin(admin: widget.admin,himself: false,);
                                 }),
                               );
                             } else if (v == "supprimer") {
-                              if(admin.isSuper)
-                                {
-                                  ToastUtils.showToast(context, 'Le super admin ne peut pas être supprimé', 3);
-                                  return;
-                                }
+
 
                               showDialog(
                                   context: context,
@@ -104,18 +107,31 @@ class AdminDisplayCard extends StatelessWidget {
                                               child: const Text("Annuler")),
                                           ElevatedButton(
                                               onPressed: () async {
-                                                String? id=await AdminDB().getAdminIdByEmail(admin.email);
-                                             AdminDB().delete(id!);
-
-
                                                 Navigator.of(context).pop();
-
+                                                setState(() {
+                                                  deleteInProgress=true;
+                                                });
+                                                String? id=await AdminDB().getAdminIdByEmail
+                                                  (widget.admin.email);
+                                             AdminDB().delete(id!);
+                                                setState(() {
+                                                  deleteInProgress=false;
+                                                });
+                                                Navigator.of(context).pop();
                                                 Navigator.pushReplacement(
                                                     context,
                                                     MaterialPageRoute(
-                                                        builder: (context) => const AdminsList()));
+                                                        builder: (context) =>
 
-                                                 
+                                                        const AdminHomePage()));
+
+                                                // Navigator.push(
+                                                //     context,
+                                                //     MaterialPageRoute(
+                                                //         builder: (context) =>
+                                                //
+                                                //         const AdminsList()));
+
                                               },
                                               style: ElevatedButton.styleFrom(
                                                   backgroundColor: const Color.fromARGB(
@@ -143,7 +159,7 @@ class AdminDisplayCard extends StatelessWidget {
                               onTap: () {
                              },
                             ),
-                            const DropdownMenuItem(
+                           if(!widget.admin.isSuper) const DropdownMenuItem(
                               value: 'supprimer',
                               child: Row(
                                 children: [
