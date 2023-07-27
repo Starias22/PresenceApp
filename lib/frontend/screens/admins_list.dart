@@ -12,9 +12,9 @@ class AdminsList extends StatefulWidget {
 }
 
 class _AdminsListState extends State<AdminsList> {
-  late List<Admin> admins = [];
+  late List<Admin> admins ;
   late List<Admin> allAdmins ;
-  late List<Admin> adminsAff = [];
+  late List<Admin> adminsAff;
 
 
   bool inProgress=true;
@@ -31,8 +31,6 @@ class _AdminsListState extends State<AdminsList> {
 
   @override
   void initState() {
-    
-
     super.initState();
     retrieve();
   }
@@ -52,24 +50,13 @@ class _AdminsListState extends State<AdminsList> {
         ),
 
       ),
-        body: FutureBuilder<void>(
-        future: retrieve(),
-    builder: (BuildContext context, AsyncSnapshot<void> snapshot) {
-    if (inProgress) {
-    return const Center(
-    child: CircularProgressIndicator(),
-    );
-    }
-    else if (snapshot.hasError) {
-    return const Center(
-    child: Text('Error retrieving admin data'),
-    );
-    }
-    else if(allAdmins.isEmpty){
-    return const Center(child: Text('Aucun admin enregistré'));
-    }
-    else {
-      return CustomScrollView(
+        body: inProgress?const Center(
+          child: CircularProgressIndicator(),
+        )
+
+        : admins.isEmpty
+    ? const Center(child: Text('Aucun admin enregistré'))
+        : CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
@@ -78,20 +65,34 @@ class _AdminsListState extends State<AdminsList> {
                 hintText: 'Rechercher par nom ou prénom',
 
                   onChanged: (value) {
-                setState(() {
-                 adminsAff = admins
-    .where((admin) =>
-        admin.firstname.toLowerCase().contains(value.toLowerCase())
-            ||
-        admin.lastname.toLowerCase().contains(value.toLowerCase())
-        ).toList();
+                  value=value.trim();
+      if (value.isEmpty||value.contains(' ')) {
+      // Show all admins when the search query is empty
+        setState(() {
+          adminsAff = allAdmins;
+        });
+
+      }
+else {
+      setState(() {
+      adminsAff = admins
+          .where((admin) =>
+      admin.firstname.toLowerCase().contains(value.toLowerCase())
+      ||
+      admin.lastname.toLowerCase().contains(value.toLowerCase())
+      ).toList();
 
 
-                });
-              }),
+      }
+      );
+      }
+              }
+              ),
+
             ),
           ),
-          SliverList(
+         // adminsAff.isEmpty? const Text('Aucun admin correspondant'):
+         SliverList(
               delegate: SliverChildListDelegate(
                   List.generate(adminsAff.length, (int index) {
             return Column(
@@ -108,10 +109,9 @@ class _AdminsListState extends State<AdminsList> {
             );
           }))),
         ],
-      );
-    }
-        },
-        )
+      )
+      ,
+
     );
   }
 }
