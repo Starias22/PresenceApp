@@ -168,13 +168,12 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                     // Afficher le cercle indicateur de progression pendant le chargement
                     return const Center(child: CircularProgressIndicator());
                   } else {
-                    // Les données de l'employé sont disponibles, continuer avec le contenu de la page
+
                     return SafeArea(
                         child:
                         CustomScrollView(
                           slivers: [
                             SliverAppBar(
-
 
                               title: const Center(
                                   child: Text("Calendrier des présences")),
@@ -240,12 +239,12 @@ class _EmployeeHomePageState extends State<EmployeeHomePage> {
                                                   MaterialPageRoute(
 
                                                       builder: (context) =>
-                                                          const WelcomeImsp()));
+                                                          const Welcome()));
                                               Navigator.push(
                                                   context, MaterialPageRoute(
                                                   builder: (
                                                       BuildContext context) {
-                                                    return const WelcomeImsp();
+                                                    return const Welcome();
                                                   }));
                                             });
                                       }

@@ -27,8 +27,6 @@ class Employee {
   late String entryTime, exitTime;
   DateTime? today;
 
-
-
   Employee(
       {
         this.id='',
@@ -85,20 +83,13 @@ class Employee {
         utils.format(entryTime)!.isAtSameMomentAs(currentTime));
   }
 
-
-  bool desireToExitBeforeEntryTime(DateTime now) {
-    return now.isBefore(utils.format(entryTime)!);
-  }
-
   bool isLate(DateTime currentTime){
-
     return utils.format(entryTime)!.isBefore(currentTime) ;
-
   }
-
-  bool desireToExitEarly(DateTime currentTime){
+  bool desiresToExitBeforeEntryTime(DateTime currentTime) {
+    return currentTime.isBefore(utils.format(entryTime)!);
+  }
+  bool desiresToExitBeforeExitTime(DateTime currentTime){
     return currentTime.isBefore(utils.format(exitTime)!);
   }
-
-
 }

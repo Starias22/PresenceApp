@@ -110,7 +110,7 @@ setState(() {
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => WelcomeImsp(
+                        builder: (context) => Welcome(
                           isSuperAdmin: isSuperAdmin!,),
                       ),
                     );
@@ -129,14 +129,14 @@ setState(() {
                         context,
                         MaterialPageRoute(
                           builder: (context) =>
-                              const WelcomeImsp(),
+                              const Welcome(),
                         ),
                       );
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (BuildContext context) {
-                            return const WelcomeImsp();
+                            return const Welcome();
                           },
                         ),
                       );

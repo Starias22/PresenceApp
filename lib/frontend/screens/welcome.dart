@@ -14,17 +14,17 @@ import 'package:presence_app/frontend/widgets/custom_alert_dialog.dart';
 import 'package:presence_app/frontend/widgets/custom_snack_bar.dart';
 import 'package:presence_app/main.dart';
 import 'package:presence_app/utils.dart';
-class WelcomeImsp extends StatefulWidget {
+class Welcome extends StatefulWidget {
 final bool isSuperAdmin;
-   const WelcomeImsp({Key? key,
+   const Welcome({Key? key,
    this.isSuperAdmin=false}) : super(key: key);
 
 
   @override
-  State<WelcomeImsp> createState() => _WelcomeImspState();
+  State<Welcome> createState() => _WelcomeState();
 }
 
-class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
+class _WelcomeState extends State<Welcome>with RouteAware {
 
   @override
   void didPopNext() {
@@ -67,13 +67,16 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
   late DateTime now;
 
   late Employee employee;
-  
+  void stop(){
 
-
+      taskCompleted=true;
+      ESP32().sendData('-1');
+      setState(() {
+        inProgress=false;
+      });
+        }
 
   @override
-
-
 
   void initState() {
 
@@ -277,32 +280,37 @@ class _WelcomeImspState extends State<WelcomeImsp>with RouteAware {
 
 else{
       now = await utils.localTime();
+      log.d('The localtime is:$now');
       employee = nullableEmployee;
+      DateTime today=DateTime(now.year,now.month,now.day);
 
-      int code = await PresenceDB().handleEmployeeAction(data, now);
-      //int code=entryMarkedSuccessfully;
+      PresenceDB presenceDB=PresenceDB();
 
-      if(code==desireToExitBeforeEntryTime||code==desireToExitEarly)
+      int code = await presenceDB.handleEmployeeAction(employee, now);
+
+      if(code==desiresToExitBeforeEntryTime||code==desiresToExitBeforeExitTime)
       {
-        String message="Êtes-vous sûr de vouloir quitter avant l'heure?";
-        if(code==desireToExitBeforeEntryTime){
+        log.d('Condition verified');
+        String message="Êtes-vous sûr de vouloir sortir avant l'heure?";
+        if(code==desiresToExitBeforeEntryTime){
+          log.d('desireToExitBeforeEntryTime');
           message+="d'entrée ";
         }
-        if(code==desireToExitEarly){
+        if(code==desiresToExitBeforeExitTime){
+          log.d('desireToExitBeforeExitTime');
           message+="de sortie ";
         }
         message+= 'officielle?';
+
         showConfirmationDialog(context, message);
-
-        if(!confirmed){
-          taskCompleted=true;
-          ESP32().sendData('-1');
-          setState(() {
-            inProgress=false;
-          });
+        if(!confirmed) {
+          log.d('Exit marking cancelled');
+          stop();
           return;
-
         }
+
+        presenceDB.updateExitTime(presenceDB.currentPresenceId, today);
+        EmployeeDB().updateCurrentStatus(employee.id, EStatus.out);
 
       }
       employeePicture =
@@ -337,19 +345,13 @@ else{
 
       ScaffoldMessenger.of(context).showSnackBar(CustomSnackBar(
         showCloseIcon: true,
-        //width: MediaQuery.of(context).size.width-2*10,
         message: '${employee.gender == 'M' ? 'Monsieur' : 'Madame'}'
             ' ${employee.firstname}'
             ' ${employee.lastname}: ${getMessage(code)}',
         image: employeePicture,
       ));
-//
-// log.d('22222');
-//   int x=await assureDataChanged(data, 150);
-//   if(x==150) {
+
       taskCompleted = true;
-      // }
-      //return;
 
     }
 
@@ -361,15 +363,18 @@ else{
     });
     taskCompleted=true;
 
-    //log.d('The end of the function');
-
 
   }
 
 
   String getMessage(int code){
+    if(code==notYet){
+      return "Vous n'êtes pas encore censé commencer par travailler."
+          " Attendez plutôt le ${utils.frenchFormatDate(employee.startDate)}";
+
+    }
     if(code==isWeekend){
-      return "Aujourdh'ui est un weekend";
+      return "Aujourd'hui est un weekend";
 
     }
     if(code==inHoliday){
@@ -385,16 +390,15 @@ else{
       return "Entrée marquée avec succès(${utils.formatTime(now)})!";
     }
 
-    if(code==desireToExitBeforeEntryTime){
-      return "Sortie marquée(${utils.formatTime(now)}) avant heure d'entrée officielle(${employee.entryTime})";
+    if(code==desiresToExitBeforeEntryTime){
+      return "Sortie marquée(${utils.formatTime(now)}) avant l'heure d'entrée officielle(${employee.entryTime})";
     }
-    if(code==desireToExitEarly){
-      return "Sortie marquée(${utils.formatTime(now)}) avant heure de sortie officielle(${employee.exitTime})";
+    if(code==desiresToExitBeforeExitTime){
+      return "Sortie marquée(${utils.formatTime(now)}) avant l'heure de sortie officielle(${employee.exitTime})";
     }
-    return 'Inconnu';
+    return 'Huuuuuuuuum*****Revoir le code';
 
   }
-  // Ajoutez cette méthode à votre classe StatefulWidget ou StatelessWidget
 
   Future<void> showConfirmationDialog(BuildContext context,String message) async {
     await showDialog(
@@ -406,7 +410,7 @@ else{
           message: message,
           context: context,
           positiveOption: 'Oui',
-          negativeOption: 'Annnuler',
+          negativeOption: 'Annuler',
           onConfirm: (){
             confirmed=true;
           },

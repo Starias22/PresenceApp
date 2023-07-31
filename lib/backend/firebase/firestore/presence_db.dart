@@ -12,6 +12,8 @@ class PresenceDB {
   FirebaseFirestore.instance.collection('presences');
   final CollectionReference _lastUpdate=
   FirebaseFirestore.instance.collection('last_update');
+  late String currentPresenceId;
+  late DateTime currentStartDate;
 
 
 
@@ -44,45 +46,48 @@ class PresenceDB {
     return querySnapshot.docs.isNotEmpty;
   }
 
-Future<bool> entered(String employeeId) async {
+Future<bool> entered(String employeeId,DateTime dateTime) async {
 
 
     return (await getPresenceById(
-        (await getPresenceId(await utils.localTime(), employeeId))!))
+        (await getPresenceId(dateTime, employeeId))!))
         .entryTime!=null;
 }
-  Future<bool> exited(String employeeId) async {
+  Future<bool> exited(String employeeId,DateTime dateTime) async {
     return (await getPresenceById
-      ((await getPresenceId(await utils.localTime(), employeeId))!)).exitTime!=null;
+      ((await getPresenceId(dateTime, employeeId))!)).exitTime!=null;
   }
-  Future<int> handleEmployeeAction( int fingerprintId,DateTime dateTime) async {
+  Future<int> handleEmployeeAction( Employee employee,DateTime dateTime) async {
 
-    DateTime dateTime=await utils.localTime();
-    if(utils.isWeekend(dateTime)) {
+
+    DateTime today=DateTime(dateTime.year,dateTime.month,dateTime.day);
+    if(utils.isWeekend(today)) {
       return isWeekend;
     }
+    if(employee.startDate.isAfter(today))
+    {
+      return notYet;
+    }
 
-    String? employeeId=await  EmployeeDB().getEmployeeIdByFingerprintId(fingerprintId);
+    String? employeeId=employee.id;
 
-   if(await HolidayDB().isInHoliday(employeeId!, dateTime)) {
+   if(await HolidayDB().isInHoliday(employeeId, dateTime)) {
      return inHoliday;
    }
 
-   if(await entered(employeeId)) {
+   if(await entered(employeeId,today)) {
 
-     if(await exited(employeeId)){
+     if(await exited(employeeId,today)){
        return exitAlreadyMarked;
      }
-     return  markExit(employeeId);
+     return  markExit(employee,dateTime);
 
    }
 
-     markEntry(employeeId);
+     markEntry(employee,dateTime);
      return entryMarkedSuccessfully;
 
      }
-
-
 
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
@@ -972,12 +977,11 @@ else if(reportType==ReportType.weekly)
     _presence.doc(presence.id).update(presence.toMap());
   }
   void updateEntryTime(String id,DateTime dateTime){
-    String entryTime=utils.formatTime(dateTime);
-    _presence.doc(id).update({'entry_time':entryTime});
+
+    _presence.doc(id).update({'entry_time':utils.formatTime(dateTime)});
   }
   void updateExitTime(String id,DateTime dateTime){
-    String exitTime=utils.formatTime(dateTime);
-    _presence.doc(id).update({'exit_time':exitTime});
+    _presence.doc(id).update({'exit_time':utils.formatTime(dateTime)});
   }
   void updateService(String id,String service){
 
@@ -987,41 +991,36 @@ else if(reportType==ReportType.weekly)
 
     _presence.doc(id).update({'status':utils.str(status)});
   }
-  void markEntry(String employeeId) async {
+  void markEntry(Employee employee,DateTime dateTime) async {
 
-    DateTime now=await utils.localTime();
+String employeeId=employee.id;
+  EStatus status=employee.isLate(dateTime)?EStatus.late:EStatus.present;
 
-
-  EStatus status=(await EmployeeDB().getEmployeeById(employeeId))
-      .isLate(now)?EStatus.late:EStatus.present;
-
-  String? presenceId= await getEmployeePresenceId(employeeId, now);
-updateEntryTime(presenceId!, now);
+  String? presenceId= await getEmployeePresenceId(employeeId, dateTime);
+updateEntryTime(presenceId!, dateTime);
 updateStatus(presenceId, status);
 EmployeeDB().updateCurrentStatus(employeeId, status);
 
   }
 
-  Future<int> markExit(String employeeId) async {
+  Future<int> markExit(Employee employee,DateTime dateTime) async {
+
+    DateTime today=DateTime(dateTime.year,dateTime.month,dateTime.day);
+    String employeeId=employee.id;
+    String? presenceId= await getEmployeePresenceId(employeeId, today);
 
 
-
-    DateTime now=await utils.localTime();
-    String? presenceId= await getEmployeePresenceId(employeeId, now);
-
-    var employee=await EmployeeDB().getEmployeeById(employeeId);
-    if(employee.desireToExitEarly(now)) {
-
-      updateExitTime(presenceId!, now);
-      EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
-      return desireToExitEarly;
+    if(employee.desiresToExitBeforeEntryTime(dateTime)) {
+      log.d('Yeah desire to exit before entry time');
+      currentPresenceId=presenceId!;
+      return desiresToExitBeforeEntryTime;
     }
-
-    if(employee.desireToExitBeforeEntryTime(now)) {
-      return desireToExitBeforeEntryTime;
+    if(employee.desiresToExitBeforeExitTime(dateTime)) {
+      log.d('Yeah desire to exit early');
+      currentPresenceId=presenceId!;
+      return desiresToExitBeforeExitTime;
     }
-
-    updateExitTime(presenceId!, now);
+    updateExitTime(presenceId!, dateTime);
     EmployeeDB().updateCurrentStatus(employeeId, EStatus.out);
     return exitMarkedSuccessfully;
 
@@ -1054,8 +1053,6 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
     if(
     employee.startDate.isAtSameMomentAs(date)){
       EmployeeDB().updateCurrentStatus(employeeId, EStatus.absent);
-
-
     }
 
     if(utils.isWeekend(date)) {

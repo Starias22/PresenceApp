@@ -24,8 +24,7 @@ class CustomAlertDialog extends AlertDialog{
            if(negativeOption!=null) CustomElevatedButton(
              text:negativeOption,
              onPressed: () {
-               // Ajoutez ici le code à exécuter lorsque l'utilisateur confirme
-               Navigator.of(context).pop(); // Ferme la boîte de dialogue
+               Navigator.of(context).pop();
              onCancel!();
              },
            ),

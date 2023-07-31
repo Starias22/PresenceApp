@@ -13,7 +13,7 @@ class Wrapper extends StatelessWidget {
     User? user = FirebaseAuth.instance.currentUser;
     final user0 = Provider.of<User?>(context);
     if(user0 == null) {
-      return const WelcomeImsp();
+      return const Welcome();
 
     }
     else{

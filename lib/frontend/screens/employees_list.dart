@@ -23,11 +23,13 @@ class EmployeesList extends StatefulWidget {
 }
 
 class _EmployeesListState extends State<EmployeesList> {
+  TextEditingController textEditingController = TextEditingController();
   List<String> tabBars = ["Tous", 'Présents', 'Retards', 'Absents', 'Sorties'];
   int _selectedIndex = 0;
   late String pictureDownloadUrl;
   bool inProgress=true;
   late List<Employee> employees = [];
+  String data='';
   late List<Employee> allEmployees ;
   late List<Employee> employeesAff = [];
   bool holidayCreationInProgress=false;
@@ -38,6 +40,7 @@ class _EmployeesListState extends State<EmployeesList> {
   @override
   void initState() {
     super.initState();
+    textEditingController.text = '';
     retrieve();
   }
 
@@ -56,6 +59,7 @@ class _EmployeesListState extends State<EmployeesList> {
   }
 
     void _trier(int index) async {
+      textEditingController.text = '';
        if (index == 0) {
 
       employeesAff = employees;
@@ -81,6 +85,7 @@ class _EmployeesListState extends State<EmployeesList> {
 
   @override
   Widget build(BuildContext context) {
+    // TextEditingController textEditingController='';
 
     return DefaultTabController(
         length: tabBars.length,
@@ -94,29 +99,6 @@ class _EmployeesListState extends State<EmployeesList> {
                else if(widget.holiday!=null&&!holidayCreationInProgress)
                  IconButton(
                    tooltip: 'Attribuer',
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
                     onPressed: () async {
 
@@ -245,9 +227,18 @@ class _EmployeesListState extends State<EmployeesList> {
                         child: Padding(
                           padding: const EdgeInsets.only(top: 3),
                           child:  SearchBar(
+                            controller: textEditingController,
                               hintText: 'Rechercher par nom, prénom ou service',
                               onChanged: (value) {
-                                setState(() {
+                                if (value.isEmpty||value.contains(' ')) {
+                                  // Show all employees when the search query is empty
+                                  setState(() {
+                                    employeesAff = allEmployees;
+                                  });
+
+                                }
+                                else {
+                                  setState(() {
                                   employeesAff = employees
                                       .where(
                                           (employee) =>
@@ -264,9 +255,11 @@ class _EmployeesListState extends State<EmployeesList> {
                                   )
                                       .toList();
                                 });
+                                }
                               }),
                         ),
                       ),
+
                       SliverAppBar(
                         automaticallyImplyLeading: false,
                         floating: true,
@@ -298,6 +291,14 @@ class _EmployeesListState extends State<EmployeesList> {
                           ),
                         ),
                       ),
+                      employeesAff.isEmpty
+                          ? const SliverToBoxAdapter(
+                        child: Padding(
+                          padding: EdgeInsets.all(16.0),
+                          child: Center(child: Text('Aucun employé correspondant')),
+                        ),
+                      )
+                          :
                       SliverList(
                           delegate: SliverChildListDelegate(
                               List.generate(employeesAff.length, (int index) {

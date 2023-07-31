@@ -97,7 +97,14 @@ else {
 
             ),
           ),
-
+          adminsAff.isEmpty
+              ? const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: Text('Aucun admin correspondant')),
+            ),
+          )
+              :
          SliverList(
               delegate: SliverChildListDelegate(
                   List.generate(adminsAff.length, (int index) {

@@ -1,5 +1,4 @@
 // ignore_for_file: use_build_context_synchronously
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:presence_app/backend/firebase/firestore/employee_db.dart';
 import 'package:presence_app/backend/models/utils/employee.dart';
@@ -155,44 +154,6 @@ class _EnrollFingerprintState extends State<EnrollFingerprint> {
                 }
 
                   }
-
-                  // else if(buttonText=='Achever'){
-                  //   updateMessage("Enregistrement en cours",val: false,
-                  //   colorCode: 4);
-                  //
-                  //   setState(() {
-                  //     creationInProgress=true;
-                  //   });
-                  //
-                  //   //complete the employee registration
-                  //   widget.employee.fingerprintId=fingerprintId;
-                  //
-                  //
-                  //   log.d('-----The fingerprint id is :'
-                  //       ' ${widget.employee.fingerprintId}');
-                  //
-                  //   if(
-                  //   // true
-                  //   await EmployeeDB().create(widget.employee)
-                  //   )
-                  //     {
-                  //
-                  //
-                  //       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  //         content: Text("Employé enregistré avec succès"),
-                  //         duration: Duration(seconds: 3),
-                  //       ));
-                  //     }
-                  //   setState(() {
-                  //     creationInProgress=false;
-                  //   });
-                  //
-                  //   Navigator.pushReplacement(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //           builder: (context) =>
-                  //               RegisterEmployee()));
-                  // }
                   else if(buttonText=='Annuler'){
 
                     cancelled=true;
@@ -257,7 +218,7 @@ int? fingerprintId;
     String espConnectionError =
         "Vérifiez la configuration du microcontrôleur et ressayez";
 
-    if ( await Connectivity().checkConnectivity() == ConnectivityResult.none) {
+    if ( !await utils.netWorkAvailable()) {
       updateMessage(networkConnectionError);
       return null;
     }
@@ -315,7 +276,7 @@ colorCode: 4);
     }
 
 log.d('Merveil le Cornard****');
-    if(data==noMatchingFingerprint)//save 151
+    if( data==noMatchingFingerprint)//save 151
         {
       await ESP32().sendData('go');
 
