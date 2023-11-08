@@ -1,34 +1,41 @@
 {
   "project_info": {
-    "project_number": "627060700121",
-    "project_id": "presenceapp-40ed9",
-    "storage_bucket": "presenceapp-40ed9.appspot.com"
+    "project_number": "213819952157",
+    "project_id": "presenceapp-bj",
+    "storage_bucket": "presenceapp-bj.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:627060700121:android:ac8f843395166b62e99fc8",
+        "mobilesdk_app_id": "1:213819952157:android:4371b202b15f2b17d80af4",
         "android_client_info": {
           "package_name": "com.example.presence_app"
         }
       },
       "oauth_client": [
         {
-          "client_id": "627060700121-6e6c0qk747rgnd3g5bka99qiutkee6k9.apps.googleusercontent.com",
+          "client_id": "213819952157-2ergl2njqqn5ehj0ak3oevhivgjle450.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBdvuw6oEup21reAfn_N0eXobqWQ2W0ufM"
+          "current_key": "AIzaSyAs3Y-miH0mGDGS6yuBREexw9I2o2yb6bc"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "627060700121-6e6c0qk747rgnd3g5bka99qiutkee6k9.apps.googleusercontent.com",
+              "client_id": "213819952157-2ergl2njqqn5ehj0ak3oevhivgjle450.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "213819952157-dit65fsoa8b7u37c2dfi9g1qca9lgrs5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.presenceApp.RunnerTests"
+              }
             }
           ]
         }

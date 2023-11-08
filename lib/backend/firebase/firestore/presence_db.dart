@@ -48,10 +48,13 @@ class PresenceDB {
 
 Future<bool> entered(String employeeId,DateTime dateTime) async {
 
-
-    return (await getPresenceById(
-        (await getPresenceId(dateTime, employeeId))!))
+  log.d("Ezechiel Bandit:......................... $employeeId");
+  log.d("Date Time:......................... $dateTime");
+  var x = await getPresenceId(dateTime, employeeId);
+  log.d("Get Presence:......................... $x");
+    return (await getPresenceById(x!))
         .entryTime!=null;
+
 }
   Future<bool> exited(String employeeId,DateTime dateTime) async {
     return (await getPresenceById
@@ -92,6 +95,10 @@ Future<bool> entered(String employeeId,DateTime dateTime) async {
 
   Future<String?> getPresenceId(DateTime dateTime,String employeeId) async {
     String date=utils.formatDateTime(dateTime);
+
+    log.d("Affichage de date ::::::::::::::::::: $date");
+    log.d("Affichage de l'id de emp ::::::::::::::::::: $employeeId");
+
     QuerySnapshot querySnapshot = await _presence
         .where('date', isEqualTo: date)
         .where('employee_id', isEqualTo: employeeId)
@@ -1235,7 +1242,7 @@ EmployeeDB().updateCurrentStatus(employeeId, status);
 
 
     Future<void> setAllEmployeesAttendancesUntilCurrentDay() async {
-
+    log.d("############## Yeh Bro");
       QuerySnapshot snapshot =await _lastUpdate.limit(1).get();
       DocumentSnapshot documentSnapshot = snapshot.docs[0];
       DocumentReference doc = documentSnapshot.reference;

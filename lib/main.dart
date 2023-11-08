@@ -8,6 +8,7 @@ import 'package:presence_app/frontend/widgets/wrapperEmployee.dart';
 import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'backend/firebase/firestore/presence_db.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -18,7 +19,6 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
 

@@ -248,10 +248,12 @@ log.d(DateTime(date.year, date.month, day));
       Timestamp? serverTimestamp =
       (documentSnapshot.data() as Map<String,dynamic>)['time'] as Timestamp?;
 
-
+        log.d("RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
         DateTime currentServerTime = serverTimestamp!.toDate();
-        return currentServerTime.subtract(const Duration(hours: 1));
 
+        log.d("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA: $currentServerTime");
+       // return currentServerTime.subtract(const Duration(hours: 1));
+       return currentServerTime;
   }
 
   String str(dynamic enm) {

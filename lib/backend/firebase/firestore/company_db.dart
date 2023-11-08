@@ -7,7 +7,7 @@ class CompanyDB{
 
 
   final CollectionReference _company =
-  FirebaseFirestore.instance.collection('companies');
+  FirebaseFirestore.instance.collection('/');
 
   Future<bool> create(Company company) async {
 
@@ -56,7 +56,7 @@ class CompanyDB{
       company.id = snapshot.id;
       return company;
     } else {
-      throw Exception('Employee not found');
+      throw Exception('Company not found');
     }
   }
 

@@ -29,12 +29,12 @@ class DefaultFirebaseOptions {
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
+          'you can reconfigure this by running the FlutterFire CLI again.',
         );
       default:
         throw UnsupportedError(
@@ -44,40 +44,40 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-      apiKey: "AIzaSyCrHpnPK69vpn0RhY5mEPh2mHxwbSEQ61E",
-      authDomain: "presenceapp-bj.firebaseapp.com",
-      projectId: "presenceapp-bj",
-      storageBucket: "presenceapp-bj.appspot.com",
-      messagingSenderId: "213819952157",
-      appId: "1:213819952157:web:7bf2f256095c7963d80af4",
-      measurementId: "G-SN5Z7SEBD3"
+    apiKey: 'AIzaSyAbV_jVqxmFoQjjonfm5BKyvZY49tu_2f0',
+    appId: '1:627060700121:web:484c815c109576f1e99fc8',
+    messagingSenderId: '627060700121',
+    projectId: 'presenceapp-40ed9',
+    authDomain: 'presenceapp-40ed9.firebaseapp.com',
+    storageBucket: 'presenceapp-40ed9.appspot.com',
+    measurementId: 'G-407LRYB2EV',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: "AIzaSyAs3Y-miH0mGDGS6yuBREexw9I2o2yb6bc",
-    projectId: "presenceapp-bj",
-    storageBucket: "presenceapp-bj.appspot.com",
-    messagingSenderId: "213819952157",
-    appId: "1:213819952157:android:4371b202b15f2b17d80af4"
+    apiKey: 'AIzaSyBdvuw6oEup21reAfn_N0eXobqWQ2W0ufM',
+    appId: '1:627060700121:android:ac8f843395166b62e99fc8',
+    messagingSenderId: '627060700121',
+    projectId: 'presenceapp-40ed9',
+    storageBucket: 'presenceapp-40ed9.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAOC5Qf2mWTWT-z40yJYEB-ARGcOZ0EdDI',
-    appId: '1:213819952157:ios:b475de982480358ad80af4',
-    messagingSenderId: '213819952157',
-    projectId: 'presenceapp-bj',
-    storageBucket: 'presenceapp-bj.appspot.com',
-    iosClientId: '213819952157-oeo8v44ifncc85untldapij1b4rddsso.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBHQ2IRf7J-gJllS0ZwKujjOlNO1a9iJEE',
+    appId: '1:627060700121:ios:df70c25e123ba9a8e99fc8',
+    messagingSenderId: '627060700121',
+    projectId: 'presenceapp-40ed9',
+    storageBucket: 'presenceapp-40ed9.appspot.com',
+    iosClientId: '627060700121-iau5d5lnoqlv393cl61kmk8q49203rmc.apps.googleusercontent.com',
     iosBundleId: 'com.example.presenceApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAOC5Qf2mWTWT-z40yJYEB-ARGcOZ0EdDI',
-    appId: '1:213819952157:ios:85f6f15110990400d80af4',
-    messagingSenderId: '213819952157',
-    projectId: 'presenceapp-bj',
-    storageBucket: 'presenceapp-bj.appspot.com',
-    iosClientId: '213819952157-dit65fsoa8b7u37c2dfi9g1qca9lgrs5.apps.googleusercontent.com',
+    apiKey: 'AIzaSyBHQ2IRf7J-gJllS0ZwKujjOlNO1a9iJEE',
+    appId: '1:627060700121:ios:2484c384d8fa5ecfe99fc8',
+    messagingSenderId: '627060700121',
+    projectId: 'presenceapp-40ed9',
+    storageBucket: 'presenceapp-40ed9.appspot.com',
+    iosClientId: '627060700121-mae1k2op2vesskn60pj6hja68d9u505a.apps.googleusercontent.com',
     iosBundleId: 'com.example.presenceApp.RunnerTests',
   );
 }

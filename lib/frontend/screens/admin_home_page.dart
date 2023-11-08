@@ -35,7 +35,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     'Autres',
   ];
   bool? isSuperAdmin ;
-Future<void> retrieve() async {
+Future<void> retrieveMerv() async {
   log.i('Setting all employees attendance for today');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
 
@@ -51,7 +51,9 @@ setState(() {
   void initState() {
     // TODO: implement initState
     super.initState();
-    retrieve();
+    log.d("####################èèèèèèèèèzezzzz");
+    retrieveMerv();
+    log.d("####################aaaaaaaaaaaaaaaaaaaaaaaaaa");
   }
   @override
   Widget build(BuildContext context) {
