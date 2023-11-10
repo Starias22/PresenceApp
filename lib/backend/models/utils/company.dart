@@ -4,7 +4,8 @@ late String? otherLocation;
 bool subscribeStatus=false;
 String? pictureDownloadUrl;
 Company({this.id='', required this.name,required this.email,
-  required this.country,this.pictureDownloadUrl, required this.city, this.otherLocation,
+  required this.country,this.pictureDownloadUrl, required this.city,
+  this.otherLocation,
   required this.subscribeStatus});
 
 Map<String, dynamic> toMap() => {
@@ -27,7 +28,8 @@ static Company fromMap(Map<String, dynamic> map) {
       pictureDownloadUrl: map['picture_download_url'],
       city: map['city'],
       subscribeStatus: map['subscribe_status'],
-      otherLocation: map['other_location']
+      otherLocation: map['other_location'],
+
   );
 }
 }

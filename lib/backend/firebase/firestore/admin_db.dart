@@ -28,6 +28,7 @@ class AdminDB {
 
   Future<Admin> getAdminByEmail(String email) async {
 
+
     QuerySnapshot querySnapshot = await _admin
         .where('email', isEqualTo: email)
         .limit(1)

@@ -1,23 +1,37 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:presence_app/backend/models/utils/admin.dart';
 import 'package:presence_app/backend/models/utils/company.dart';
+import 'package:presence_app/utils.dart';
 
 
 
 class CompanyDB{
 
 
-  final CollectionReference _company =
-  FirebaseFirestore.instance.collection('/');
+ final CollectionReference _company =
+  FirebaseFirestore.instance.collection('companies');
 
   Future<bool> create(Company company) async {
-
     if (await exists(company.email)) return false;
+    Admin superAdmin=Admin
+      (firstname: company.name, lastname: company.name,
+        email: company.email,
+    isSuper: true);
+    var companyDescriptionReference=await
+    _company.doc().collection('description').add(company.toMap());
 
+var companyReference=companyDescriptionReference.parent;
+    company.id=companyReference.parent!.id;
+    companyDescriptionReference.update({'id':company.id});
 
-    await _company.add(company.toMap());
-    company.id=(await getCompanyIdByEmail(company.email))!;
+    var companiesCollectionReference=companyReference.parent;
+    companiesCollectionReference?.collection('admins').
+    add(superAdmin.toMap());
 
-    _company.doc(company.id).update({'id':company.id});
+    companiesCollectionReference?.collection('timezone_offset').
+    add({'seconds':2*3600});
+    companiesCollectionReference?.collection('last_update').
+    add({'date':'2023-11-01'});
 
 
 
@@ -26,9 +40,10 @@ class CompanyDB{
   }
 
   Future<bool> exists(String email) async {
-    QuerySnapshot querySnapshot =
-    await _company.where('email', isEqualTo: email).limit(1).get();
-    return querySnapshot.docs.isNotEmpty;
+    var companies=await getAllCompanies();
+    return companies.where((company) => company.email.compareTo(email)==0).isNotEmpty;
+
+
   }
 
 
@@ -46,6 +61,7 @@ class CompanyDB{
   }
 
   Future<Company> getCompanyById(String id) async {
+
     DocumentSnapshot<Map<String, dynamic>> snapshot =
     await _company.doc(id).get()as DocumentSnapshot<Map<String, dynamic>>;
     if (snapshot.exists) {
@@ -60,19 +76,14 @@ class CompanyDB{
     }
   }
 
-  Future<Company> getCompanyByEmail(String email) async {
+  Future<Company?> getCompanyByEmail(String email) async {
 
-    QuerySnapshot querySnapshot = await _company
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
+    var companies=(await getAllCompanies()).
+    where((company) => company.email.compareTo(email)==0);
 
-    DocumentSnapshot<Map<String, dynamic>> snapshot =
-    querySnapshot.docs.first as DocumentSnapshot<Map<String, dynamic>>;
-    if (snapshot.exists) {
 
-      Company company =Company.fromMap(snapshot.data()!);
-      return company;
+    if (companies.isNotEmpty) {
+      return companies.first;
     } else {
       throw Exception('Company not found');
     }
@@ -80,8 +91,24 @@ class CompanyDB{
 
 
 
+  Future<List<String>> getAllCollectionsAtRoot() async {
+    final firestore = FirebaseFirestore.instance;
+    final collectionReference = firestore.collection('');
+
+    final snapshots = await collectionReference.get();
+
+    final collections = <String>[];
+    for (final snapshot in snapshots.docs) {
+      collections.add(snapshot.id);
+    }
+
+    return collections;
+  }
   Future<List<Company>> getAllCompanies() async {
-    QuerySnapshot querySnapshot = await _company.get();
+
+        QuerySnapshot querySnapshot = await _company.get();
+        log.d('3333');
+        log.d(querySnapshot.size);
 
     List<Company> companies = querySnapshot.docs.map((DocumentSnapshot doc) {
       return Company.fromMap(doc.data() as Map<String,dynamic>);
@@ -110,3 +137,5 @@ class CompanyDB{
 
 
 }
+
+     
