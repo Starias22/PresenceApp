@@ -1,9 +1,9 @@
-class Company{
+class CompanyDescription{
 late String name,email,country,city,id;
 late String? otherLocation;
 bool subscribeStatus=false;
 String? pictureDownloadUrl;
-Company({this.id='', required this.name,required this.email,
+CompanyDescription({this.id='', required this.name,required this.email,
   required this.country,this.pictureDownloadUrl, required this.city,
   this.otherLocation,
   required this.subscribeStatus});
@@ -19,8 +19,8 @@ Map<String, dynamic> toMap() => {
   'picture_download_url':pictureDownloadUrl
 };
 
-static Company fromMap(Map<String, dynamic> map) {
-  return Company(
+static CompanyDescription fromMap(Map<String, dynamic> map) {
+  return CompanyDescription(
       id: map['id'],
       email: map['email'],
       name: map['name'],

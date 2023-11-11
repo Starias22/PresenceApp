@@ -11,7 +11,7 @@ class CompanyDB{
  final CollectionReference _company =
   FirebaseFirestore.instance.collection('companies');
 
-  Future<bool> create(Company company) async {
+  Future<bool> create(CompanyDescription company) async {//good
     if (await exists(company.email)) return false;
     Admin superAdmin=Admin
       (firstname: company.name, lastname: company.name,
@@ -39,28 +39,23 @@ var companyReference=companyDescriptionReference.parent;
     return true;
   }
 
-  Future<bool> exists(String email) async {
-    var companies=await getAllCompanies();
+  Future<bool> exists(String email) async {//good
+    var companies=await getAllCompaniesDescriptions();
     return companies.where((company) => company.email.compareTo(email)==0).isNotEmpty;
 
 
   }
 
 
-  Future<String?> getCompanyIdByEmail(String email) async {
-    QuerySnapshot querySnapshot = await _company
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
-
-
-    if (querySnapshot.docs.isNotEmpty) {
-      return querySnapshot.docs.first.id;
-    }
+  Future<String?> getCompanyIdByEmail(String email) async {//good
+    
+    var companies=(await getAllCompaniesDescriptions());
+    var match=companies.where((company) => company.email.compareTo(email)==0).toList();
+    if(match.isNotEmpty) return match[0].id;
     return null;
   }
 
-  Future<Company> getCompanyById(String id) async {
+  Future<CompanyDescription> getCompanyDescriptionById(String id) async {//ok
 
     DocumentSnapshot<Map<String, dynamic>> snapshot =
     await _company.doc(id).get()as DocumentSnapshot<Map<String, dynamic>>;
@@ -68,7 +63,7 @@ var companyReference=companyDescriptionReference.parent;
 
 
       // Convert the document snapshot into an Admin object
-      Company company = Company.fromMap(snapshot.data()!);
+      CompanyDescription company = CompanyDescription.fromMap(snapshot.data()!);
       company.id = snapshot.id;
       return company;
     } else {
@@ -76,14 +71,14 @@ var companyReference=companyDescriptionReference.parent;
     }
   }
 
-  Future<Company?> getCompanyByEmail(String email) async {
+  Future<CompanyDescription?> getCompanyDescriptionByEmail(String email) async {//ok
 
-    var companies=(await getAllCompanies()).
-    where((company) => company.email.compareTo(email)==0);
+    var companiesDescriptions=(await getAllCompaniesDescriptions()).
+    where((description) => description.email.compareTo(email)==0);
 
 
-    if (companies.isNotEmpty) {
-      return companies.first;
+    if (companiesDescriptions.isNotEmpty) {
+      return companiesDescriptions.first;
     } else {
       throw Exception('Company not found');
     }
@@ -91,7 +86,7 @@ var companyReference=companyDescriptionReference.parent;
 
 
 
-  Future<List<String>> getAllCollectionsAtRoot() async {
+  /*Future<List<String>> getAllCollectionsAtRoot() async {
     final firestore = FirebaseFirestore.instance;
     final collectionReference = firestore.collection('');
 
@@ -103,34 +98,48 @@ var companyReference=companyDescriptionReference.parent;
     }
 
     return collections;
-  }
-  Future<List<Company>> getAllCompanies() async {
+  }*/
+  Future<List<CompanyDescription>> getAllCompaniesDescriptions() async
+  {//maybe a problem
+
+    List<CompanyDescription>  descriptions=[];
 
         QuerySnapshot querySnapshot = await _company.get();
-        log.d('3333');
         log.d(querySnapshot.size);
+        CompanyDescription description;
+        CollectionReference descriptionCollection;
+        for (var doc in querySnapshot.docs){
+          descriptionCollection= doc.reference.collection('description');
+          // Get the document in the "description" collection
+           var theDescriptionDoc = (await descriptionCollection.get()).docs[0];
+           description= CompanyDescription(name: theDescriptionDoc['name'],
+               email: theDescriptionDoc['email'],
+               country: theDescriptionDoc['country'],
+               city: 'city',
+               subscribeStatus: theDescriptionDoc['subscribeStatus']
+           );
+           descriptions.add(description);
 
-    List<Company> companies = querySnapshot.docs.map((DocumentSnapshot doc) {
-      return Company.fromMap(doc.data() as Map<String,dynamic>);
-    }).toList();
+        }
+        return descriptions;
 
-    return companies;
+
   }
 
 
-  Future<void> delete(String id) async {
+  Future<void> delete(String id) async {//ok
     _company.doc(id).delete();
 
   }
 
 
-  void updatePictureDownloadUrl(String companyId,String url){
+  void updatePictureDownloadUrl(String companyId,String url){//ok
     _company.doc(companyId).update({'picture_download_url':url});
 
   }
 
 
-  Future<void> update(Company company) async {
+  Future<void> update(CompanyDescription company) async {
 
     _company.doc(company.id).update(company.toMap());
   }

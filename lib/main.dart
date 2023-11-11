@@ -23,11 +23,11 @@ void main() async {
     
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  Company company=Company
+  CompanyDescription company=CompanyDescription
     (name: 'UM6P', email: 'um6p@um6p.ma',
       country: 'Morocco', city: 'Benguerir', subscribeStatus: true);
   log.d('Before');
-  await CompanyDB().create(company);
+  //await CompanyDB().create(company);
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool? isDarkModeValue = prefs.getBool('isDarkMode');
 
