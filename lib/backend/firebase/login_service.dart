@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:presence_app/backend/firebase/firestore/admin_db.dart';
 
 
 import 'package:presence_app/utils.dart';
@@ -43,25 +44,37 @@ class Login {
   Future<int> signIn(String email, String password) async {
     UserCredential credential;
 
+
+    log.d('/////////////');
     try {
+      log.d('The email is $email and the password is $password');
+      log.d('/////////////');
       credential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+
+      log.d('/////////////');
+      log.i(credential.user?.email);
       if (!credential.user!.emailVerified) {
         log.e('Email not verified so you are signed out!');
         signOut();
         return emailNotVerified;
       }
     } catch (e) {
+
+      log.e('An error occurred');
+      log.e(e.toString());
+      if (e.toString().contains('too-many-requests')) {
+
+        log.e('too many requests');
+        return tooManyRequests;
+      }
+
       if (e is FirebaseAuthException) {
         if (e.message!.contains('no user record')) {
           log.e('No user found for that email.');
           return emailNotExists;
         }
-        if (e.message!.contains('too-many-requests')) {
 
-          log.e('too many requests');
-          return tooManyRequests;
-        }
         if (e.message!.contains('wrong-password')) {
           log.e('Wrong password provided for that user.');
           return wrongPassword;
@@ -76,15 +89,27 @@ class Login {
           log.e('Network Resquest failed! May be you are not connected');
 
           return networkRequestFailed;
-        } else {
-          if (e.message!.contains(
-              'The password is invalid or the user does not have a password.')) {
-            return wrongPassword;
-          }
-          //return failure;
         }
-      } else if (e is FirebaseException) {
-        log.e('Firebase exception');
+        if
+           (e.message!.contains(
+              'The password is invalid or the user does not have a password.')) {
+          return wrongPassword;
+        }}
+        if (e is FirebaseException) {
+        log.e('Firebase exception:  ${e.toString()}');
+
+        if (e.toString().contains('firebase_auth/invalid-login-credentials')) {
+          if(!await AdminDB().exists(email)) {
+            log.e('User not found');
+            return emailNotExists;
+          }
+          log.e('Wrong password provided for that user.');
+          return wrongPassword;
+
+
+        }
+
+
 
         return internalError;
       } else {

@@ -38,8 +38,9 @@ class _AdminHomePageState extends State<AdminHomePage> {
 Future<void> retrieveMerv() async {
   log.i('Setting all employees attendance for today');
   await PresenceDB().setAllEmployeesAttendancesUntilCurrentDay();
-
+  log.d('The email is: ${FirebaseAuth.instance.currentUser}');
 String? email=FirebaseAuth.instance.currentUser?.email;
+log.d('The email is: $email');
 var x=(await AdminDB().getAdminByEmail(email!)).isSuper;
 
 setState(() {

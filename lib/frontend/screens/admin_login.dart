@@ -27,17 +27,24 @@ class _AdminLoginState extends State<AdminLogin> {
   TextEditingController emailC = TextEditingController(),
       passwordC = TextEditingController();
 
-  String? email, password;
+  late String email, password;
   bool emailSending=false;
 
 
 
   void retrieveTexts() {
+    log.d('We are there');
+    log.d('The value of emailC.text is: ${emailC.text}');
     email = emailC.text;
+    log.d('The value of email is: $email');
+
+
     password = passwordC.text;
+    log.d('The value of password: $password');
+
   }
 
-  void reset() {
+  void clearFields() {
     emailC.text = '';
     passwordC.text = '';
   }
@@ -188,7 +195,7 @@ class _AdminLoginState extends State<AdminLogin> {
                                   backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                                 ),
                                 onPressed: () => {
-                                  reset(),
+                                  clearFields(),
                                   Navigator.of(context).pop()
                                 },
                                 child: const Text(
@@ -208,18 +215,31 @@ class _AdminLoginState extends State<AdminLogin> {
                                     backgroundColor: MaterialStateProperty.all<Color>(const Color(0xFF0020FF)),
                                   ),
                                   onPressed: () async {
+                                    log.d('The button is pressed');
                                     if (_key.currentState!.validate()) {
                                       _key.currentState!.save();
+                                      log.d('Everything is okay');
                                     } else {
+
                                       return;
                                     }
                                     setState(() {
                                       loginInProcess=true;
                                     });
+
                                     retrieveTexts();
+
+                                    log.d('Retrieved');
+
+                                    log.d('The value of email is: $email');
+
+
+                                    log.d('The value of password: $password');
                                     
 
                                     await singIn();
+
+                                    log.d('After signin');
                                   },
                                   child: const Text(
                                     "Se connecter",
@@ -289,8 +309,11 @@ class _AdminLoginState extends State<AdminLogin> {
   }
 
   Future<void> singIn() async{
+    log.d('Let us see: $email');
 
-    var loginCode= await Login().signIn(email!, password!);
+    var loginCode= await Login().signIn(email, password);
+    log.d('The value of loginCode is: $loginCode');
+
 
     try {
 
@@ -337,17 +360,17 @@ class _AdminLoginState extends State<AdminLogin> {
 
           case tooManyRequests:
 
-            Login().resetPassword(email!);
+            Login().resetPassword(email);
             message =
             "L'accès à ce compte a été temporairement désactivé en raison de nombreuses tentatives de connexion infructueuses. Vous pouvez immédiatement le restaurez en réinitialisant votre mot de passe ou vous pouvez réessayer plus tard. Un email de reinitialisation est envoyé à cette adresse";
             break;
 
           case success:
-            log.d(email);
-            if(await AdminDB().exists(email!)) {
+
+            if(await AdminDB().exists(email)) {
               message = 'Connexion réussie !';
 
-              reset();
+             // clearFields();
 
             }
             else{
