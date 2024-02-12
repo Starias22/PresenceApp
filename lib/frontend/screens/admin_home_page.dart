@@ -41,6 +41,7 @@ Future<void> retrieveMerv() async {
 
 String? email=FirebaseAuth.instance.currentUser?.email;
 var x=(await AdminDB().getAdminByEmail(email!)).isSuper;
+
 setState(() {
   isSuperAdmin=x ;
 });

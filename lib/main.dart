@@ -11,8 +11,8 @@ import 'package:presence_app/utils.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'backend/firebase/firestore/presence_db.dart';
-//import 'firebase_options_merveil.dart';
-import 'firebase_options.dart';
+import 'firebase_options_merveil.dart';
+//import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
