@@ -341,7 +341,7 @@ void updateDateController(bool isStartDate){
                                 (
                                   text: 'Suivant',
                                   onPressed: (){
-
+                                      return;
                                     if(start.isAfter(end)){
                                       ScaffoldMessenger.of(context).showSnackBar( CustomSnackBar(
                                         duration: const Duration(seconds: 5),

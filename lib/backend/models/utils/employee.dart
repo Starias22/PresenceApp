@@ -78,18 +78,27 @@ class Employee {
   }
 
   bool isInRange(DateTime currentTime){
+    DateTime currentdTime=DateTime(2000,1,1, currentTime.hour, currentTime.minute);
 
-   return  (utils.format(entryTime)!.isBefore(currentTime)||
-        utils.format(entryTime)!.isAtSameMomentAs(currentTime));
+    return  (utils.format(entryTime)!.isBefore(currentdTime)||
+        utils.format(entryTime)!.isAtSameMomentAs(currentdTime));
   }
 
   bool isLate(DateTime currentTime){
-    return utils.format(entryTime)!.isBefore(currentTime) ;
+
+    DateTime currentdTime=DateTime(2000,1,1, currentTime.hour, currentTime.minute);
+
+    return utils.format(entryTime)!.isBefore(currentdTime) ;
   }
+
   bool desiresToExitBeforeEntryTime(DateTime currentTime) {
-    return currentTime.isBefore(utils.format(entryTime)!);
+    DateTime currentdTime=DateTime(2000,1,1, currentTime.hour, currentTime.minute);
+
+    return currentdTime.isBefore(utils.format(entryTime)!);
   }
   bool desiresToExitBeforeExitTime(DateTime currentTime){
-    return currentTime.isBefore(utils.format(exitTime)!);
+    DateTime currentdTime=DateTime(2000,1,1, currentTime.hour, currentTime.minute);
+
+    return currentdTime.isBefore(utils.format(exitTime)!);
   }
 }
